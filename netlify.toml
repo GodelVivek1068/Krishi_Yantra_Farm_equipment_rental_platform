@@ -1,3 +1,10 @@
+# KrishiYantra frontend deploy config (Netlify)
+# Build settings: Base directory = "frontend", Publish directory = "."
+# IMPORTANT: set the /api proxy below to YOUR Render backend URL.
+# It must match your Render Web Service name. The value below is the
+# default for a service named "krishiyantra-api" (see render.yaml).
+# Change it if your Render service is named differently.
+
 [build]
   base = "frontend"
   publish = "."
