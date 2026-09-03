@@ -13,7 +13,7 @@ def _serialize_user(user):
     role = user.get('role', 'renter')
     kyc_status = user.get('kyc_status')
     if not kyc_status:
-        kyc_status = 'approved' if role in {'owner', 'admin'} else 'not_required'
+        kyc_status = 'approved' if role in {'owner', 'supplier', 'admin'} else 'not_required'
 
     return {
         'id': str(user['_id']),
@@ -50,7 +50,7 @@ def register():
     location = data.get('location', '').strip()
     password = data.get('password', '')
     role = data.get('role', 'renter')
-    role = role if role in {'renter', 'owner'} else 'renter'
+    role = role if role in {'renter', 'owner', 'kamgar', 'supplier'} else 'renter'
 
     is_admin_email = email in _admin_emails()
     if is_admin_email:
@@ -69,7 +69,7 @@ def register():
 
     hashed_pw = generate_password_hash(password)
 
-    kyc_status = 'pending' if role == 'owner' else ('approved' if role == 'admin' else 'not_required')
+    kyc_status = 'pending' if role in {'owner', 'kamgar', 'supplier'} else ('approved' if role == 'admin' else 'not_required')
     user_doc = {
         'name': name,
         'email': email,
@@ -129,6 +129,29 @@ def login_owner():
 
     if user.get('role', 'renter') != 'owner':
         return jsonify({'error': 'This account is not registered as owner'}), 403
+
+    token = generate_token(user['_id'])
+    return jsonify({
+        'token': token,
+        'user': _serialize_user(user)
+    })
+
+
+@auth_bp.route('/login-supplier', methods=['POST'])
+def login_supplier():
+    data = request.get_json() or {}
+    email = data.get('email', '').strip().lower()
+    password = data.get('password', '')
+
+    if not email or not password:
+        return jsonify({'error': 'Email and password are required'}), 400
+
+    user = mongo.db.users.find_one({'email': email})
+    if not user or not check_password_hash(user['password'], password):
+        return jsonify({'error': 'Invalid email or password'}), 401
+
+    if str(user.get('role', 'renter')).lower() != 'supplier':
+        return jsonify({'error': 'This account is not registered as supplier'}), 403
 
     token = generate_token(user['_id'])
     return jsonify({

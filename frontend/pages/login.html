@@ -51,9 +51,11 @@
         <p id="loginSubtitle">Login to your KrishiYantra account</p>
       </div>
       <div id="alertBox"></div>
-      <div class="role-switch">
-        <button type="button" id="renterLoginBtn" class="role-btn active" onclick="setLoginMode('renter')">Farmer / Renter Login</button>
-        <button type="button" id="ownerLoginBtn" class="role-btn" onclick="setLoginMode('owner')">Owner Login</button>
+      <div class="role-switch" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+        <button type="button" id="renterLoginBtn" class="role-btn active" onclick="setLoginMode('renter')">Farmer / Renter</button>
+        <button type="button" id="ownerLoginBtn" class="role-btn" onclick="setLoginMode('owner')">Owner</button>
+        <button type="button" id="kamgarLoginBtn" class="role-btn" onclick="setLoginMode('kamgar')">Kamgar / Worker</button>
+        <button type="button" id="supplierLoginBtn" class="role-btn" onclick="setLoginMode('supplier')">Supplier</button>
       </div>
       <div class="form-group">
         <label>Email Address</label>
@@ -83,9 +85,15 @@
       loginMode = mode;
       document.getElementById('renterLoginBtn').classList.toggle('active', mode === 'renter');
       document.getElementById('ownerLoginBtn').classList.toggle('active', mode === 'owner');
+      document.getElementById('kamgarLoginBtn').classList.toggle('active', mode === 'kamgar');
+      document.getElementById('supplierLoginBtn').classList.toggle('active', mode === 'supplier');
       document.getElementById('loginSubtitle').textContent = mode === 'owner'
         ? 'Owner login to manage listings and bookings'
-        : 'Login to your KrishiYantra account';
+        : mode === 'kamgar'
+          ? 'Worker login to manage availability and hired jobs'
+          : mode === 'supplier'
+            ? 'Supplier login to manage fertilizer listings and orders'
+            : 'Login to your KrishiYantra account';
     }
 
     async function doLogin() {
@@ -93,7 +101,9 @@
       const password = document.getElementById('password').value;
       if (!email || !password) { showAlert('alertBox','Please fill all fields','error'); return; }
       try {
-        const endpoint = loginMode === 'owner' ? '/auth/login-owner' : '/auth/login';
+        let endpoint = '/auth/login';
+        if (loginMode === 'owner') endpoint = '/auth/login-owner';
+        if (loginMode === 'supplier') endpoint = '/auth/login-supplier';
         const res = await apiCall('POST', endpoint, { email, password });
         if (res.token) {
           localStorage.setItem('token', res.token);
@@ -110,6 +120,14 @@
             } else {
               window.location.href = 'owner-dashboard.html';
             }
+            return;
+          }
+          if ((res.user && res.user.role) === 'supplier') {
+            window.location.href = 'supplier-dashboard.html';
+            return;
+          }
+          if ((res.user && res.user.role) === 'kamgar') {
+            window.location.href = 'kamgar-dashboard.html';
             return;
           }
           window.location.href = '../index.html';

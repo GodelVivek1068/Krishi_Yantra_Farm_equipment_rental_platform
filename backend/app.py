@@ -7,12 +7,15 @@ from routes.equipment import equipment_bp
 from routes.rentals import rentals_bp
 from routes.contact import contact_bp
 from routes.admin_marketplace import marketplace_admin_bp
+from routes.kamgar import kamgar_bp
+from routes.fertilizer import fertilizer_bp
 
 
 FRONTEND_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'frontend'))
 
 def create_app():
     app = Flask(__name__)
+    app.url_map.strict_slashes = False
     cors_origins = os.getenv('CORS_ORIGINS', '*').strip()
     if cors_origins == '*':
         CORS(app, origins='*')
@@ -29,6 +32,8 @@ def create_app():
     app.register_blueprint(rentals_bp, url_prefix='/api/rentals')
     app.register_blueprint(contact_bp, url_prefix='/api/contact')
     app.register_blueprint(marketplace_admin_bp, url_prefix='/api/admin')
+    app.register_blueprint(kamgar_bp, url_prefix='/api/kamgar')
+    app.register_blueprint(fertilizer_bp, url_prefix='/api/fertilizer')
 
     @app.route('/')
     def index():

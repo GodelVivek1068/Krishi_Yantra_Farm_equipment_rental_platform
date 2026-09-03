@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Supplier Dashboard - KrishiYantra</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    .dashboard-header { background: linear-gradient(135deg, #1f6f45, #153a2a); color: white; padding: 40px 24px 30px; }
+    .dashboard-header h1 { font-family: 'Playfair Display', serif; font-size: 2rem; }
+    .dashboard-wrap { max-width: 1180px; margin: 28px auto; padding: 0 24px 56px; }
+    .stats-grid { display: grid; gap: 14px; grid-template-columns: repeat(4, minmax(0,1fr)); margin-bottom: 24px; }
+    .stat-card { background: white; border: 1px solid var(--gray-200); border-radius: 12px; padding: 18px; box-shadow: var(--shadow-sm); }
+    .stat-label { color: var(--gray-600); font-size: 0.82rem; }
+    .stat-value { font-size: 1.5rem; font-weight: 800; color: var(--green-dark); margin-top: 4px; }
+    .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .panel { background: white; border: 1px solid var(--gray-200); border-radius: 12px; padding: 18px; box-shadow: var(--shadow-sm); }
+    .panel h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--green-dark); margin-bottom: 14px; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .form-grid .full { grid-column: 1 / -1; }
+    .form-group label { display: block; margin-bottom: 5px; font-size: 0.78rem; font-weight: 700; color: var(--gray-600); }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; border: 1px solid var(--gray-200); border-radius: 8px; padding: 9px 10px; font: inherit; }
+    .form-group textarea { min-height: 90px; resize: vertical; }
+    .item-card { border: 1px solid var(--gray-200); border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+    .item-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+    .item-name { font-weight: 800; color: var(--green-dark); }
+    .item-meta { color: var(--gray-600); font-size: 0.82rem; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+    .badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 5px 10px; font-weight: 700; font-size: 0.72rem; }
+    .badge-green { background: #dcfce7; color: #166534; }
+    .badge-amber { background: #fef3c7; color: #92400e; }
+    .badge-red { background: #fee2e2; color: #b91c1c; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .btn-mini { border: none; border-radius: 999px; padding: 6px 12px; cursor: pointer; font-size: 0.78rem; font-weight: 700; }
+    .btn-mini.edit { background: #e0f2fe; color: #0369a1; }
+    .btn-mini.ok { background: #dcfce7; color: #166534; }
+    .btn-mini.no { background: #fee2e2; color: #b91c1c; }
+    .empty { color: var(--gray-400); text-align: center; padding: 20px; }
+    .quick-options { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .option-chip { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--gray-200); padding: 8px 14px; border-radius: 999px; background: #f7fffb; color: var(--green-dark); font-size: 0.84rem; font-weight: 700; }
+    @media(max-width:980px) { .stats-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } .dashboard-grid { grid-template-columns: 1fr; } }
+    @media(max-width:640px) { .stats-grid { grid-template-columns: 1fr; } .form-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="equipment.html">Equipment</a></li>
+      <li><a href="fertilizer.html">Fertilizer</a></li>
+      <li><a href="supplier-dashboard.html" class="active">Supplier Dashboard</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth"><a href="login.html" class="btn-outline">Login</a><a href="register.html" class="btn-primary">Register</a></div>
+    <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+  </nav>
+
+  <div class="dashboard-header">
+    <h1>Supplier Dashboard</h1>
+    <p>Manage fertilizer listings, orders, and delivery status.</p>
+  </div>
+
+  <div class="dashboard-wrap">
+    <div id="alertBox"></div>
+    <div class="quick-options">
+      <a class="option-chip" href="fertilizer.html"><i class="fa-solid fa-seedling"></i> View Catalog</a>
+      <button type="button" class="option-chip" onclick="toggleAddForm()"><i class="fa-solid fa-plus"></i> Add Product</button>
+      <button type="button" class="option-chip" onclick="toggleBulkUpload()"><i class="fa-solid fa-cloud-arrow-up"></i> Bulk Upload</button>
+    </div>
+
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card"><div class="stat-label">Listings</div><div class="stat-value">-</div></div>
+      <div class="stat-card"><div class="stat-label">Pending Orders</div><div class="stat-value">-</div></div>
+      <div class="stat-card"><div class="stat-label">Total Sales</div><div class="stat-value">-</div></div>
+      <div class="stat-card"><div class="stat-label">Inventory</div><div class="stat-value">-</div></div>
+    </div>
+
+    <div id="analyticsPanel" style="display:none;background:white;border:1px solid var(--gray-200);border-radius:12px;padding:20px;margin-bottom:24px;box-shadow:var(--shadow-sm);">
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--green-dark);margin-bottom:16px;"><i class="fa-solid fa-chart-line"></i> Your Performance</h3>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;">
+        <div style="padding:12px;background:#f7fffb;border-radius:8px;border-left:4px solid var(--green-mid);">
+          <div style="font-size:0.82rem;color:var(--gray-600);">Avg Rating</div>
+          <div style="font-size:1.6rem;font-weight:900;color:var(--green-dark);margin-top:4px;" id="avgRatingVal">-</div>
+        </div>
+        <div style="padding:12px;background:#f7fffb;border-radius:8px;border-left:4px solid var(--green-mid);">
+          <div style="font-size:0.82rem;color:var(--gray-600);">Total Ratings</div>
+          <div style="font-size:1.6rem;font-weight:900;color:var(--green-dark);margin-top:4px;" id="totalRatingsVal">-</div>
+        </div>
+        <div style="padding:12px;background:#f7fffb;border-radius:8px;border-left:4px solid var(--green-mid);">
+          <div style="font-size:0.82rem;color:var(--gray-600);">Revenue</div>
+          <div style="font-size:1.6rem;font-weight:900;color:var(--green-dark);margin-top:4px;" id="revenueVal">-</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--gray-200);">
+        <div style="font-size:0.88rem;font-weight:600;color:var(--green-dark);margin-bottom:12px;">Order Status Breakdown</div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;" id="statusBreakdown"></div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <section class="panel" id="productPanel">
+        <h3><i class="fa-solid fa-boxes-stacked"></i> Your Fertilizer Products</h3>
+        <div id="addProductBox" style="display:none; margin-bottom:14px; border:1px solid var(--gray-200); border-radius:10px; padding:14px; background:linear-gradient(180deg,#f7fffb,#fff);">
+          <div class="form-grid">
+            <div class="form-group"><label>Name</label><input id="productName" type="text" /></div>
+            <div class="form-group"><label>Category</label><select id="productCategory"><option value="fertilizer">Fertilizer</option><option value="nitrogen">Nitrogen</option><option value="phosphorus">Phosphorus</option><option value="potash">Potash</option><option value="balanced">Balanced</option><option value="organic">Organic</option></select></div>
+            <div class="form-group"><label>Brand</label><input id="productBrand" type="text" /></div>
+            <div class="form-group"><label>Variant</label><input id="productVariant" type="text" /></div>
+            <div class="form-group"><label>Price / bag</label><input id="productPrice" type="number" min="1" /></div>
+            <div class="form-group"><label>Stock</label><input id="productStock" type="number" min="0" /></div>
+            <div class="form-group full"><label>Location</label><input id="productLocation" type="text" /></div>
+            <div class="form-group full"><label>Description</label><textarea id="productDescription"></textarea></div>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px; flex-wrap:wrap;">
+            <button type="button" class="btn-mini no" onclick="toggleAddForm(false)">Cancel</button>
+            <button type="button" class="btn-mini ok" onclick="submitProduct()">Save Product</button>
+          </div>
+        </div>
+        <div id="bulkUploadBox" style="display:none; margin-bottom:14px; border:1px solid var(--gray-200); border-radius:10px; padding:14px; background:linear-gradient(180deg,#f7fffb,#fff);">
+          <h4 style="color:var(--green-dark);margin-bottom:12px;">Bulk Upload Products</h4>
+          <p style="font-size:0.85rem;color:var(--gray-600);margin-bottom:12px;">Paste JSON array of products. Required fields: name, location, price_per_bag. Optional: category, brand, variant, stock_available, description</p>
+          <textarea id="bulkProductsJson" placeholder='[{"name":"NPK Fertilizer","category":"balanced","brand":"AgroXL","price_per_bag":500,"stock_available":100,"location":"Pune","description":"High quality NPK"}]' style="width:100%;min-height:120px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);padding:10px;font-family:monospace;font-size:0.85rem;resize:vertical;"></textarea>
+          <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px; flex-wrap:wrap;">
+            <button type="button" class="btn-mini no" onclick="toggleBulkUpload(false)">Cancel</button>
+            <button type="button" class="btn-mini ok" onclick="submitBulkUpload()">Upload Products</button>
+          </div>
+        </div>
+        <div id="productList"><div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div></div>
+      </section>
+
+      <section class="panel">
+        <h3><i class="fa-solid fa-receipt"></i> Customer Orders</h3>
+        <div id="orderList"><div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div></div>
+      </section>
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+  <script>
+    let products = [];
+    let orders = [];
+
+    function requireSupplier() {
+      const user = getUser();
+      if (!isLoggedIn()) {
+        window.location.href = 'login.html?redirect=supplier-dashboard.html';
+        return false;
+      }
+      if (!user || user.role !== 'supplier') {
+        showAlert('alertBox', 'Supplier account required for dashboard access.', 'error');
+        setTimeout(() => window.location.href = 'login.html?redirect=supplier-dashboard.html', 1200);
+        return false;
+      }
+      return true;
+    }
+
+    function statusClass(status) {
+      const value = String(status || '').toLowerCase();
+      if (['delivered', 'paid', 'accepted', 'confirmed'].includes(value)) return 'badge-green';
+      if (['requested', 'packed', 'dispatched'].includes(value)) return 'badge-amber';
+      return 'badge-red';
+    }
+
+    function toggleAddForm(show = null) {
+      const box = document.getElementById('addProductBox');
+      if (!box) return;
+      const visible = show === null ? box.style.display === 'none' : show;
+      box.style.display = visible ? 'block' : 'none';
+      if (visible) document.getElementById('productName').focus();
+    }
+
+    function toggleBulkUpload(show = null) {
+      const box = document.getElementById('bulkUploadBox');
+      if (!box) return;
+      const visible = show === null ? box.style.display === 'none' : show;
+      box.style.display = visible ? 'block' : 'none';
+      if (visible) document.getElementById('bulkProductsJson').focus();
+    }
+
+    async function submitBulkUpload() {
+      const jsonText = document.getElementById('bulkProductsJson')?.value.trim();
+      if (!jsonText) {
+        showAlert('alertBox', 'Please paste product JSON data.', 'error');
+        return;
+      }
+
+      let productsArray;
+      try {
+        productsArray = JSON.parse(jsonText);
+        if (!Array.isArray(productsArray)) {
+          throw new Error('JSON must be an array');
+        }
+      } catch (e) {
+        showAlert('alertBox', 'Invalid JSON format: ' + e.message, 'error');
+        return;
+      }
+
+      if (productsArray.length === 0) {
+        showAlert('alertBox', 'Please add at least one product.', 'error');
+        return;
+      }
+
+      try {
+        const res = await apiCall('POST', '/fertilizer/products/bulk-upload', {
+          products: productsArray
+        }, true);
+        
+        showAlert('alertBox', `${res.created} products uploaded successfully.${res.errors.length > 0 ? ' ' + res.errors.length + ' errors.' : ''}`, res.errors.length > 0 ? 'warning' : 'success');
+        
+        if (res.errors.length > 0) {
+          console.log('Bulk upload errors:', res.errors);
+        }
+
+        toggleBulkUpload(false);
+        document.getElementById('bulkProductsJson').value = '';
+        setTimeout(() => loadProducts(), 1500);
+      } catch (e) {
+        showAlert('alertBox', e.message || 'Unable to upload products.', 'error');
+      }
+    }
+
+    async function loadDashboard() {
+      if (!requireSupplier()) return;
+      await Promise.all([loadProducts(), loadOrders(), loadAnalytics()]);
+      renderStats();
+    }
+
+    async function loadAnalytics() {
+      try {
+        const res = await apiCall('GET', '/fertilizer/supplier/analytics', null, true);
+        const analyticsPanel = document.getElementById('analyticsPanel');
+        if (analyticsPanel && res) {
+          analyticsPanel.style.display = 'block';
+          const avgRatingVal = document.getElementById('avgRatingVal');
+          const totalRatingsVal = document.getElementById('totalRatingsVal');
+          const revenueVal = document.getElementById('revenueVal');
+          const statusBreakdown = document.getElementById('statusBreakdown');
+          
+          if (avgRatingVal) avgRatingVal.textContent = res.avg_rating || '-';
+          if (totalRatingsVal) totalRatingsVal.textContent = res.total_ratings || 0;
+          if (revenueVal) revenueVal.textContent = '₹' + (res.total_revenue || 0).toLocaleString('en-IN');
+          
+          if (statusBreakdown && res.status_breakdown) {
+            const statuses = Object.entries(res.status_breakdown);
+            statusBreakdown.innerHTML = statuses.map(([status, count]) => 
+              `<span class="option-chip">${status}: ${count}</span>`
+            ).join('');
+          }
+        }
+      } catch (e) {
+        console.log('Analytics not available:', e.message);
+      }
+    }
+
+    async function loadProducts() {
+      try {
+        const user = getUser();
+        const supplierId = user && user._id ? user._id : '';
+        const res = await apiCall('GET', `/fertilizer/products?available_only=false${supplierId ? `&supplier_id=${encodeURIComponent(supplierId)}` : ''}`, null, true);
+        products = res.products || [];
+        renderProducts();
+      } catch (e) {
+        products = [];
+        renderProducts();
+        showAlert('alertBox', e.message || 'Unable to load fertilizer products.', 'error');
+      }
+    }
+
+    async function loadOrders() {
+      try {
+        const res = await apiCall('GET', '/fertilizer/orders/my', null, true);
+        orders = res.orders || [];
+        renderOrders();
+      } catch (e) {
+        orders = [];
+        renderOrders();
+        showAlert('alertBox', e.message || 'Unable to load orders.', 'error');
+      }
+    }
+
+    function renderStats() {
+      const totalSales = orders.reduce((sum, order) => sum + Number(order.total_amount || 0), 0);
+      const pending = orders.filter(order => String(order.status || '').toLowerCase() === 'requested').length;
+      const inventory = products.reduce((sum, p) => sum + Number(p.stock_available || 0), 0);
+      document.getElementById('statsGrid').innerHTML = `
+        <div class="stat-card"><div class="stat-label">Listings</div><div class="stat-value">${products.length}</div></div>
+        <div class="stat-card"><div class="stat-label">Pending Orders</div><div class="stat-value">${pending}</div></div>
+        <div class="stat-card"><div class="stat-label">Total Sales</div><div class="stat-value">₹${totalSales.toLocaleString('en-IN')}</div></div>
+        <div class="stat-card"><div class="stat-label">Inventory</div><div class="stat-value">${inventory}</div></div>
+      `;
+    }
+
+    function renderProducts() {
+      const list = document.getElementById('productList');
+      if (!products.length) {
+        list.innerHTML = '<div class="empty">No fertilizer listings yet. Add your first product.</div>';
+        return;
+      }
+      list.innerHTML = products.map(product => `
+        <div class="item-card">
+          <div class="item-top">
+            <div>
+              <div class="item-name">${product.name || 'Fertilizer'}</div>
+              <div class="item-meta">
+                <span>${product.category || 'fertilizer'}</span>
+                <span>Brand: ${product.brand || 'Local'}</span>
+                <span>Stock: ${product.stock_available || 0}</span>
+              </div>
+            </div>
+            <span class="badge ${product.available ? 'badge-green' : 'badge-red'}">${product.available ? 'Available' : 'Out of stock'}</span>
+          </div>
+          <div class="item-meta">
+            <span><i class="fa-solid fa-location-dot"></i> ${product.location || 'Location not set'}</span>
+            <span><i class="fa-solid fa-indian-rupee-sign"></i> ₹${product.price_per_bag || 0}/bag</span>
+          </div>
+          <div class="actions">
+            <button class="btn-mini edit" onclick="editProduct('${product.id}')">Edit</button>
+            <button class="btn-mini no" onclick="deleteProduct('${product.id}')">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderOrders() {
+      const list = document.getElementById('orderList');
+      if (!orders.length) {
+        list.innerHTML = '<div class="empty">No customer orders yet.</div>';
+        return;
+      }
+      list.innerHTML = orders.map(order => `
+        <div class="item-card">
+          <div class="item-top">
+            <div>
+              <div class="item-name">${order.product_name || 'Fertilizer Order'}</div>
+              <div class="item-meta">
+                <span><i class="fa-solid fa-user"></i> ${order.farmer_name || 'Farmer'}</span>
+                <span><i class="fa-solid fa-box"></i> Qty: ${order.quantity || 0}</span>
+                <span><i class="fa-solid fa-location-dot"></i> ${order.delivery_location || 'Farm location'}</span>
+              </div>
+            </div>
+            <span class="badge ${statusClass(order.status)}">${order.status || 'requested'}</span>
+          </div>
+          <div class="item-meta">
+            <span><i class="fa-solid fa-money-bill-wave"></i> ₹${order.total_amount || 0}</span>
+            <span><i class="fa-solid fa-wallet"></i> ${order.payment_status || 'pending'}</span>
+            <span><i class="fa-solid fa-calendar"></i> ${order.delivery_date || 'Flexible'}</span>
+          </div>
+          <div class="actions">
+            <button class="btn-mini ok" onclick="updateOrderStatus('${order.id}', 'accepted')">Accept</button>
+            <button class="btn-mini ok" onclick="updateOrderStatus('${order.id}', 'packed')">Packed</button>
+            <button class="btn-mini ok" onclick="updateOrderStatus('${order.id}', 'dispatched')">Dispatch</button>
+            <button class="btn-mini ok" onclick="updateOrderStatus('${order.id}', 'delivered')">Delivered</button>
+            <button class="btn-mini no" onclick="updateOrderStatus('${order.id}', 'cancelled')">Cancel</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function submitProduct() {
+      const payload = {
+        name: document.getElementById('productName').value.trim(),
+        category: document.getElementById('productCategory').value,
+        brand: document.getElementById('productBrand').value.trim(),
+        variant: document.getElementById('productVariant').value.trim(),
+        price_per_bag: Number(document.getElementById('productPrice').value || 0),
+        stock_available: Number(document.getElementById('productStock').value || 0),
+        location: document.getElementById('productLocation').value.trim(),
+        description: document.getElementById('productDescription').value.trim(),
+        supplier_name: getUser()?.name || '',
+        supplier_phone: getUser()?.phone || ''
+      };
+      if (!payload.name || !payload.location || payload.price_per_bag <= 0) {
+        showAlert('alertBox', 'Please add a valid product name, location, and price.', 'error');
+        return;
+      }
+      try {
+        await apiCall('POST', '/fertilizer/products', payload, true);
+        toggleAddForm(false);
+        document.getElementById('productName').value = '';
+        document.getElementById('productBrand').value = '';
+        document.getElementById('productVariant').value = '';
+        document.getElementById('productPrice').value = '';
+        document.getElementById('productStock').value = '';
+        document.getElementById('productLocation').value = '';
+        document.getElementById('productDescription').value = '';
+        showAlert('alertBox', 'Fertilizer product added successfully.', 'success');
+        await loadProducts();
+      } catch (e) {
+        showAlert('alertBox', e.message || 'Unable to create product.', 'error');
+      }
+    }
+
+    async function editProduct(productId) {
+      const product = products.find(item => item.id === productId);
+      if (!product) return;
+      const nextName = window.prompt('Product name', product.name || '');
+      if (nextName === null) return;
+      const nextPrice = Number(window.prompt('Price per bag', product.price_per_bag || 0));
+      if (!Number.isFinite(nextPrice) || nextPrice <= 0) {
+        showAlert('alertBox', 'Enter a valid product price.', 'error');
+        return;
+      }
+      const nextStock = Number(window.prompt('Stock available', product.stock_available || 0));
+      if (!Number.isFinite(nextStock) || nextStock < 0) {
+        showAlert('alertBox', 'Stock must be zero or more.', 'error');
+        return;
+      }
+      try {
+        await apiCall('PUT', `/fertilizer/products/${productId}`, {
+          name: nextName.trim(),
+          price_per_bag: nextPrice,
+          stock_available: nextStock,
+          available: nextStock > 0,
+          location: product.location || '',
+          supplier_name: getUser()?.name || '',
+          supplier_phone: getUser()?.phone || ''
+        }, true);
+        showAlert('alertBox', 'Product updated.', 'success');
+        await loadProducts();
+      } catch (e) {
+        showAlert('alertBox', e.message || 'Unable to update product.', 'error');
+      }
+    }
+
+    async function deleteProduct(productId) {
+      if (!window.confirm('Delete this fertilizer product?')) return;
+      try {
+        await apiCall('DELETE', `/fertilizer/products/${productId}`, null, true);
+        showAlert('alertBox', 'Product deleted.', 'success');
+        await loadProducts();
+      } catch (e) {
+        showAlert('alertBox', e.message || 'Unable to delete product.', 'error');
+      }
+    }
+
+    async function updateOrderStatus(orderId, status) {
+      try {
+        await apiCall('PUT', `/fertilizer/orders/${orderId}/status`, { status }, true);
+        showAlert('alertBox', `Order marked as ${status}.`, 'success');
+        await loadOrders();
+      } catch (e) {
+        showAlert('alertBox', e.message || 'Unable to update order status.', 'error');
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>

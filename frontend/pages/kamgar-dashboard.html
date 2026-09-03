@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kamgar Dashboard - KrishiYantra</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    body { background: #f6faf7; }
+    .page-header { background: linear-gradient(135deg, #204d36, #2d7a4f); color: white; padding: 48px 24px 36px; }
+    .page-header h1 { font-family: 'Playfair Display', serif; font-size: 2.2rem; }
+    .page-header p { color: rgba(255,255,255,0.75); }
+    .container { max-width: 1180px; margin: 0 auto; padding: 28px 24px 80px; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: white; border: 1px solid #e5efe7; border-radius: 16px; padding: 18px; box-shadow: var(--shadow-sm); }
+    .stat-label { color: var(--gray-600); font-size: 0.8rem; }
+    .stat-value { font-size: 1.6rem; font-weight: 800; color: var(--green-dark); margin-top: 8px; }
+    .panel { background: white; border: 1px solid #e5efe7; border-radius: 18px; padding: 20px; box-shadow: var(--shadow-sm); }
+    .grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 22px; }
+    .section-title { color: var(--green-dark); font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 14px; }
+    .profile-card { background: linear-gradient(180deg, #f8fdf9, #f0faf3); border: 1px dashed #bddcbe; border-radius: 16px; padding: 18px; margin-bottom: 18px; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+    .form-grid .full { grid-column: 1 / -1; }
+    .job-list { display: grid; gap: 12px; }
+    .job-card { border: 1px solid #e7efe8; border-radius: 14px; padding: 14px; }
+    .job-card h4 { margin: 0 0 8px; color: var(--green-dark); }
+    .job-meta { color: var(--gray-600); font-size: 0.86rem; display: flex; flex-wrap: wrap; gap: 10px; }
+    .status-badge { display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; margin-top: 10px; }
+    .status-requested { background: #fff7d6; color: #9a6700; }
+    .status-accepted { background: #dff8e9; color: #0f7a39; }
+    .status-in_progress { background: #dbeafe; color: #1d4ed8; }
+    .status-completed { background: #e2e8f0; color: #334155; }
+    .status-cancelled { background: #fee2e2; color: #b91c1c; }
+    .pill { display: inline-block; background: #edf9f1; color: var(--green-dark); border: 1px solid #d4ebd9; border-radius: 999px; padding: 6px 9px; font-size: 0.72rem; margin: 6px 6px 0 0; }
+    .small-btn { border: none; border-radius: 999px; padding: 7px 12px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+    .green { background: #dcfce7; color: #166534; }
+    .amber { background: #fef3c7; color: #92400e; }
+    .empty { padding: 20px; text-align: center; color: var(--gray-500); }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="kamgar.html">Workers</a></li>
+      <li><a href="kamgar-dashboard.html" class="active">Dashboard</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth">
+      <a href="login.html" class="btn-outline">Login</a>
+      <a href="register.html" class="btn-primary">Register</a>
+    </div>
+    <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+  </nav>
+
+  <div class="page-header">
+    <h1>Kamgar Dashboard</h1>
+    <p>Manage your worker profile, availability, and booked farm jobs.</p>
+  </div>
+
+  <div class="container">
+    <div class="stats">
+      <div class="stat-card"><div class="stat-label">Jobs Requested</div><div class="stat-value" id="jobsRequested">0</div></div>
+      <div class="stat-card"><div class="stat-label">Accepted</div><div class="stat-value" id="jobsAccepted">0</div></div>
+      <div class="stat-card"><div class="stat-label">In Progress</div><div class="stat-value" id="jobsProgress">0</div></div>
+      <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-value" id="jobsCompleted">0</div></div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <h2 class="section-title">Your Worker Profile</h2>
+        <div class="profile-card" id="profileCard">
+          <div class="empty">Loading your worker profile...</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="section-title">Update Availability</h2>
+        <div class="form-grid">
+          <div>
+            <label>Available</label>
+            <select id="availableStatus">
+              <option value="true">Available</option>
+              <option value="false">Not available</option>
+            </select>
+          </div>
+          <div>
+            <label>Availability note</label>
+            <input id="availabilityNote" type="text" placeholder="Immediate / Next week" />
+          </div>
+          <div class="full">
+            <label>Hourly rate</label>
+            <input id="hourlyRate" type="number" placeholder="300" />
+          </div>
+          <div class="full">
+            <button class="btn-green" onclick="saveWorkerProfile()">Save Profile</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:22px;">
+      <h2 class="section-title">Assigned Job Requests</h2>
+      <div id="jobList" class="job-list"><div class="empty">Loading jobs...</div></div>
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+  <script>
+    const user = getUser();
+    let workerProfile = null;
+
+    function statusClass(status) {
+      const key = String(status || '').toLowerCase().replace(/\s+/g, '_');
+      return key === 'requested' ? 'status-requested' : key === 'accepted' ? 'status-accepted' : key === 'in_progress' ? 'status-in_progress' : key === 'completed' ? 'status-completed' : key === 'cancelled' ? 'status-cancelled' : 'status-requested';
+    }
+
+    async function loadWorkerDashboard() {
+      if (!isLoggedIn()) {
+        window.location.href = 'login.html?redirect=kamgar-dashboard.html';
+        return;
+      }
+
+      try {
+        const res = await apiCall('GET', '/kamgar/profiles/my', null, true);
+        workerProfile = res.worker;
+        renderProfile(res.worker);
+      } catch (error) {
+        renderProfile(null);
+      }
+
+      try {
+        const jobsRes = await apiCall('GET', '/kamgar/jobs/my', null, true);
+        renderJobs(jobsRes.jobs || []);
+      } catch (error) {
+        document.getElementById('jobList').innerHTML = '<div class="empty">No jobs found.</div>';
+      }
+    }
+
+    function renderProfile(profile) {
+      const card = document.getElementById('profileCard');
+      if (!profile) {
+        card.innerHTML = `
+          <div class="empty">
+            No worker profile found yet. Create one from the worker page.<br><br>
+            <a class="btn-green" href="kamgar.html">Go to Workers</a>
+          </div>
+        `;
+        return;
+      }
+
+      document.getElementById('availableStatus').value = profile.available ? 'true' : 'false';
+      document.getElementById('availabilityNote').value = profile.availability || '';
+      document.getElementById('hourlyRate').value = profile.hourly_rate || '';
+
+      card.innerHTML = `
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;">
+          <div>
+            <h3 style="margin:0; color:var(--green-dark);">${profile.name}</h3>
+            <p style="margin:6px 0 0; color:var(--gray-600);">${profile.location}</p>
+          </div>
+          <span class="pill">${profile.available ? 'Available' : 'Unavailable'}</span>
+        </div>
+        <div style="margin-top:14px; display:flex; flex-wrap:wrap; gap:8px;">
+          ${(profile.skills || []).map(skill => `<span class="pill">${skill}</span>`).join('') || '<span class="pill">No skills added</span>'}
+        </div>
+        <div style="margin-top:12px; color:var(--gray-700); line-height:1.8;">
+          <div><strong>Experience:</strong> ${profile.experience_years || 0} years</div>
+          <div><strong>Availability:</strong> ${profile.availability || 'Immediate'}</div>
+          <div><strong>Rate:</strong> ₹${profile.hourly_rate || 0} / hour</div>
+          <div><strong>Phone:</strong> ${profile.phone || 'Not set'}</div>
+        </div>
+      `;
+    }
+
+    function renderJobs(jobs) {
+      const list = document.getElementById('jobList');
+      if (!jobs.length) {
+        list.innerHTML = '<div class="empty">No job requests yet.</div>';
+        return;
+      }
+
+      const requested = jobs.filter(j => String(j.status).toLowerCase() === 'requested').length;
+      const accepted = jobs.filter(j => String(j.status).toLowerCase() === 'accepted').length;
+      const inProgress = jobs.filter(j => String(j.status).toLowerCase() === 'in_progress').length;
+      const completed = jobs.filter(j => String(j.status).toLowerCase() === 'completed').length;
+
+      document.getElementById('jobsRequested').textContent = requested;
+      document.getElementById('jobsAccepted').textContent = accepted;
+      document.getElementById('jobsProgress').textContent = inProgress;
+      document.getElementById('jobsCompleted').textContent = completed;
+
+      list.innerHTML = jobs.map(job => `
+        <div class="job-card">
+          <h4>${job.title || 'Farm labour request'}</h4>
+          <div class="job-meta">
+            <span><i class="fa-solid fa-user"></i> ${job.farmer_name || 'Farmer'}</span>
+            <span><i class="fa-solid fa-location-dot"></i> ${job.location || 'Location'}</span>
+            <span><i class="fa-solid fa-calendar"></i> ${job.start_date || '-'} → ${job.end_date || '-'}</span>
+          </div>
+          <div class="job-meta" style="margin-top:8px;">
+            <span><i class="fa-solid fa-indian-rupee-sign"></i> ${job.estimated_cost || 0}</span>
+            <span><i class="fa-solid fa-clock"></i> ${job.work_hours || 'Flexible'}</span>
+          </div>
+          <span class="status-badge ${statusClass(job.status)}">${String(job.status || 'requested').replace('_', ' ')}</span>
+          <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="small-btn green" onclick="updateJobStatus('${job.id}', 'accepted')">Accept</button>
+            <button class="small-btn amber" onclick="updateJobStatus('${job.id}', 'in_progress')">In Progress</button>
+            <button class="small-btn" style="background:#e2e8f0;color:#334155;" onclick="updateJobStatus('${job.id}', 'completed')">Completed</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function updateJobStatus(jobId, status) {
+      try {
+        const res = await apiCall('PUT', `/kamgar/jobs/${jobId}/status`, { status }, true);
+        alert('Job status updated.');
+        loadWorkerDashboard();
+      } catch (error) {
+        alert(error.message || 'Unable to update job status.');
+      }
+    }
+
+    async function saveWorkerProfile() {
+      const available = document.getElementById('availableStatus').value === 'true';
+      const availability = document.getElementById('availabilityNote').value.trim();
+      const hourlyRate = document.getElementById('hourlyRate').value.trim();
+
+      if (!workerProfile || !workerProfile.id) {
+        alert('Create a worker profile first from the worker listing page.');
+        return;
+      }
+
+      try {
+        const payload = {
+          name: user && user.name ? user.name : '',
+          phone: user && user.phone ? user.phone : '',
+          location: user && user.location ? user.location : '',
+          availability,
+          hourly_rate: hourlyRate,
+          available,
+          skills: workerProfile.skills || []
+        };
+
+        const res = await apiCall('POST', '/kamgar/profiles', payload, true);
+        alert('Worker profile updated.');
+        workerProfile = res.worker;
+        renderProfile(res.worker);
+      } catch (error) {
+        alert(error.message || 'Unable to update worker profile.');
+      }
+    }
+
+    loadWorkerDashboard();
+  </script>
+</body>
+</html>

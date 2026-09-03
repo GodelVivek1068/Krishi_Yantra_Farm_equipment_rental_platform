@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fertilizer Detail - KrishiYantra</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    .detail-page { max-width: 980px; margin: 40px auto; padding: 0 24px; }
+    .back-link { color: var(--green-mid); font-size: 0.9rem; font-weight: 600; margin-bottom: 24px; display: inline-flex; align-items: center; gap: 6px; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    .detail-image {
+      width: 100%; height: 320px; background: linear-gradient(135deg, #edf8ef, #dff3db); border-radius: var(--radius); display: flex; align-items: center; justify-content: center;
+      font-size: 7rem; border: 1px solid var(--gray-200);
+    }
+    .detail-name { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; color: var(--green-dark); margin-bottom: 10px; }
+    .detail-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; font-size: 0.88rem; color: var(--gray-600); }
+    .detail-meta span { display: flex; align-items: center; gap: 5px; }
+    .detail-price { font-size: 2rem; font-weight: 900; color: var(--green-mid); margin-bottom: 20px; }
+    .detail-price small { font-size: 0.9rem; color: var(--gray-400); font-weight: 400; }
+    .detail-desc { color: var(--gray-600); line-height: 1.7; margin-bottom: 24px; font-size: 0.93rem; }
+    .owner-card {
+      background: var(--green-pale); border-radius: var(--radius); padding: 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
+    }
+    .owner-avatar { width: 50px; height: 50px; background: var(--green-mid); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; font-weight: 700; }
+    .owner-info h4 { font-weight: 700; color: var(--green-dark); margin-bottom: 2px; }
+    .owner-info span { font-size: 0.82rem; color: var(--gray-600); }
+    .booking-form { background: var(--white); border: 1.5px solid var(--gray-200); border-radius: var(--radius); padding: 24px; margin-top: 32px; }
+    .booking-form h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--green-dark); margin-bottom: 20px; }
+    .booking-summary { background: var(--green-pale); border-radius: var(--radius-sm); padding: 14px; margin: 16px 0; font-size: 0.9rem; }
+    .booking-summary .summary-row { display: flex; justify-content: space-between; padding: 4px 0; }
+    .booking-summary .summary-total { font-weight: 700; border-top: 1px solid var(--gray-200); padding-top: 8px; margin-top: 4px; color: var(--green-dark); font-size: 1rem; }
+    .ratings-section { background: var(--white); border: 1.5px solid var(--gray-200); border-radius: var(--radius); padding: 24px; margin-top: 32px; }
+    .ratings-section h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--green-dark); margin-bottom: 20px; }
+    .rating-summary { display: flex; align-items: center; gap: 24px; margin-bottom: 24px; }
+    .rating-stars { font-size: 2rem; }
+    .rating-avg { font-size: 1.8rem; font-weight: 900; color: var(--green-dark); }
+    .rating-count { font-size: 0.9rem; color: var(--gray-600); }
+    .rating-submit { background: var(--green-pale); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 20px; }
+    .rating-form { display: flex; flex-direction: column; gap: 12px; }
+    .star-input { display: flex; gap: 8px; }
+    .star-input span { font-size: 1.8rem; cursor: pointer; color: var(--gray-300); transition: color 0.2s; }
+    .star-input span:hover, .star-input span.active { color: #fbbf24; }
+    .rating-reviews { border-top: 1px solid var(--gray-200); padding-top: 20px; }
+    .review-item { border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 12px; }
+    .review-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px; }
+    .review-author { font-weight: 600; color: var(--green-dark); }
+    .review-date { font-size: 0.82rem; color: var(--gray-600); }
+    .review-stars { font-size: 0.9rem; color: #fbbf24; }
+    .review-comment { color: var(--gray-600); font-size: 0.9rem; line-height: 1.5; }
+    @media(max-width:700px) { .detail-grid { grid-template-columns: 1fr; } .rating-summary { flex-direction: column; align-items: start; gap: 12px; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="equipment.html">Equipment</a></li>
+      <li><a href="kamgar.html">Workers</a></li>
+      <li><a href="fertilizer.html" class="active">Fertilizer</a></li>
+      <li><a href="my-orders.html">My Orders</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth"><a href="login.html" class="btn-outline">Login</a><a href="register.html" class="btn-primary">Register</a></div>
+    <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+  </nav>
+
+  <div class="detail-page">
+    <a href="fertilizer.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Fertilizer</a>
+    <div id="alertBox"></div>
+    <div id="detailContent"><div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div></div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-brand"><i class="fa-solid fa-tractor"></i> KrishiYantra</div>
+    <p>Empowering Indian Farmers</p>
+    <p class="footer-copy">© 2024 KrishiYantra</p>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    let currentProduct = null;
+    const safeText = (value) => String(value || '').replace(/[&<>"']/g, (m) => {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      if (m === '"') return '&quot;';
+      return '&#39;';
+    });
+
+    function showAlert(containerId, message, type = 'error') {
+      const box = document.getElementById(containerId);
+      if (!box) return;
+      box.innerHTML = `<div class="alert alert-${type}">${safeText(message)}</div>`;
+    }
+
+    async function loadProduct() {
+      if (!productId) {
+        showAlert('alertBox', 'Invalid fertilizer link. Please open a product again from the list.', 'error');
+        document.getElementById('detailContent').innerHTML = '';
+        return;
+      }
+
+      try {
+        const res = await apiCall('GET', `/fertilizer/products/${productId}`);
+        if (!res.product) throw new Error(res.error || 'Product not found');
+        renderProduct(res.product);
+        await loadRatings();
+      } catch (error) {
+        showAlert('alertBox', error.message || 'Unable to load product details.', 'error');
+        document.getElementById('detailContent').innerHTML = '<div class="no-results">Could not load fertilizer details.</div>';
+      }
+    }
+
+    async function loadRatings() {
+      try {
+        const res = await apiCall('GET', `/fertilizer/products/${productId}/ratings`);
+        const ratings = res.ratings || [];
+        renderRatings(ratings);
+      } catch (e) {
+        console.error('Could not load ratings:', e);
+      }
+    }
+
+    function renderRatings(ratings) {
+      const detailContent = document.getElementById('detailContent');
+      if (!detailContent) return;
+      
+      let avgRating = 0;
+      if (ratings.length > 0) {
+        avgRating = (ratings.reduce((sum, r) => sum + (r.rating || 0), 0) / ratings.length).toFixed(1);
+      }
+
+      const starsHtml = (rating) => {
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+          stars += `<span style="color:${i <= rating ? '#fbbf24' : '#d1d5db'}">★</span>`;
+        }
+        return stars;
+      };
+
+      const ratingSubmitSection = !isLoggedIn() ? '' : `
+        <div class="rating-submit">
+          <h4 style="color:var(--green-dark);margin-bottom:12px;">Rate This Fertilizer</h4>
+          <div class="rating-form">
+            <div class="star-input" id="starInput">
+              <span class="star-btn" data-rating="1">★</span>
+              <span class="star-btn" data-rating="2">★</span>
+              <span class="star-btn" data-rating="3">★</span>
+              <span class="star-btn" data-rating="4">★</span>
+              <span class="star-btn" data-rating="5">★</span>
+            </div>
+            <textarea id="ratingComment" placeholder="Share your experience (optional)" maxlength="500" style="border:1px solid var(--gray-200);border-radius:var(--radius-sm);padding:10px;font-family:inherit;font-size:0.9rem;resize:vertical;min-height:80px;"></textarea>
+            <button type="button" class="btn-green" style="padding:10px;border-radius:var(--radius-sm);" onclick="submitRating()">Submit Rating</button>
+          </div>
+        </div>
+      `;
+
+      const reviewsHtml = ratings.length === 0 
+        ? '<div style="text-align:center;color:var(--gray-400);padding:20px;">No reviews yet. Be the first to rate!</div>'
+        : ratings.map(r => `
+          <div class="review-item">
+            <div class="review-header">
+              <div>
+                <div class="review-author">${safeText(r.farmer_name || 'Farmer')}</div>
+                <div class="review-date">${new Date(r.created_at).toLocaleDateString()}</div>
+              </div>
+              <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+            </div>
+            ${r.comment ? `<div class="review-comment">"${safeText(r.comment)}"</div>` : ''}
+          </div>
+        `).join('');
+
+      const ratingsHtml = `
+        <div class="ratings-section">
+          <h3><i class="fa-solid fa-star"></i> Customer Reviews</h3>
+          <div class="rating-summary">
+            <div class="rating-stars">${starsHtml(Math.round(avgRating))}</div>
+            <div>
+              <div class="rating-avg">${avgRating}</div>
+              <div class="rating-count">${ratings.length} ${ratings.length === 1 ? 'review' : 'reviews'}</div>
+            </div>
+          </div>
+          ${ratingSubmitSection}
+          <div class="rating-reviews">
+            ${reviewsHtml}
+          </div>
+        </div>
+      `;
+
+      detailContent.insertAdjacentHTML('beforeend', ratingsHtml);
+
+      // Bind star input
+      const starBtns = document.querySelectorAll('.star-btn');
+      starBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const rating = this.dataset.rating;
+          starBtns.forEach((b, i) => {
+            b.classList.toggle('active', (i + 1) <= rating);
+          });
+        });
+      });
+    }
+
+    async function submitRating() {
+      if (!isLoggedIn()) {
+        showAlert('alertBox', 'Please log in to submit a rating.', 'info');
+        return;
+      }
+
+      const activeStars = document.querySelectorAll('.star-btn.active').length;
+      if (!activeStars) {
+        showAlert('alertBox', 'Please select a rating.', 'error');
+        return;
+      }
+
+      const comment = document.getElementById('ratingComment')?.value.trim() || '';
+      const payload = {
+        product_id: productId,
+        rating: activeStars,
+        comment: comment
+      };
+
+      try {
+        await apiCall('POST', '/fertilizer/ratings', payload, true);
+        showAlert('alertBox', 'Your rating has been submitted!', 'success');
+        setTimeout(() => location.reload(), 1200);
+      } catch (e) {
+        showAlert('alertBox', e.message || 'Unable to submit rating.', 'error');
+      }
+    }
+
+    function renderProduct(product) {
+      currentProduct = product;
+      const isAvailable = product.available !== false && Number(product.stock_available || 0) > 0;
+      const icon = '🌱';
+      const imageHtml = `<div class="detail-image">${icon}</div>`;
+      document.title = `${product.name} - KrishiYantra`;
+      document.getElementById('detailContent').innerHTML = `
+        <div class="detail-grid">
+          <div>${imageHtml}</div>
+          <div class="detail-info">
+            <span class="badge badge-green">${safeText(product.category || 'fertilizer')}</span>
+            <h1 class="detail-name" style="margin-top:10px">${safeText(product.name)}</h1>
+            <div class="detail-meta">
+              <span><i class="fa-solid fa-location-dot"></i> ${safeText(product.location || 'Farm location')}</span>
+              <span><i class="fa-solid fa-circle" style="color:${isAvailable ? '#22c55e' : '#ef4444'};font-size:0.6rem"></i> ${isAvailable ? 'Available' : 'Unavailable'}</span>
+            </div>
+            <div class="detail-price">₹${Number(product.price_per_bag || 0)}<small>/ bag</small></div>
+            <p class="detail-desc">${safeText(product.description || 'Quality crop nutrition product for improved field yield.')}</p>
+            <div class="owner-card">
+              <div class="owner-avatar">${safeText((product.supplier_name || 'S')[0]).toUpperCase()}</div>
+              <div class="owner-info">
+                <h4>${safeText(product.supplier_name || 'Supplier')}</h4>
+                <span><i class="fa-solid fa-phone"></i> ${safeText(product.supplier_phone || 'Contact via platform')}</span>
+              </div>
+            </div>
+            <div class="detail-meta">
+              <span><i class="fa-solid fa-box"></i> Stock: ${Number(product.stock_available || 0)} bags</span>
+              <span><i class="fa-solid fa-tag"></i> Brand: ${safeText(product.brand || 'Local')}</span>
+            </div>
+          </div>
+        </div>
+        <div class="booking-form">
+          <h3><i class="fa-solid fa-seedling"></i> Book This Fertilizer</h3>
+          ${!isAvailable ? '<div class="alert alert-warning">This product is currently out of stock and unavailable for booking.</div>' : ''}
+          <div class="form-group">
+            <label>Quantity (bags)</label>
+            <input type="number" id="quantity" min="1" max="${Number(product.stock_available || 0)}" value="1" ${isAvailable ? '' : 'disabled'} />
+          </div>
+          <div class="form-group">
+            <label>Delivery Location</label>
+            <input type="text" id="deliveryLocation" placeholder="Your farm / village address" ${isAvailable ? '' : 'disabled'} />
+          </div>
+          <div class="form-group">
+            <label>Preferred Delivery Date</label>
+            <input type="date" id="deliveryDate" min="${new Date().toISOString().split('T')[0]}" ${isAvailable ? '' : 'disabled'} />
+          </div>
+          <div class="booking-summary" id="bookingSummary">
+            <div class="summary-row"><span>Price per bag</span><span>₹${Number(product.price_per_bag || 0)}</span></div>
+            <div class="summary-row"><span>Quantity</span><span id="qtySummary">1</span></div>
+            <div class="summary-row summary-total"><span>Total Amount</span><span id="totalAmt">₹${Number(product.price_per_bag || 0)}</span></div>
+          </div>
+          <button id="bookBtn" class="btn-green" style="width:100%;justify-content:center;padding:13px;" onclick="bookFertilizer('${product.id}', ${Number(product.price_per_bag || 0)})" ${isAvailable ? '' : 'disabled'}>
+            <i class="fa-solid fa-check-circle"></i> ${isAvailable ? 'Pay & Confirm Order' : 'Unavailable'}
+          </button>
+        </div>
+      `;
+      const quantityInput = document.getElementById('quantity');
+      if (quantityInput) {
+        quantityInput.addEventListener('input', () => updateSummary(product.price_per_bag));
+      }
+      updateSummary(product.price_per_bag);
+    }
+
+    function updateSummary(pricePerBag) {
+      const quantityInput = document.getElementById('quantity');
+      const qty = Math.max(1, Number(quantityInput ? quantityInput.value : 1) || 1);
+      const total = qty * Number(pricePerBag || 0);
+      const qtySummary = document.getElementById('qtySummary');
+      const totalAmt = document.getElementById('totalAmt');
+      if (qtySummary) qtySummary.textContent = qty;
+      if (totalAmt) totalAmt.textContent = `₹${total}`;
+    }
+
+    async function bookFertilizer(productIdValue, productPrice) {
+      if (!isLoggedIn()) {
+        window.location.href = `login.html?redirect=fertilizer-detail.html?id=${productIdValue}`;
+        return;
+      }
+      if (typeof Razorpay === 'undefined') {
+        showAlert('alertBox', 'Payment gateway failed to load. Please refresh and try again.', 'error');
+        return;
+      }
+
+      const quantity = Number(document.getElementById('quantity')?.value || 0);
+      const deliveryLocation = document.getElementById('deliveryLocation')?.value.trim();
+      const deliveryDate = document.getElementById('deliveryDate')?.value;
+      if (!quantity || quantity <= 0) {
+        showAlert('alertBox', 'Please enter a valid quantity.', 'error'); return;
+      }
+      if (!deliveryLocation) {
+        showAlert('alertBox', 'Please enter your delivery location.', 'error'); return;
+      }
+      if (!deliveryDate) {
+        showAlert('alertBox', 'Please select a delivery date.', 'error'); return;
+      }
+
+      const totalAmount = quantity * productPrice;
+      const bookBtn = document.getElementById('bookBtn');
+      if (bookBtn) {
+        bookBtn.disabled = true;
+        bookBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing Payment...';
+      }
+
+      const payload = {
+        product_id: productIdValue,
+        quantity,
+        delivery_location: deliveryLocation,
+        delivery_date: deliveryDate,
+        total_amount: totalAmount
+      };
+
+      try {
+        const order = await apiCall('POST', '/fertilizer/orders/payment/order', payload, true);
+        const user = getUser() || {};
+        const options = {
+          key: order.key_id,
+          amount: order.amount,
+          currency: order.currency || 'INR',
+          name: 'KrishiYantra',
+          description: 'Fertilizer Booking Payment',
+          order_id: order.order_id,
+          prefill: {
+            name: (order.prefill && order.prefill.name) || user.name || '',
+            email: (order.prefill && order.prefill.email) || user.email || '',
+            contact: (order.prefill && order.prefill.contact) || user.phone || ''
+          },
+          theme: { color: '#2d7a4f' },
+          handler: async function (paymentResponse) {
+            try {
+              const verifyPayload = {
+                ...payload,
+                razorpay_order_id: paymentResponse.razorpay_order_id,
+                razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                razorpay_signature: paymentResponse.razorpay_signature
+              };
+              const verifyRes = await apiCall('POST', '/fertilizer/orders/payment/verify', verifyPayload, true);
+              if (verifyRes.order) {
+                showAlert('alertBox', 'Payment successful. Your fertilizer order has been placed.', 'success');
+                setTimeout(() => window.location.href = 'my-orders.html', 1800);
+              } else {
+                showAlert('alertBox', 'Payment verified but the order could not be created.', 'error');
+              }
+            } catch (verifyErr) {
+              showAlert('alertBox', verifyErr.message || 'Payment verification failed.', 'error');
+            } finally {
+              if (bookBtn) {
+                bookBtn.disabled = false;
+                bookBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Pay & Confirm Order';
+              }
+            }
+          },
+          modal: {
+            ondismiss: function () {
+              showAlert('alertBox', 'Payment cancelled. No fertilizer order was created.', 'info');
+              if (bookBtn) {
+                bookBtn.disabled = false;
+                bookBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Pay & Confirm Order';
+              }
+            }
+          }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+      } catch (e) {
+        if (bookBtn) {
+          bookBtn.disabled = false;
+          bookBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Pay & Confirm Order';
+        }
+        showAlert('alertBox', e.message || 'Payment initialization failed. Please try again.', 'error');
+      }
+    }
+
+    loadProduct();
+  </script>
+</body>
+</html>

@@ -33,7 +33,7 @@ function isFarmerLoggedIn() {
   const user = getUser();
   if (!user || !user.role) return false;
   const role = String(user.role).toLowerCase();
-  return role === 'farmer' || role === 'renter';
+  return role === 'farmer' || role === 'renter' || role === 'kamgar' || role === 'supplier';
 }
 function logout() {
   localStorage.removeItem('token');
@@ -59,6 +59,8 @@ function roleToLabel(roleValue) {
   const role = String(roleValue || '').toLowerCase();
   if (role === 'admin') return 'Admin';
   if (role === 'owner') return 'Owner';
+  if (role === 'supplier') return 'Supplier';
+  if (role === 'kamgar') return 'Worker';
   return 'Farmer';
 }
 
@@ -101,8 +103,9 @@ function updateNavAuth() {
   if (user) {
     const role = String(user.role || '').toLowerCase();
     const isOwner = role === 'owner';
+    const isSupplier = role === 'supplier';
     const isAdmin = role === 'admin';
-    const isFarmer = role === 'farmer' || role === 'renter';
+    const isFarmer = role === 'farmer' || role === 'renter' || role === 'kamgar' || role === 'supplier';
     const kycStatus = String(user.kyc_status || '').toLowerCase();
     const firstName = (user.name || 'User').split(' ')[0];
     const accountInitials = String(user.name || 'U')
@@ -118,13 +121,12 @@ function updateNavAuth() {
     const ownerEquipmentLink = (isOwner && kycStatus === 'approved')
       ? '<a href="/pages/owner-dashboard.html#equipmentList" class="btn-outline" style="margin-left:8px">Equipment</a>'
       : '';
+    const supplierLink = isSupplier
+      ? '<a href="/pages/supplier-dashboard.html" class="btn-outline" style="margin-left:8px">Supplier Dashboard</a>'
+      : '';
     const ownerLink = isOwner
       ? `<a href="${ownerPortalHref}" class="btn-outline" style="margin-left:8px">${ownerPortalLabel}</a>`
       : '';
-    const adminLink = isAdmin
-      ? '<a href="/pages/admin-panel.html" class="btn-outline" style="margin-left:8px">Admin Panel</a>'
-      : '';
-
     let statusTag = '';
     if (isOwner) {
       if (kycStatus === 'pending') statusTag = ' | KYC: Pending';
@@ -135,6 +137,10 @@ function updateNavAuth() {
     if (isFarmer) {
       navAuth.classList.add('nav-auth-has-account');
       navAuth.innerHTML = `
+        <a href="/pages/notifications.html" class="account-icon-btn" title="Notifications">
+          <i class="fa-solid fa-bell"></i>
+          <span class="notification-badge" id="notificationBadge" style="display: none;"></span>
+        </a>
         <div class="account-menu" id="farmerAccountMenu">
           <button class="account-icon-btn" id="accountToggleBtn" type="button" aria-expanded="false" aria-label="Open account details">
             <i class="fa-solid fa-user"></i>
@@ -195,6 +201,7 @@ function updateNavAuth() {
     navAuth.innerHTML = `
       <span style="color:rgba(255,255,255,0.8);font-size:0.88rem;">${roleLabel}: <strong>${firstName}</strong>${statusTag}</span>
       ${ownerLink}
+      ${supplierLink}
       ${ownerEquipmentLink}
       ${adminLink}
       <button class="btn-outline" onclick="logout()">Logout</button>

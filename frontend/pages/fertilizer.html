@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fertilizer Booking - KrishiYantra</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    body { background: #f8faf7; }
+    .page-hero { background: linear-gradient(135deg, #1c4d38, #2b7a52); color: white; padding: 48px 24px; text-align: center; }
+    .page-hero h1 { font-family: 'Playfair Display', serif; font-size: 2.3rem; margin-bottom: 10px; }
+    .page-hero p { max-width: 700px; margin: 0 auto; color: rgba(255,255,255,0.85); }
+    .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; }
+    .filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; background: white; padding: 18px; border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid #e6efe7; margin-bottom: 24px; }
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 18px; }
+    .product-card { background: white; border: 1px solid #e6efe7; border-radius: 18px; padding: 20px; box-shadow: var(--shadow-sm); }
+    .product-card.unavailable { border-color: #f1d0d0; background: #fffafa; }
+    .product-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .product-name { font-size: 1.18rem; font-weight: 800; color: var(--green-dark); }
+    .category-tag { background: rgba(45,122,79,0.1); color: var(--green-dark); padding: 6px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
+    .availability-pill {
+      display: inline-block; margin-top: 10px; padding: 6px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700;
+    }
+    .pill-available { background: #dcfce7; color: #166534; }
+    .pill-unavailable { background: #fee2e2; color: #b91c1c; }
+    .meta { margin-top: 10px; color: var(--gray-600); font-size: 0.93rem; }
+    .price { margin-top: 10px; font-size: 1.5rem; font-weight: 800; color: var(--green-dark); }
+    .btn-row { display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+    .empty-state { text-align: center; color: var(--gray-600); padding: 32px 10px; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="equipment.html">Equipment</a></li>
+      <li><a href="kamgar.html">Workers</a></li>
+      <li><a href="fertilizer.html" class="active">Fertilizer</a></li>
+      <li><a href="my-orders.html">My Orders</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth"><a href="login.html" class="btn-outline">Login</a><a href="register.html" class="btn-primary">Register</a></div>
+    <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+  </nav>
+
+  <div class="page-hero">
+    <h1>Buy Fertilizer & Crop Inputs</h1>
+    <p>Compare trusted product brands and place a booking request for fertilizer bags delivered to your farm.</p>
+  </div>
+
+  <div class="container">
+    <div class="filters">
+      <div class="form-group">
+        <label>Category</label>
+        <select id="fertCategory">
+          <option value="">All</option>
+          <option value="nitrogen">Nitrogen</option>
+          <option value="phosphorus">Phosphorus</option>
+          <option value="potash">Potash</option>
+          <option value="balanced">Balanced</option>
+          <option value="organic">Organic</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Location</label>
+        <input id="fertLocation" type="text" placeholder="Pune / Nashik" />
+      </div>
+      <div class="form-group">
+        <label>Brand</label>
+        <input id="fertBrand" type="text" placeholder="IFFCO / Coromandel" />
+      </div>
+      <div class="form-group">
+        <label>Availability</label>
+        <select id="availabilityFilter">
+          <option value="">All products</option>
+          <option value="true">Available only</option>
+        </select>
+      </div>
+      <button class="btn-green" onclick="loadProducts()">Search Products</button>
+    </div>
+
+    <div id="fertResults" class="product-grid"></div>
+  </div>
+
+  <script src="../js/main.js"></script>
+  <script>
+    async function loadProducts() {
+      const results = document.getElementById('fertResults');
+      const params = new URLSearchParams();
+      const category = document.getElementById('fertCategory').value.trim();
+      const location = document.getElementById('fertLocation').value.trim();
+      const brand = document.getElementById('fertBrand').value.trim();
+      const availableOnly = document.getElementById('availabilityFilter').value === 'true';
+
+      if (category) params.append('category', category);
+      if (location) params.append('location', location);
+      if (brand) params.append('brand', brand);
+      if (availableOnly) params.append('available_only', 'true');
+
+      results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading products...</div>';
+
+      try {
+        const res = await apiCall('GET', `/fertilizer/products?${params.toString()}`);
+        const products = res.products || [];
+        if (!products.length) {
+          results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-box-open"></i>No fertilizer products found.</div>';
+          return;
+        }
+
+        results.innerHTML = products.map(product => `
+          <div class="product-card ${product.available ? '' : 'unavailable'}">
+            <div class="product-header">
+              <div class="product-name">${product.name}</div>
+              <span class="category-tag">${product.category || 'fertilizer'}</span>
+            </div>
+            <div class="availability-pill ${product.available ? 'pill-available' : 'pill-unavailable'}">
+              ${product.available ? 'Available' : 'Unavailable'}
+            </div>
+            <div class="meta"><strong>Brand:</strong> ${product.brand || 'Local supplier'}</div>
+            <div class="meta"><strong>Variant:</strong> ${product.variant || 'Standard'}</div>
+            <div class="meta"><strong>Supplier:</strong> ${product.supplier_name || 'KrishiYantra Vendor'}</div>
+            <div class="meta"><strong>Location:</strong> ${product.location || 'Not specified'}</div>
+            <div class="meta"><strong>Stock:</strong> ${product.stock_available || 0} bags</div>
+            <div class="price">₹${Number(product.price_per_bag || 0)} / bag</div>
+            <div class="meta">${product.description || 'Crop nutrition product for improved yield.'}</div>
+            <div class="btn-row">
+              <a href="fertilizer-detail.html?id=${product.id}" class="btn-outline">View Details</a>
+              <button class="btn-green ${product.available ? '' : 'hidden'}" onclick="window.location.href='fertilizer-detail.html?id=${product.id}'">Book Now</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (error) {
+        results.innerHTML = `<div class="empty-state"><i class="fa-solid fa-plug-circle-xmark"></i>${error.message || 'Unable to fetch products.'}</div>`;
+      }
+    }
+
+    loadProducts();
+  </script>
+</body>
+</html>

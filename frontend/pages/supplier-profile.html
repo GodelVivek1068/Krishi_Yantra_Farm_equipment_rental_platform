@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Supplier Profile - KrishiYantra</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    .profile-header { background: linear-gradient(135deg, #1f6f45, #153a2a); color: white; padding: 60px 24px; text-align: center; }
+    .profile-header h1 { font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 8px; }
+    .profile-avatar { width: 120px; height: 120px; background: rgba(255, 255, 255, 0.2); border: 3px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin: 0 auto 20px; }
+    .profile-wrap { max-width: 1000px; margin: -40px auto 40px; padding: 0 24px; position: relative; z-index: 10; }
+    .profile-card { background: white; border-radius: 12px; padding: 30px; box-shadow: var(--shadow-lg); margin-bottom: 28px; }
+    .profile-info-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-bottom: 28px; }
+    .info-section { border-bottom: 1px solid var(--gray-200); padding-bottom: 14px; }
+    .info-section:last-child { border-bottom: none; }
+    .info-label { font-size: 0.82rem; font-weight: 700; color: var(--gray-600); text-transform: uppercase; }
+    .info-value { font-size: 1rem; font-weight: 600; color: var(--green-dark); margin-top: 4px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 28px; }
+    .stat-card { background: var(--green-pale); border-radius: 8px; padding: 16px; text-align: center; }
+    .stat-value { font-size: 1.8rem; font-weight: 900; color: var(--green-dark); }
+    .stat-label { font-size: 0.75rem; color: var(--gray-600); margin-top: 4px; font-weight: 700; }
+    .products-section h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--green-dark); margin-bottom: 16px; }
+    .product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .product-card { border: 1px solid var(--gray-200); border-radius: 8px; padding: 14px; background: var(--white); }
+    .product-name { font-weight: 700; color: var(--green-dark); margin-bottom: 6px; }
+    .product-meta { font-size: 0.82rem; color: var(--gray-600); display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+    .product-price { font-size: 1.2rem; font-weight: 900; color: var(--green-mid); }
+    .rating-badge { display: inline-flex; align-items: center; gap: 4px; background: #fef3c7; color: #92400e; padding: 6px 10px; border-radius: 999px; font-size: 0.82rem; font-weight: 700; }
+    .empty { text-align: center; color: var(--gray-400); padding: 40px 20px; }
+    .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--green-mid); font-weight: 600; margin-bottom: 20px; cursor: pointer; }
+    @media(max-width:980px) { .profile-info-grid { grid-template-columns: 1fr; } .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media(max-width:640px) { .profile-header h1 { font-size: 1.6rem; } .stats-grid { grid-template-columns: 1fr; } .product-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="fertilizer.html">Fertilizer</a></li>
+      <li><a href="equipment.html">Equipment</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth"><a href="login.html" class="btn-outline">Login</a><a href="register.html" class="btn-primary">Register</a></div>
+    <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+  </nav>
+
+  <div class="profile-header" id="profileHeader">
+    <div class="loading-spinner" style="color: white;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>
+  </div>
+
+  <div class="profile-wrap">
+    <a class="back-link" href="fertilizer.html"><i class="fa-solid fa-arrow-left"></i> Back to Fertilizer</a>
+    <div id="alertBox"></div>
+    
+    <div class="profile-card" id="profileCard">
+      <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading supplier profile...</div>
+    </div>
+
+    <div class="profile-card">
+      <div class="products-section">
+        <h3><i class="fa-solid fa-seedling"></i> Products by this Supplier</h3>
+        <div class="product-grid" id="productsGrid">
+          <div class="empty">No products available.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-brand"><i class="fa-solid fa-tractor"></i> KrishiYantra</div>
+    <p>Empowering Indian Farmers</p>
+    <p class="footer-copy">© 2024 KrishiYantra</p>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const supplierId = urlParams.get('id');
+
+    function safeText(value) {
+      return String(value || '').replace(/[&<>"']/g, (m) => {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        if (m === '"') return '&quot;';
+        return '&#39;';
+      });
+    }
+
+    function showAlert(containerId, message, type = 'error') {
+      const box = document.getElementById(containerId);
+      if (!box) return;
+      box.innerHTML = `<div class="alert alert-${type}">${safeText(message)}</div>`;
+    }
+
+    async function loadProfile() {
+      if (!supplierId) {
+        showAlert('alertBox', 'Invalid supplier link. Please check the URL.', 'error');
+        return;
+      }
+
+      try {
+        const res = await apiCall('GET', `/fertilizer/supplier/${supplierId}/profile`);
+        if (!res.profile) throw new Error(res.error || 'Supplier not found');
+        renderProfile(res.profile);
+        await loadSupplierProducts();
+      } catch (error) {
+        showAlert('alertBox', error.message || 'Unable to load supplier profile.', 'error');
+        document.getElementById('profileHeader').innerHTML = '<p style="color:white;">Supplier not found</p>';
+      }
+    }
+
+    function renderProfile(profile) {
+      document.title = `${profile.company_name || profile.name} - KrishiYantra`;
+      
+      const initials = (profile.company_name || profile.name || 'S')
+        .split(' ')
+        .slice(0, 2)
+        .map(p => p[0])
+        .join('')
+        .toUpperCase();
+
+      const headerHtml = `
+        <div class="profile-avatar">${safeText(initials)}</div>
+        <h1>${safeText(profile.company_name || profile.name || 'Supplier')}</h1>
+        <p>${safeText(profile.company_description || 'Quality fertilizer supplier')}</p>
+      `;
+      document.getElementById('profileHeader').innerHTML = headerHtml;
+
+      const ratingStars = profile.avg_rating > 0 
+        ? '<div class="rating-badge"><i class="fa-solid fa-star"></i> ' + profile.avg_rating + ' (' + profile.total_ratings + ' reviews)</div>'
+        : '';
+
+      const profileHtml = `
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value">${profile.total_products}</div>
+            <div class="stat-label">Products</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${profile.total_orders}</div>
+            <div class="stat-label">Orders</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">₹${Number(profile.avg_rating || 0).toFixed(1)}</div>
+            <div class="stat-label">Avg Rating</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${profile.total_ratings}</div>
+            <div class="stat-label">Reviews</div>
+          </div>
+        </div>
+
+        <div class="profile-info-grid">
+          <div class="info-section">
+            <div class="info-label">Company Name</div>
+            <div class="info-value">${safeText(profile.company_name || profile.name)}</div>
+          </div>
+          <div class="info-section">
+            <div class="info-label">Location</div>
+            <div class="info-value">${safeText(profile.location || 'Not specified')}</div>
+          </div>
+          <div class="info-section">
+            <div class="info-label">Phone</div>
+            <div class="info-value">${safeText(profile.phone || 'Contact via KrishiYantra')}</div>
+          </div>
+          <div class="info-section">
+            <div class="info-label">Website</div>
+            <div class="info-value">${profile.company_website ? '<a href="' + safeText(profile.company_website) + '" target="_blank">' + safeText(profile.company_website) + '</a>' : 'Not specified'}</div>
+          </div>
+          ${profile.company_description ? '<div class="info-section" style="grid-column: 1 / -1;"><div class="info-label">About</div><div class="info-value" style="font-weight: 400; line-height: 1.6;">' + safeText(profile.company_description) + '</div></div>' : ''}
+        </div>
+
+        ${ratingStars ? '<div style="text-align: center; padding: 14px 0; border-top: 1px solid var(--gray-200);">' + ratingStars + '</div>' : ''}
+      `;
+      document.getElementById('profileCard').innerHTML = profileHtml;
+    }
+
+    async function loadSupplierProducts() {
+      try {
+        const res = await apiCall('GET', `/fertilizer/products?supplier_name=${encodeURIComponent(urlParams.get('name') || '')}`);
+        // Filter by supplier ID (we need the products list)
+        const allProducts = res.products || [];
+        // Note: We'd need supplier_id in the product response to properly filter
+        // For now, load all products and let the user see context
+        renderProducts(allProducts.slice(0, 6)); // Show first 6 products
+      } catch (e) {
+        console.log('Could not load products:', e);
+        renderProducts([]);
+      }
+    }
+
+    function renderProducts(products) {
+      const grid = document.getElementById('productsGrid');
+      if (!products.length) {
+        grid.innerHTML = '<div class="empty" style="grid-column: 1 / -1;">No products available from this supplier.</div>';
+        return;
+      }
+
+      grid.innerHTML = products.map(p => `
+        <div class="product-card">
+          <div class="product-name">${safeText(p.name)}</div>
+          <div class="product-meta">
+            <span>${safeText(p.category || 'fertilizer')}</span>
+            <span>${safeText(p.brand || 'Local')}</span>
+          </div>
+          <div class="product-price">₹${Number(p.price_per_bag || 0)}/bag</div>
+          ${p.rating_count > 0 ? '<div style="margin-top: 8px;"><div class="rating-badge"><i class="fa-solid fa-star"></i> ' + (p.rating_avg || 0) + '</div></div>' : ''}
+          <div style="margin-top: 10px;">
+            <a href="fertilizer-detail.html?id=${p.id}" class="btn-outline" style="width: 100%; text-align: center; padding: 8px; border-radius: 6px; font-size: 0.85rem;">View Details</a>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>

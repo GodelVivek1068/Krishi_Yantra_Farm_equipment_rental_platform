@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">KrishiYantra</string>
+    <string name="server_url">http://10.42.32.32:5000</string>
+</resources>

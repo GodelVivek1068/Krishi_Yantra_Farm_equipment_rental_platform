@@ -54,6 +54,8 @@
       <div class="role-toggle">
         <button class="role-btn active" id="roleRenter" onclick="setRole('renter')">🌾 Rent Equipment</button>
         <button class="role-btn" id="roleOwner" onclick="setRole('owner')">🚜 List My Equipment</button>
+        <button class="role-btn" id="roleKamgar" onclick="setRole('kamgar')">👩‍🌾 Work as Kamgar</button>
+        <button class="role-btn" id="roleSupplier" onclick="setRole('supplier')">🌱 Sell Fertilizer</button>
       </div>
 
       <div class="two-col">
@@ -101,6 +103,8 @@
       selectedRole = role;
       document.getElementById('roleRenter').classList.toggle('active', role === 'renter');
       document.getElementById('roleOwner').classList.toggle('active', role === 'owner');
+      document.getElementById('roleKamgar').classList.toggle('active', role === 'kamgar');
+      document.getElementById('roleSupplier').classList.toggle('active', role === 'supplier');
     }
 
     async function doRegister() {
@@ -128,6 +132,9 @@
           if (selectedRole === 'owner') {
             showAlert('alertBox', '✅ Owner account created. Redirecting to KYC page...', 'success');
             setTimeout(() => window.location.href = 'owner-kyc.html', 1400);
+          } else if (selectedRole === 'supplier') {
+            showAlert('alertBox', '✅ Supplier account created. Redirecting to supplier dashboard...', 'success');
+            setTimeout(() => window.location.href = 'supplier-dashboard.html', 1400);
           } else {
             showAlert('alertBox', '✅ Account created! Redirecting...', 'success');
             setTimeout(() => window.location.href = '../index.html', 1500);

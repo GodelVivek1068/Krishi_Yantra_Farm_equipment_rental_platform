@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kamgar Hiring - KrishiYantra</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    body { background: #f5f9f6; }
+    .page-hero { background: linear-gradient(135deg, #1d4d36, #2d7a4f); color: white; padding: 48px 24px; text-align: center; }
+    .page-hero h1 { font-family: 'Playfair Display', serif; font-size: 2.3rem; margin-bottom: 10px; }
+    .page-hero p { max-width: 700px; margin: 0 auto; color: rgba(255,255,255,0.85); }
+    .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; }
+    .filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; background: white; border-radius: 16px; box-shadow: var(--shadow-sm); padding: 18px; border: 1px solid #e4efe6; margin-bottom: 24px; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+    .worker-card { background: white; border-radius: 18px; padding: 20px; border: 1px solid #e4efe6; box-shadow: var(--shadow-sm); }
+    .worker-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #d9f7e6, #b7e9c6); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #1d4d36; }
+    .badge { background: rgba(45,122,79,0.1); color: var(--green-dark); font-weight: 700; padding: 6px 10px; border-radius: 999px; font-size: 0.76rem; }
+    .meta { margin: 10px 0; color: var(--gray-600); font-size: 0.94rem; }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .pill { background: #f1f8f3; color: #1c5a3a; border: 1px solid #dfeee2; padding: 6px 9px; border-radius: 999px; font-size: 0.75rem; }
+    .price { font-size: 1.2rem; font-weight: 800; color: var(--green-dark); }
+    .btn-row { display: flex; gap: 10px; margin-top: 14px; }
+    .empty-state { text-align: center; color: var(--gray-600); padding: 30px 10px; }
+    .inline-form { display: grid; gap: 12px; }
+    .status { margin-top: 10px; font-size: 0.82rem; color: var(--gray-600); }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="equipment.html">Equipment</a></li>
+      <li><a href="kamgar.html" class="active">Workers</a></li>
+      <li><a href="fertilizer.html">Fertilizer</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth"><a href="login.html" class="btn-outline">Login</a><a href="register.html" class="btn-primary">Register</a></div>
+    <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+  </nav>
+
+  <div class="page-hero">
+    <h1>Find Skilled Farm Workers</h1>
+    <p>Hire local Kamgar workers for harvesting, transplanting, field work, irrigation, spraying, and daily labour needs.</p>
+  </div>
+
+  <div class="container">
+    <div class="filters">
+      <div class="form-group">
+        <label>Location</label>
+        <input id="workerLocation" type="text" placeholder="Pune / Nashik / Solapur" />
+      </div>
+      <div class="form-group">
+        <label>Skill</label>
+        <input id="workerSkill" type="text" placeholder="Harvesting / Weeding / Spraying" />
+      </div>
+      <div class="form-group">
+        <label>Min rate</label>
+        <input id="workerMinRate" type="number" placeholder="200" />
+      </div>
+      <div class="form-group">
+        <label>Available only</label>
+        <select id="workerAvailableOnly">
+          <option value="true">Yes</option>
+          <option value="false">All</option>
+        </select>
+      </div>
+      <button class="btn-green" onclick="loadWorkers()">Search Workers</button>
+    </div>
+
+    <div id="workerResults" class="card-grid"></div>
+  </div>
+
+  <script src="../js/main.js"></script>
+  <script>
+    async function loadWorkers() {
+      const results = document.getElementById('workerResults');
+      const params = new URLSearchParams();
+      const location = document.getElementById('workerLocation').value.trim();
+      const skill = document.getElementById('workerSkill').value.trim();
+      const minRate = document.getElementById('workerMinRate').value.trim();
+      const availableOnly = document.getElementById('workerAvailableOnly').value;
+
+      if (location) params.append('location', location);
+      if (skill) params.append('skill', skill);
+      if (minRate) params.append('min_rate', minRate);
+      params.append('available_only', availableOnly);
+
+      results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading workers...</div>';
+
+      try {
+        const res = await apiCall('GET', `/kamgar/profiles?${params.toString()}`);
+        const workers = res.workers || [];
+        if (!workers.length) {
+          results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-user-slash"></i>No workers found for the selected filters.</div>';
+          return;
+        }
+
+        results.innerHTML = workers.map(worker => `
+          <div class="worker-card">
+            <div class="worker-top">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div class="avatar">${(worker.name || 'W').split(' ').map(p => p[0]).slice(0,2).join('').toUpperCase()}</div>
+                <div>
+                  <h3 style="margin:0; font-size:1.1rem;">${worker.name}</h3>
+                  <div class="status">${worker.available ? 'Available now' : 'Busy this week'}</div>
+                </div>
+              </div>
+              <span class="badge">${worker.availability || 'Immediate'}</span>
+            </div>
+            <div class="meta"><i class="fa-solid fa-location-dot"></i> ${worker.location || 'Location not provided'}</div>
+            <div class="meta"><i class="fa-solid fa-briefcase"></i> ${worker.experience_years || 0} years experience</div>
+            <div class="pills">${(worker.skills || []).map(skillName => `<span class="pill">${skillName}</span>`).join('')}</div>
+            <div class="price">₹${Number(worker.hourly_rate || 0)} / hour</div>
+            <div class="status">${worker.description || 'Skilled worker for field and farm labour work.'}</div>
+            <div class="btn-row">
+              <button class="btn-green" onclick="bookWorker('${worker.id}')">Hire Now</button>
+              <button class="btn-outline" onclick="showWorkerContact('${worker.phone || ''}')">Call</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (error) {
+        results.innerHTML = `<div class="empty-state"><i class="fa-solid fa-plug-circle-xmark"></i>${error.message || 'Unable to fetch workers.'}</div>`;
+      }
+    }
+
+    function showWorkerContact(phone) {
+      if (!phone) {
+        alert('Phone number not available.');
+        return;
+      }
+      alert('Worker mobile: ' + phone);
+    }
+
+    async function bookWorker(workerId) {
+      if (!isLoggedIn()) {
+        window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.pathname + '#workers');
+        return;
+      }
+
+      const title = prompt('Job title (e.g. Harvesting, Spray, Weeding):', 'Farm Labour Work');
+      if (!title) return;
+
+      const description = prompt('Short job description:', 'Need help for field work and labour support.');
+      if (!description) return;
+
+      const location = prompt('Work location:', 'Nearby farm field');
+      if (!location) return;
+
+      const startDate = prompt('Start date (YYYY-MM-DD):', new Date().toISOString().slice(0, 10));
+      if (!startDate) return;
+
+      const endDate = prompt('End date (YYYY-MM-DD):', new Date(Date.now()+86400000).toISOString().slice(0,10));
+      if (!endDate) return;
+
+      const estimatedCost = prompt('Estimated cost (₹):', '2500');
+      if (!estimatedCost) return;
+
+      try {
+        const payload = {
+          worker_id: workerId,
+          title,
+          description,
+          location,
+          start_date: startDate,
+          end_date: endDate,
+          work_hours: '8 hours',
+          estimated_cost: Number(estimatedCost) || 0,
+          job_type: 'field_work'
+        };
+
+        const res = await apiCall('POST', '/kamgar/jobs', payload, true);
+        alert('Worker request sent successfully!');
+        console.log(res);
+      } catch (error) {
+        alert(error.message || 'Unable to book worker.');
+      }
+    }
+
+    loadWorkers();
+  </script>
+</body>
+</html>
