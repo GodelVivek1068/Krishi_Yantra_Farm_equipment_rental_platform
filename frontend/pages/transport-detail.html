@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
-  <title>Equipment Detail - KrishiYantra</title>
+  <title>Transport Detail - KrishiYantra</title>
   <link rel="stylesheet" href="../css/main.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
@@ -84,7 +84,7 @@
 </head>
 <body>
   <nav class="navbar">
-    <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
+    <div class="nav-brand"><i class="fa-solid fa-truck"></i><span>KrishiYantra</span></div>
     <ul class="nav-links" id="navLinks">
       <li><a href="../index.html">Home</a></li>
       <li id="farmerMyRentalsNav" hidden><a href="my-rentals.html">My Rentals</a></li>
@@ -97,27 +97,28 @@
           <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
           <a href="kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a>
           <a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
-          <a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a>
+          <a href="transport.html" class="active"><i class="fa-solid fa-truck"></i> Transport</a>
         </div>
       </li>
-      <li id="farmerOrdersNav" hidden><a href="my-orders.html">My Orders</a></li>
+      <li><a href="my-transports.html">My Bookings</a></li>
+      <li><a href="my-orders.html">My Orders</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
     <div class="nav-auth" id="navAuth">
-      <a href="login.html" class="btn-outline">Login</a>
-      <a href="register.html" class="btn-primary">Register</a>
+      <a href="transport-login.html" class="btn-outline">Login</a>
+      <a href="transport-register.html" class="btn-primary">Register</a>
     </div>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
   </nav>
 
   <div class="detail-page">
-    <a href="equipment.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Equipment</a>
+    <a href="transport.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Transport</a>
     <div id="alertBox"></div>
     <div id="detailContent"><div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div></div>
   </div>
 
   <footer class="footer">
-    <div class="footer-brand"><i class="fa-solid fa-tractor"></i> KrishiYantra</div>
+    <div class="footer-brand"><i class="fa-solid fa-truck"></i> KrishiYantra</div>
     <p>Empowering Indian Farmers</p>
     <p class="footer-copy">© 2024 KrishiYantra</p>
   </footer>
@@ -126,17 +127,15 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const equipId = urlParams.get('id');
-    let currentEquipment = null;
-    let detailRefreshTimer = null;
+    const transportId = urlParams.get('id');
+    let currentTransport = null;
     let bookingDraft = {
       startDate: '',
       endDate: '',
       deliveryAddress: '',
-      notes: ''
+      goodsDescription: ''
     };
-    const DETAIL_REFRESH_INTERVAL = 6000; // 6 seconds
-    const ICONS = { tractor:'🚜', harvester:'🌾', rotavator:'⚙️', sprayer:'💧', thresher:'🌿', plough:'🔧', seeder:'🌱', pump:'🪣' };
+    const ICONS = { tractor:'🚜', harvester:'🌾', rotavator:'⚙️', sprayer:'💧', thresher:'🌿', plough:'🔧', seeder:'🌱', pump:'🪣', truck:'🚛', van:'🚐', picker:'🚚', trailer:'🚛', container:'🚢', tanker:'🚛' };
     const safeText = (value) => String(value || '').replace(/[&<>"']/g, (m) => {
       if (m === '&') return '&amp;';
       if (m === '<') return '&lt;';
@@ -153,50 +152,26 @@
       return parsed.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
     }
 
-    function startDetailRefresh() {
-      if (detailRefreshTimer) clearInterval(detailRefreshTimer);
-      detailRefreshTimer = setInterval(() => {
-        if (document.hidden) return; // Pause if tab is not visible
-        if (isEditingBookingForm()) return; // Do not interrupt active input
-        loadDetail();
-      }, DETAIL_REFRESH_INTERVAL);
-    }
-
-    function stopDetailRefresh() {
-      if (detailRefreshTimer) {
-        clearInterval(detailRefreshTimer);
-        detailRefreshTimer = null;
-      }
-    }
-
-    // Listen for visibility changes
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) stopDetailRefresh();
-      else startDetailRefresh();
-    });
-
     async function loadDetail() {
-      if (!equipId) {
-        showAlert('alertBox', 'Invalid equipment link. Please open equipment again from the list.', 'error');
+      if (!transportId) {
+        showAlert('alertBox', 'Invalid transport link. Please open vehicle again from the list.', 'error');
         document.getElementById('detailContent').innerHTML = '';
         return;
       }
-
-      if (!/^[a-f\d]{24}$/i.test(equipId)) {
-        showAlert('alertBox', 'This equipment link is outdated. Please open the item again from the Equipment page.', 'error');
-        document.getElementById('detailContent').innerHTML = '<div class="no-results">Invalid equipment ID format.</div>';
+      if (!/^[a-f\d]{24}$/i.test(transportId)) {
+        showAlert('alertBox', 'This transport link is outdated. Please open the vehicle again from the Transport page.', 'error');
+        document.getElementById('detailContent').innerHTML = '<div class="no-results">Invalid transport ID format.</div>';
         return;
       }
-
       try {
-        const res = await apiCall('GET', `/equipment/${equipId}`);
-        if (!res.equipment) {
-          throw new Error(res.error || 'Equipment not found');
+        const res = await apiCall('GET', `/transport/${transportId}`);
+        if (!res.transport) {
+          throw new Error(res.error || 'Transport vehicle not found');
         }
-        renderDetail(res.equipment);
+        renderDetail(res.transport);
       } catch(e) {
-        showAlert('alertBox', e.message || 'Unable to load equipment from backend.', 'error');
-        document.getElementById('detailContent').innerHTML = '<div class="no-results">Could not load equipment details.</div>';
+        showAlert('alertBox', e.message || 'Unable to load transport from backend.', 'error');
+        document.getElementById('detailContent').innerHTML = '<div class="no-results">Could not load transport details.</div>';
       }
     }
 
@@ -204,38 +179,34 @@
       const startDate = document.getElementById('startDate');
       const endDate = document.getElementById('endDate');
       const deliveryAddress = document.getElementById('deliveryAddress');
-      const notes = document.getElementById('notes');
-      if (!startDate || !endDate || !deliveryAddress || !notes) return;
-
+      const goodsDescription = document.getElementById('goodsDescription');
+      if (!startDate || !endDate || !deliveryAddress || !goodsDescription) return;
       bookingDraft = {
         startDate: startDate.value || '',
         endDate: endDate.value || '',
         deliveryAddress: deliveryAddress.value || '',
-        notes: notes.value || ''
+        goodsDescription: goodsDescription.value || ''
       };
     }
 
     function restoreBookingDraft(pricePerDay, isAvailable) {
       if (!isAvailable) return;
-
       const startDate = document.getElementById('startDate');
       const endDate = document.getElementById('endDate');
       const deliveryAddress = document.getElementById('deliveryAddress');
-      const notes = document.getElementById('notes');
-      if (!startDate || !endDate || !deliveryAddress || !notes) return;
-
+      const goodsDescription = document.getElementById('goodsDescription');
+      if (!startDate || !endDate || !deliveryAddress || !goodsDescription) return;
       if (bookingDraft.startDate) startDate.value = bookingDraft.startDate;
       if (bookingDraft.endDate) endDate.value = bookingDraft.endDate;
       if (bookingDraft.deliveryAddress) deliveryAddress.value = bookingDraft.deliveryAddress;
-      if (bookingDraft.notes) notes.value = bookingDraft.notes;
-
+      if (bookingDraft.goodsDescription) goodsDescription.value = bookingDraft.goodsDescription;
       if (startDate.value && endDate.value) {
         calcTotal(pricePerDay);
       }
     }
 
     function wireBookingDraftListeners() {
-      const ids = ['startDate', 'endDate', 'deliveryAddress', 'notes'];
+      const ids = ['startDate', 'endDate', 'deliveryAddress', 'goodsDescription'];
       ids.forEach((id) => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -244,152 +215,85 @@
       });
     }
 
-    function isEditingBookingForm() {
-      const active = document.activeElement;
-      if (!active) return false;
-      return active.id === 'startDate' || active.id === 'endDate' || active.id === 'deliveryAddress' || active.id === 'notes';
-    }
-
-    function renderDetail(eq) {
+    function renderDetail(vehicle) {
       captureBookingDraft();
-      currentEquipment = eq;
-      const isAvailable = eq.available !== false;
-      const user = getUser();
-      const role = user && user.role ? String(user.role).toLowerCase() : '';
-      const canViewAvailabilityStatus = isLoggedIn() && (role === 'farmer' || role === 'renter');
-      const icon = ICONS[eq.category] || '🚜';
-      const ratingAvg = Number(eq.rating_avg || 0);
-      const ratingCount = Number(eq.rating_count || 0);
+      currentTransport = vehicle;
+      const isAvailable = vehicle.available !== false;
+      const pricePerDay = Number(vehicle.price_per_day || 0);
+      const ratingAvg = Number(vehicle.rating_avg || 0);
+      const ratingCount = Number(vehicle.rating_count || 0);
       const ratingLine = ratingCount > 0
-        ? `<div class="detail-rating"><i class="fa-solid fa-star star"></i> ${ratingAvg.toFixed(1)} average rating from ${ratingCount} farmer review${ratingCount === 1 ? '' : 's'}</div>`
-        : '<div class="detail-rating"><i class="fa-regular fa-star"></i> No farmer ratings yet</div>';
-      const bookedDays = Number(eq.unavailable_booked_days || 0);
-      const availableOn = eq.unavailable_until_label || formatShortDate(eq.unavailable_until_date);
-      const unavailabilityMessage = bookedDays > 0 && availableOn
-        ? `This equipment is already booked for ${bookedDays} day${bookedDays === 1 ? '' : 's'} and is expected to be available on ${availableOn}. We are showing nearby alternatives from other owners below.`
-        : (availableOn
-          ? `This equipment is already booked and is expected to be available on ${availableOn}. We are showing nearby alternatives from other owners below.`
-          : 'This equipment is already booked and currently unavailable. We are showing nearby alternatives from other owners below.');
-      const imageHtml = eq.image_url
-        ? `<img src="${safeText(eq.image_url)}" alt="${safeText(eq.name)}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.textContent='${icon}'"/>`
+        ? `<div class="detail-rating"><i class="fa-solid fa-star star"></i> ${ratingAvg.toFixed(1)} average rating from ${ratingCount} reviews</div>`
+        : '<div class="detail-rating"><i class="fa-regular fa-star"></i> No ratings yet</div>';
+      const icon = ICONS[vehicle.vehicle_type] || '🚛';
+      const imageHtml = vehicle.image_url
+        ? `<img src="${safeText(vehicle.image_url)}" alt="${safeText(vehicle.name)}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.textContent='${icon}'"/>`
         : icon;
-      document.title = `${eq.name} - KrishiYantra`;
+      const bookedDays = Number(vehicle.unavailable_booked_days || 0);
+      const availableOn = vehicle.unavailable_until_label || formatShortDate(vehicle.unavailable_until_date);
+      const unavailabilityMessage = bookedDays > 0 && availableOn
+        ? `This vehicle is already booked for ${bookedDays} day${bookedDays === 1 ? '' : 's'} and is expected to be available on ${availableOn}.`
+        : (availableOn
+          ? `This vehicle is already booked and is expected to be available on ${availableOn}.`
+          : 'This vehicle is currently unavailable.');
+      document.title = `${vehicle.name} - KrishiYantra`;
       document.getElementById('detailContent').innerHTML = `
         <div class="detail-grid">
           <div>
             <div class="detail-image">${imageHtml}</div>
           </div>
           <div class="detail-info">
-            <span class="badge badge-green">${eq.category}</span>
-            <h1 class="detail-name" style="margin-top:10px">${eq.name}</h1>
+            <span class="badge badge-green">${vehicle.vehicle_type || 'other'}</span>
+            <h1 class="detail-name" style="margin-top:10px">${vehicle.name}</h1>
             <div class="detail-meta">
-              <span><i class="fa-solid fa-location-dot"></i> ${eq.location}</span>
-              ${canViewAvailabilityStatus ? `<span><i class="fa-solid fa-circle" style="color:${isAvailable?'#22c55e':'#ef4444'};font-size:0.6rem"></i> ${isAvailable?'Available':'Unavailable'}</span>` : ''}
+              <span><i class="fa-solid fa-location-dot"></i> ${vehicle.location}</span>
+              ${isAvailable ? `<span><i class="fa-solid fa-circle" style="color:#22c55e;font-size:0.6rem"></i> Available</span>` : `<span><i class="fa-solid fa-circle" style="color:#ef4444;font-size:0.6rem"></i> Unavailable</span>`}
             </div>
             ${ratingLine}
-            <div class="detail-price">₹${eq.price_per_day}<small>/day</small></div>
-            <p class="detail-desc">${eq.description || 'Quality farm equipment available for rent.'}</p>
+            <div class="detail-price">₹${pricePerDay}<small>/day</small></div>
+            <p class="detail-desc">${vehicle.description || 'Transport vehicle available for hire.'}</p>
             <div class="owner-card">
-              <div class="owner-avatar">${eq.owner_name?eq.owner_name[0]:'O'}</div>
+              <div class="owner-avatar">${(vehicle.owner_name || 'O').split(' ').map(p => p[0]).slice(0,2).join('').toUpperCase()}</div>
               <div class="owner-info">
-                <h4>${eq.owner_name || 'Equipment Owner'}</h4>
-                <span><i class="fa-solid fa-phone"></i> ${eq.owner_phone || 'Contact via platform'}</span>
+                <h4>${vehicle.owner_name || 'Owner'}</h4>
+                <span><i class="fa-solid fa-phone"></i> ${vehicle.owner_phone || 'Contact via platform'}</span>
               </div>
             </div>
           </div>
         </div>
         <div class="booking-form">
-          <h3><i class="fa-solid fa-calendar-check"></i> Book This Equipment</h3>
-          ${canViewAvailabilityStatus && !isAvailable ? `<div class="alert alert-warning">${unavailabilityMessage}</div>` : ''}
+          <h3><i class="fa-solid fa-calendar-check"></i> Book This Vehicle</h3>
+          ${!isAvailable ? `<div class="alert alert-warning">${unavailabilityMessage}</div>` : ''}
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
             <div class="form-group">
               <label>Start Date</label>
-              <input type="date" id="startDate" min="${new Date().toISOString().split('T')[0]}" onchange="calcTotal(${eq.price_per_day})" ${isAvailable ? '' : 'disabled'}/>
+              <input type="date" id="startDate" min="${new Date().toISOString().split('T')[0]}" onchange="calcTotal(${pricePerDay})" ${isAvailable ? '' : 'disabled'}/>
             </div>
             <div class="form-group">
               <label>End Date</label>
-              <input type="date" id="endDate" min="${new Date().toISOString().split('T')[0]}" onchange="calcTotal(${eq.price_per_day})" ${isAvailable ? '' : 'disabled'}/>
+              <input type="date" id="endDate" min="${new Date().toISOString().split('T')[0]}" onchange="calcTotal(${pricePerDay})" ${isAvailable ? '' : 'disabled'}/>
             </div>
           </div>
           <div class="form-group">
             <label>Delivery Address</label>
-            <input type="text" id="deliveryAddress" placeholder="Your field / village address" ${isAvailable ? '' : 'disabled'}/>
-            <div style="display:flex;justify-content:flex-end;margin-top:8px;">
-              <button type="button" class="btn-map-bold" onclick="openBookingLocationInMaps('${eq.location || ''}')" ${isAvailable ? '' : 'disabled'}>
-                <i class="fa-solid fa-map-location-dot"></i> View On Google Maps
-              </button>
-            </div>
+            <input type="text" id="deliveryAddress" placeholder="Pickup / delivery location" ${isAvailable ? '' : 'disabled'}/>
           </div>
           <div class="form-group">
-            <label>Special Requests (optional)</label>
-            <textarea id="notes" placeholder="Any special requirements..." ${isAvailable ? '' : 'disabled'}></textarea>
+            <label>Goods Description</label>
+            <textarea id="goodsDescription" placeholder="Type of goods, weight estimate..." ${isAvailable ? '' : 'disabled'}></textarea>
           </div>
           <div class="booking-summary" id="bookingSummary" style="display:none">
-            <div class="summary-row"><span>Price per day</span><span>₹${eq.price_per_day}</span></div>
+            <div class="summary-row"><span>Price per day</span><span>₹${pricePerDay}</span></div>
             <div class="summary-row"><span>Number of days</span><span id="numDays">-</span></div>
             <div class="summary-row summary-total"><span>Total Amount</span><span id="totalAmt">-</span></div>
           </div>
-          <button id="bookBtn" class="btn-green" style="width:100%;justify-content:center;padding:13px;" onclick="bookEquipment('${eq._id}',${eq.price_per_day})" ${isAvailable ? '' : 'disabled'}>
-            <i class="fa-solid fa-check-circle"></i> ${isAvailable ? 'Confirm Booking' : 'Already Booked'}
+          <button id="bookBtn" class="btn-green" style="width:100%;justify-content:center;padding:13px;" onclick="bookTransport('${vehicle._id}', ${pricePerDay})" ${isAvailable ? '' : 'disabled'}>
+            <i class="fa-solid fa-check-circle"></i> ${isAvailable ? 'Confirm & Pay' : 'Currently Booked'}
           </button>
         </div>
-        <div id="alternativesWrap"></div>
       `;
-
-      restoreBookingDraft(eq.price_per_day, isAvailable);
+      restoreBookingDraft(pricePerDay, isAvailable);
       wireBookingDraftListeners();
-
-      if (!isAvailable) {
-        loadAlternatives(eq);
-      }
-    }
-
-    async function loadAlternatives(eq) {
-      const altWrap = document.getElementById('alternativesWrap');
-      if (!altWrap) return;
-
-      altWrap.innerHTML = '<div class="alt-wrap"><div class="alt-title"><i class="fa-solid fa-location-dot"></i> Looking for nearby alternatives...</div></div>';
-
-      try {
-        const res = await apiCall('GET', `/equipment/${eq._id}/alternatives?limit=6`);
-        const alternatives = res.alternatives || [];
-
-        if (!alternatives.length) {
-          altWrap.innerHTML = `
-            <div class="alt-wrap">
-              <div class="alt-title"><i class="fa-solid fa-circle-info"></i> No nearby alternatives found</div>
-              <div class="alt-meta">Try changing location on the equipment page to discover more tractors from other owners.</div>
-            </div>
-          `;
-          return;
-        }
-
-        altWrap.innerHTML = `
-          <div class="alt-wrap">
-            <div class="alt-title"><i class="fa-solid fa-tractor"></i> Nearby ${safeText(eq.category)} options from other owners</div>
-            <div class="alt-grid">
-              ${alternatives.map((item) => `
-                <div class="alt-card">
-                  <div class="alt-name">${safeText(item.name)}</div>
-                  <div class="alt-meta"><i class="fa-solid fa-location-dot"></i> ${safeText(item.location)} | Owner: ${safeText(item.owner_name || 'Equipment Owner')}</div>
-                  <div class="alt-meta"><i class="fa-solid fa-star" style="color:#f59e0b"></i> ${Number(item.rating_count || 0) > 0 ? `${Number(item.rating_avg || 0).toFixed(1)} (${Number(item.rating_count || 0)})` : 'No ratings yet'}</div>
-                  <div class="alt-price">₹${item.price_per_day}/day</div>
-                  <a class="btn-outline" style="display:inline-flex" href="equipment-detail.html?id=${item._id}">
-                    <i class="fa-solid fa-arrow-right"></i> View This Equipment
-                  </a>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
-      } catch (_) {
-        altWrap.innerHTML = `
-          <div class="alt-wrap">
-            <div class="alt-title"><i class="fa-solid fa-circle-exclamation"></i> Could not load alternatives right now</div>
-            <div class="alt-meta">Please try again in a moment.</div>
-          </div>
-        `;
-      }
     }
 
     function calcTotal(pricePerDay) {
@@ -403,23 +307,9 @@
       document.getElementById('bookingSummary').style.display = 'block';
     }
 
-    function openBookingLocationInMaps(defaultLocation) {
-      const deliveryInput = document.getElementById('deliveryAddress');
-      const typedLocation = deliveryInput ? String(deliveryInput.value || '').trim() : '';
-      const targetLocation = typedLocation || String(defaultLocation || '').trim();
-
-      if (!targetLocation) {
-        showAlert('alertBox', 'Please enter delivery address first to open it on Google Maps.', 'error');
-        return;
-      }
-
-      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(targetLocation)}`;
-      window.open(mapsUrl, '_blank', 'noopener,noreferrer');
-    }
-
-    async function bookEquipment(eqId, price) {
+    async function bookTransport(transportIdParam, pricePerDay) {
       if (!isLoggedIn()) {
-        window.location.href = `login.html?redirect=equipment-detail.html?id=${eqId}`;
+        window.location.href = `transport-login.html?redirect=${encodeURIComponent(`transport-detail.html?id=${transportIdParam}`)}`;
         return;
       }
       if (typeof Razorpay === 'undefined') {
@@ -429,39 +319,35 @@
       const startDate = document.getElementById('startDate').value;
       const endDate = document.getElementById('endDate').value;
       const deliveryAddress = document.getElementById('deliveryAddress').value;
-      const notes = document.getElementById('notes').value;
+      const goodsDescription = document.getElementById('goodsDescription').value;
       if (!startDate || !endDate || !deliveryAddress) {
         showAlert('alertBox', 'Please fill all required fields', 'error'); return;
       }
       const days = Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000);
       if (days <= 0) { showAlert('alertBox', 'End date must be after start date', 'error'); return; }
-
-      const totalAmount = days * price;
+      const totalAmount = days * pricePerDay;
       const bookBtn = document.getElementById('bookBtn');
       if (bookBtn) {
         bookBtn.disabled = true;
         bookBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing Payment...';
       }
-
       const bookingPayload = {
-        equipment_id: eqId,
+        transport_id: transportIdParam,
         start_date: startDate,
         end_date: endDate,
         delivery_address: deliveryAddress,
-        notes,
+        goods_description: goodsDescription,
         total_amount: totalAmount
       };
-
       try {
-        const order = await apiCall('POST', '/rentals/payment/order', bookingPayload, true);
+        const order = await apiCall('POST', '/transport/payment/order', bookingPayload, true);
         const user = getUser() || {};
-
         const options = {
           key: order.key_id,
           amount: order.amount,
           currency: order.currency || 'INR',
           name: 'KrishiYantra',
-          description: 'Equipment Booking Payment',
+          description: 'Transport Booking Payment',
           order_id: order.order_id,
           prefill: {
             name: (order.prefill && order.prefill.name) || user.name || '',
@@ -477,11 +363,11 @@
                 razorpay_payment_id: paymentResponse.razorpay_payment_id,
                 razorpay_signature: paymentResponse.razorpay_signature
               };
-              const verifyRes = await apiCall('POST', '/rentals/payment/verify', verifyPayload, true);
+              const verifyRes = await apiCall('POST', '/transport/payment/verify', verifyPayload, true);
               if (verifyRes.rental) {
-                bookingDraft = { startDate: '', endDate: '', deliveryAddress: '', notes: '' };
-                showAlert('alertBox', 'Payment successful. Booking request sent to owner for confirmation.', 'success');
-                setTimeout(() => window.location.href = 'my-rentals.html', 1800);
+                bookingDraft = { startDate: '', endDate: '', deliveryAddress: '', goodsDescription: '' };
+                showAlert('alertBox', 'Payment successful. Transport booking request sent to owner for confirmation.', 'success');
+                setTimeout(() => window.location.href = 'my-transports.html', 1800);
               } else {
                 showAlert('alertBox', 'Payment verified but booking could not be created.', 'error');
               }
@@ -490,7 +376,7 @@
             } finally {
               if (bookBtn) {
                 bookBtn.disabled = false;
-                bookBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Confirm Booking';
+                bookBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Confirm & Pay';
               }
             }
           },
@@ -499,34 +385,24 @@
               showAlert('alertBox', 'Payment cancelled. Booking was not created.', 'info');
               if (bookBtn) {
                 bookBtn.disabled = false;
-                bookBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Confirm Booking';
+                bookBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Confirm & Pay';
               }
             }
           }
         };
-
         const rzp = new Razorpay(options);
         rzp.open();
       } catch(e) {
         if (bookBtn) {
           bookBtn.disabled = false;
-          bookBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Confirm Booking';
+          bookBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Confirm & Pay';
         }
-        if ((e.message || '').toLowerCase().includes('currently unavailable')) {
-          showAlert('alertBox', 'This equipment became unavailable. Showing nearby alternatives from other owners.', 'error');
-          if (currentEquipment) {
-            currentEquipment.available = false;
-            loadAlternatives(currentEquipment);
+        if ((e.message || '').toLowerCase().includes('currently unavailable') || (e.message || '').toLowerCase().includes('transport is unavailable')) {
+          showAlert('alertBox', 'This vehicle became unavailable. Please choose another vehicle.', 'error');
+          if (currentTransport) {
+            currentTransport.available = false;
+            renderDetail(currentTransport);
           }
-          return;
-        }
-        if ((e.message || '').toLowerCase().includes('authentication required') || (e.message || '').toLowerCase().includes('unauthorized')) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          showAlert('alertBox', 'Your session expired after reseeding. Please login again.', 'error');
-          setTimeout(() => {
-            window.location.href = `login.html?redirect=equipment-detail.html?id=${eqId}`;
-          }, 1500);
           return;
         }
         showAlert('alertBox', e.message || 'Payment initialization failed. Please try again.', 'error');
@@ -534,7 +410,6 @@
     }
 
     loadDetail();
-    startDetailRefresh();
   </script>
 </body>
 </html>

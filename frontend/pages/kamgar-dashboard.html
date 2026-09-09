@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
   <title>Kamgar Dashboard - KrishiYantra</title>
   <link rel="stylesheet" href="../css/main.css" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
@@ -21,6 +22,7 @@
     .grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 22px; }
     .section-title { color: var(--green-dark); font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 14px; }
     .profile-card { background: linear-gradient(180deg, #f8fdf9, #f0faf3); border: 1px dashed #bddcbe; border-radius: 16px; padding: 18px; margin-bottom: 18px; }
+    .profile-form { border-top: 1px solid #dcecdf; margin-top: 18px; padding-top: 18px; }
     .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
     .form-grid .full { grid-column: 1 / -1; }
     .job-list { display: grid; gap: 12px; }
@@ -45,12 +47,22 @@
     <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
     <ul class="nav-links" id="navLinks">
       <li><a href="../index.html">Home</a></li>
-      <li><a href="kamgar.html">Workers</a></li>
+      <li id="farmerServicesNav" class="service-menu">
+        <button type="button" class="service-menu-toggle" aria-expanded="false">
+          Services <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="service-menu-dropdown">
+          <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
+          <a href="kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a>
+          <a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
+          <a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a>
+        </div>
+      </li>
       <li><a href="kamgar-dashboard.html" class="active">Dashboard</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
     <div class="nav-auth" id="navAuth">
-      <a href="login.html" class="btn-outline">Login</a>
+      <a href="worker-login.html" class="btn-outline">Login</a>
       <a href="register.html" class="btn-primary">Register</a>
     </div>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
@@ -75,6 +87,18 @@
         <div class="profile-card" id="profileCard">
           <div class="empty">Loading your worker profile...</div>
         </div>
+        <form class="profile-form" id="workerProfileForm">
+          <h3 style="margin-bottom:12px;color:var(--green-dark);">Profile details</h3>
+          <div class="form-grid">
+            <div><label for="profileName">Name</label><input id="profileName" type="text" required></div>
+            <div><label for="profilePhone">Phone</label><input id="profilePhone" type="text" required></div>
+            <div><label for="profileLocation">Location</label><input id="profileLocation" type="text" required></div>
+            <div><label for="profileExperience">Experience (years)</label><input id="profileExperience" type="number" min="0"></div>
+            <div class="full"><label for="profileSkills">Skills (comma separated)</label><input id="profileSkills" type="text" placeholder="Harvesting, Weeding, Spraying" required></div>
+            <div class="full"><label for="profileDescription">About your work</label><textarea id="profileDescription" rows="3" style="width:100%;padding:10px;border:1px solid var(--gray-200);border-radius:8px;font:inherit;resize:vertical;"></textarea></div>
+            <div class="full"><button class="btn-green" type="submit">Save worker profile</button></div>
+          </div>
+        </form>
       </div>
 
       <div class="panel">
@@ -120,7 +144,12 @@
 
     async function loadWorkerDashboard() {
       if (!isLoggedIn()) {
-        window.location.href = 'login.html?redirect=kamgar-dashboard.html';
+        window.location.href = 'worker-login.html?redirect=kamgar-dashboard.html';
+        return;
+      }
+      if (!user || String(user.role || '').toLowerCase() !== 'kamgar') {
+        alert('Worker account required for dashboard access.');
+        window.location.href = 'worker-login.html?redirect=kamgar-dashboard.html';
         return;
       }
 
@@ -143,18 +172,23 @@
     function renderProfile(profile) {
       const card = document.getElementById('profileCard');
       if (!profile) {
-        card.innerHTML = `
-          <div class="empty">
-            No worker profile found yet. Create one from the worker page.<br><br>
-            <a class="btn-green" href="kamgar.html">Go to Workers</a>
-          </div>
-        `;
+        card.innerHTML = '<div class="empty">Create your worker profile below to start receiving farm job requests.</div>';
+        const currentUser = getUser() || {};
+        document.getElementById('profileName').value = currentUser.name || '';
+        document.getElementById('profilePhone').value = currentUser.phone || '';
+        document.getElementById('profileLocation').value = currentUser.location || '';
         return;
       }
 
       document.getElementById('availableStatus').value = profile.available ? 'true' : 'false';
       document.getElementById('availabilityNote').value = profile.availability || '';
       document.getElementById('hourlyRate').value = profile.hourly_rate || '';
+      document.getElementById('profileName').value = profile.name || '';
+      document.getElementById('profilePhone').value = profile.phone || '';
+      document.getElementById('profileLocation').value = profile.location || '';
+      document.getElementById('profileExperience').value = profile.experience_years || 0;
+      document.getElementById('profileSkills').value = (profile.skills || []).join(', ');
+      document.getElementById('profileDescription').value = profile.description || '';
 
       card.innerHTML = `
         <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;">
@@ -162,16 +196,17 @@
             <h3 style="margin:0; color:var(--green-dark);">${profile.name}</h3>
             <p style="margin:6px 0 0; color:var(--gray-600);">${profile.location}</p>
           </div>
-          <span class="pill">${profile.available ? 'Available' : 'Unavailable'}</span>
+          <span class="pill">${profile.available ? 'Available' : profile.unavailable_reason === 'hired' ? 'Currently hired' : 'Unavailable'}</span>
         </div>
         <div style="margin-top:14px; display:flex; flex-wrap:wrap; gap:8px;">
           ${(profile.skills || []).map(skill => `<span class="pill">${skill}</span>`).join('') || '<span class="pill">No skills added</span>'}
         </div>
-        <div style="margin-top:12px; color:var(--gray-700); line-height:1.8;">
+          <div style="margin-top:12px; color:var(--gray-700); line-height:1.8;">
           <div><strong>Experience:</strong> ${profile.experience_years || 0} years</div>
           <div><strong>Availability:</strong> ${profile.availability || 'Immediate'}</div>
           <div><strong>Rate:</strong> ₹${profile.hourly_rate || 0} / hour</div>
           <div><strong>Phone:</strong> ${profile.phone || 'Not set'}</div>
+          ${profile.unavailable_until_label ? `<div><strong>Available again:</strong> ${profile.unavailable_until_label}</div>` : ''}
         </div>
       `;
     }
@@ -206,11 +241,10 @@
             <span><i class="fa-solid fa-clock"></i> ${job.work_hours || 'Flexible'}</span>
           </div>
           <span class="status-badge ${statusClass(job.status)}">${String(job.status || 'requested').replace('_', ' ')}</span>
-          <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="small-btn green" onclick="updateJobStatus('${job.id}', 'accepted')">Accept</button>
-            <button class="small-btn amber" onclick="updateJobStatus('${job.id}', 'in_progress')">In Progress</button>
-            <button class="small-btn" style="background:#e2e8f0;color:#334155;" onclick="updateJobStatus('${job.id}', 'completed')">Completed</button>
-          </div>
+          ${String(job.status).toLowerCase() !== 'cancelled' && String(job.status).toLowerCase() !== 'completed' ? `<div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+            ${String(job.status).toLowerCase() === 'requested' ? `<button class="small-btn green" onclick="updateJobStatus('${job.id}', 'accepted')">Accept</button>` : ''}
+            ${['accepted', 'in_progress'].includes(String(job.status).toLowerCase()) ? `<button class="small-btn amber" onclick="updateJobStatus('${job.id}', 'in_progress')">In Progress</button><button class="small-btn" style="background:#e2e8f0;color:#334155;" onclick="updateJobStatus('${job.id}', 'completed')">Completed</button>` : ''}
+          </div>` : ''}
         </div>
       `).join('');
     }
@@ -230,20 +264,22 @@
       const availability = document.getElementById('availabilityNote').value.trim();
       const hourlyRate = document.getElementById('hourlyRate').value.trim();
 
-      if (!workerProfile || !workerProfile.id) {
-        alert('Create a worker profile first from the worker listing page.');
+      if (!document.getElementById('profileSkills').value.trim() || !document.getElementById('profileLocation').value.trim()) {
+        alert('Location and at least one skill are required.');
         return;
       }
 
       try {
         const payload = {
-          name: user && user.name ? user.name : '',
-          phone: user && user.phone ? user.phone : '',
-          location: user && user.location ? user.location : '',
+          name: document.getElementById('profileName').value.trim(),
+          phone: document.getElementById('profilePhone').value.trim(),
+          location: document.getElementById('profileLocation').value.trim(),
           availability,
           hourly_rate: hourlyRate,
           available,
-          skills: workerProfile.skills || []
+          experience_years: Number(document.getElementById('profileExperience').value || 0),
+          skills: document.getElementById('profileSkills').value.split(',').map(skill => skill.trim()).filter(Boolean),
+          description: document.getElementById('profileDescription').value.trim()
         };
 
         const res = await apiCall('POST', '/kamgar/profiles', payload, true);
@@ -255,7 +291,15 @@
       }
     }
 
+    document.getElementById('workerProfileForm').addEventListener('submit', event => {
+      event.preventDefault();
+      saveWorkerProfile();
+    });
+
     loadWorkerDashboard();
+    setInterval(() => {
+      if (!document.hidden) loadWorkerDashboard();
+    }, 15000);
   </script>
 </body>
 </html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <title>My Worker Bookings - KrishiYantra</title>
+  <link rel="stylesheet" href="../css/main.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    .page-header { background: linear-gradient(135deg, var(--green-dark), #2d6a4f); color: white; padding: 48px 24px 36px; text-align: center; }
+    .page-header h1 { font-family: 'Playfair Display', serif; font-size: 2rem; }
+    .page-actions { margin-top: 18px; display: flex; justify-content: center; }
+    .back-btn { border-color: rgba(255,255,255,0.72); background: rgba(255,255,255,0.08); display: inline-flex; align-items: center; gap: 8px; }
+    .back-btn:hover { background: rgba(255,255,255,0.18); }
+    .bookings-page { max-width: 900px; margin: 40px auto; padding: 0 24px; }
+    .tab-nav { display: flex; gap: 4px; background: var(--gray-100); border-radius: var(--radius); padding: 4px; margin-bottom: 24px; }
+    .tab-btn {
+      flex: 1; padding: 10px 16px; border: none; background: none;
+      border-radius: calc(var(--radius) - 4px); font-family: inherit;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer; color: var(--gray-600);
+      transition: var(--transition);
+    }
+    .tab-btn.active { background: var(--white); color: var(--green-dark); box-shadow: var(--shadow-sm); }
+    .job-card {
+      background: var(--white); border-radius: var(--radius); border: 1px solid var(--gray-200);
+      padding: 20px; margin-bottom: 16px; display: flex; gap: 16px; align-items: flex-start;
+      box-shadow: var(--shadow-sm); transition: var(--transition);
+    }
+    .job-card:hover { box-shadow: var(--shadow-md); }
+    .job-icon { font-size: 2.5rem; flex-shrink: 0; }
+    .job-info { flex: 1; }
+    .job-info h4 { font-weight: 700; color: var(--green-dark); margin-bottom: 6px; }
+    .job-meta { font-size: 0.82rem; color: var(--gray-600); display: flex; flex-wrap: wrap; gap: 12px; }
+    .job-meta span { display: flex; align-items: center; gap: 5px; }
+    .job-amount { font-weight: 700; color: var(--green-mid); font-size: 1.1rem; white-space: nowrap; }
+    .job-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+    .btn-cancel-booking {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid #dc2626; background: #fff1f2; color: #b91c1c;
+      border-radius: 999px; padding: 7px 12px; font-size: 0.76rem; font-weight: 700;
+      cursor: pointer; transition: var(--transition);
+    }
+    .btn-cancel-booking:hover { background: #ffe4e6; transform: translateY(-1px); }
+    .btn-cancel-booking:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+    .no-jobs { text-align: center; padding: 60px; color: var(--gray-400); }
+    .no-jobs i { font-size: 3rem; display: block; margin-bottom: 16px; }
+    .login-prompt { text-align: center; padding: 60px; }
+    .login-prompt h3 { font-family: 'Playfair Display', serif; color: var(--green-dark); margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li id="farmerMyRentalsNav" hidden><a href="my-rentals.html">My Rentals</a></li>
+      <li id="farmerListEquipmentNav" hidden><a href="list-equipment.html">List Equipment</a></li>
+      <li id="farmerServicesNav" class="service-menu">
+        <button type="button" class="service-menu-toggle" aria-expanded="false">
+          Services <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="service-menu-dropdown">
+          <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
+          <a href="kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a>
+          <a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
+          <a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a>
+        </div>
+      </li>
+      <li><a href="my-worker-bookings.html" class="active">My Worker Bookings</a></li>
+      <li><a href="my-orders.html">My Orders</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth">
+      <a href="login.html" class="btn-outline">Login</a>
+      <a href="register.html" class="btn-primary">Register</a>
+    </div>
+    <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+  </nav>
+
+  <div class="page-header">
+    <h1>My Worker Bookings</h1>
+    <p>Track all your worker hire requests</p>
+    <div class="page-actions">
+      <button type="button" class="btn-outline back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    </div>
+  </div>
+
+  <div class="bookings-page" id="pageContent">
+    <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-brand"><i class="fa-solid fa-tractor"></i> KrishiYantra</div>
+    <p>Empowering Indian Farmers</p>
+    <p class="footer-copy">© 2024 KrishiYantra</p>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+    function goBack() {
+      if (window.history.length > 1) {
+        window.history.back();
+        return;
+      }
+      window.location.href = 'kamgar.html';
+    }
+
+    async function init() {
+      const page = document.getElementById('pageContent');
+      if (!isLoggedIn()) {
+        page.innerHTML = `
+          <div class="login-prompt">
+            <h3>Please Login to View Your Worker Bookings</h3>
+            <p style="color:var(--gray-600);margin-bottom:24px">Track all your worker hire requests in one place.</p>
+            <a href="login.html?redirect=my-worker-bookings.html" class="btn-green" style="display:inline-flex">
+              <i class="fa-solid fa-right-to-bracket"></i> Login Now
+            </a>
+          </div>`;
+        return;
+      }
+
+      page.innerHTML = `
+        <div class="tab-nav">
+          <button class="tab-btn active" onclick="switchTab('hiring', this)">Workers I Hired</button>
+          <button class="tab-btn" onclick="switchTab('posted', this)">My Posted Jobs</button>
+        </div>
+        <div id="tabContent"><div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i></div></div>
+      `;
+      loadJobs('hiring');
+      startAutoRefresh();
+    }
+
+    let currentTab = 'hiring';
+    let autoRefreshTimer = null;
+    const AUTO_REFRESH_INTERVAL = 5000;
+    const cancellingJobs = new Set();
+
+    function switchTab(tab, btn) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loadJobs(tab);
+    }
+
+    function startAutoRefresh() {
+      if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+      autoRefreshTimer = setInterval(() => {
+        if (document.hidden) return;
+        loadJobs(currentTab, true);
+      }, AUTO_REFRESH_INTERVAL);
+    }
+
+    async function loadJobs(tab, silent = false) {
+      const content = document.getElementById('tabContent');
+      if (!silent) content.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>';
+      try {
+        const res = await apiCall('GET', '/kamgar/jobs/my', null, true);
+        const jobs = res.jobs || [];
+        const user = getUser() || {};
+        const uid = String(user._id || user.id || '');
+        if (tab === 'hiring') {
+          const myJobs = jobs.filter(j => uid && String(j.farmer_id) === uid);
+          renderJobs(myJobs, 'hiring');
+        } else {
+          const postedJobs = jobs.filter(j => uid && String(j.worker_id) === uid);
+          renderJobs(postedJobs, 'posted');
+        }
+      } catch(e) {
+        if (!silent) content.innerHTML = `<div class="no-jobs"><i class="fa-solid fa-circle-exclamation"></i>Unable to load jobs.<br/>${e.message || ''}</div>`;
+      }
+    }
+
+    function renderJobs(jobs, tab) {
+      const content = document.getElementById('tabContent');
+      if (!jobs.length) {
+        const msg = tab === 'hiring'
+          ? 'No worker hire requests yet.<br/><a href="kamgar.html" class="btn-green" style="display:inline-flex;margin-top:20px">Find Workers</a>'
+          : 'No job requests yet.<br/><a href="kamgar-dashboard.html" class="btn-green" style="display:inline-flex;margin-top:20px">Go to Dashboard</a>';
+        content.innerHTML = `<div class="no-jobs"><i class="fa-solid fa-briefcase"></i>${msg}</div>`;
+        return;
+      }
+
+      content.innerHTML = jobs.map(j => {
+        const status = String(j.status || 'requested').toLowerCase();
+        const statusClass = status === 'requested' ? 'badge-amber' : status === 'accepted' ? 'badge-green' : status === 'in_progress' ? 'badge-blue' : status === 'completed' ? 'badge-green' : 'badge-red';
+        const canCancel = status === 'requested' || status === 'accepted';
+        const isCancelling = cancellingJobs.has(String(j.id));
+        return `
+          <div class="job-card">
+            <div class="job-icon">👷</div>
+            <div class="job-info">
+              <h4>${j.title || 'Farm Labour Request'}</h4>
+              <div class="job-meta">
+                <span><i class="fa-solid fa-user"></i> ${tab === 'hiring' ? j.worker_name : j.farmer_name}</span>
+                <span><i class="fa-solid fa-location-dot"></i> ${j.location}</span>
+                <span><i class="fa-solid fa-calendar"></i> ${j.start_date} → ${j.end_date}</span>
+                <span><i class="fa-solid fa-clock"></i> ${j.work_hours || 'Flexible'}</span>
+                <span class="badge ${statusClass}">${status}</span>
+              </div>
+            </div>
+            <div class="job-actions">
+              <div class="job-amount">₹${Number(j.estimated_cost || 0).toLocaleString('en-IN')}</div>
+              ${canCancel ? `<button class="btn-cancel-booking" onclick="cancelJob('${j.id}')" ${isCancelling ? 'disabled' : ''}>
+                <i class="fa-solid fa-ban"></i> ${isCancelling ? 'Cancelling...' : 'Cancel'}
+              </button>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function cancelJob(jobId) {
+      const confirmed = window.confirm('Cancel this worker hire request? This action cannot be undone.');
+      if (!confirmed) return;
+
+      const id = String(jobId);
+      if (cancellingJobs.has(id)) return;
+
+      cancellingJobs.add(id);
+      loadJobs(currentTab);
+
+      try {
+        await apiCall('PUT', `/kamgar/jobs/${id}/status`, { status: 'cancelled' }, true);
+        alert('Hire request cancelled successfully.');
+      } catch (e) {
+        alert(e.message || 'Unable to cancel hire request right now.');
+      } finally {
+        cancellingJobs.delete(id);
+        loadJobs(currentTab);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

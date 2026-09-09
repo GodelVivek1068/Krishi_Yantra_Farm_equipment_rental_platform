@@ -41,6 +41,7 @@ def _send_contact_email(name, contact, topic, message):
         smtp.login(smtp_user, smtp_password)
         smtp.send_message(email)
 
+@contact_bp.route('', methods=['POST'])
 @contact_bp.route('/', methods=['POST'])
 def send_message():
     data = request.get_json() or {}
@@ -75,11 +76,13 @@ def send_message():
             {'_id': message_id},
             {'$set': {'email_delivery_status': 'failed', 'email_delivery_error': str(exc)}}
         )
-        return jsonify({'error': 'Message saved, but email delivery failed. Please contact support directly at vj572483@gmail.com.'}), 500
+        # Message is safely saved in DB; avoid failing user submission if SMTP is unreachable
+        return jsonify({'message': 'Message received and saved. We will get back to you soon!', 'email_sent': False}), 201
 
-    return jsonify({'message': 'Message received. We will get back to you soon!'}), 201
+    return jsonify({'message': 'Message received. We will get back to you soon!', 'email_sent': True}), 201
 
 
+@contact_bp.route('', methods=['GET'])
 @contact_bp.route('/', methods=['GET'])
 def get_messages():
     messages = list(mongo.db.contact_messages.find().sort('created_at', -1).limit(100))

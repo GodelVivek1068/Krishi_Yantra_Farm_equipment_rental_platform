@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <title>Transport Login - KrishiYantra</title>
+  <link rel="stylesheet" href="../css/main.css"/>
+  <link rel="stylesheet" href="../css/auth.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    body { background: linear-gradient(135deg, #1a2a3a 0%, #1e4a6e 50%, #1d6fa4 100%); }
+    .auth-icon { background: linear-gradient(135deg, #1e4a6e, #1d6fa4); box-shadow: 0 8px 24px rgba(30,74,110,0.4); }
+    .auth-header h1 { color: #0f2a3a; }
+    .btn-auth-submit { background: linear-gradient(135deg, #1e4a6e, #1d6fa4); box-shadow: 0 4px 16px rgba(30,74,110,0.4); }
+    .btn-auth-submit:hover:not(:disabled) { background: linear-gradient(135deg, #183c5a, #186694); }
+    .lockout-fill { background: linear-gradient(90deg, #1d6fa4, #f59e0b); }
+    .security-badge i { color: #1d6fa4; }
+    .auth-links a { color: #1e4a6e; }
+    .role-tab.active { border-color: #1d6fa4; color: #0f2a3a; background: linear-gradient(135deg, #e8f4fd, #d0eaf8); box-shadow: 0 4px 12px rgba(29,111,164,0.2); }
+    .role-tab:hover { border-color: #1d6fa4; color: #1e4a6e; background: #f0f7fd; }
+    .input-wrap input:focus { border-color: #1d6fa4; box-shadow: 0 0 0 4px rgba(29,111,164,0.1); }
+  </style>
+</head>
+<body class="auth-body">
+  <nav class="navbar">
+    <div class="nav-brand"><i class="fa-solid fa-truck"></i><span>KrishiYantra</span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li id="farmerServicesNav" class="service-menu">
+        <button type="button" class="service-menu-toggle" aria-expanded="false">
+          Services <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="service-menu-dropdown">
+          <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
+          <a href="kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a>
+          <a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
+          <a href="transport.html" class="active"><i class="fa-solid fa-truck"></i> Transport</a>
+        </div>
+      </li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth">
+      <a href="transport-register.html" class="btn-primary">Register</a>
+    </div>
+    <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+  </nav>
+
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-icon"><i class="fa-solid fa-truck"></i></div>
+        <h1 id="pageTitle">Transport Login</h1>
+        <p id="loginSubtitle">Login to book or manage transport vehicles</p>
+      </div>
+
+      <!-- Role tabs -->
+      <div class="role-tabs" style="grid-template-columns:1fr 1fr;">
+        <button type="button" class="role-tab active" id="tabRenter" onclick="setRole('renter')">
+          <i class="fa-solid fa-user"></i> Book Transport
+        </button>
+        <button type="button" class="role-tab" id="tabOwner" onclick="setRole('owner')">
+          <i class="fa-solid fa-warehouse"></i> List Vehicle
+        </button>
+      </div>
+
+      <div class="auth-alert" id="alertBox" role="alert">
+        <i class="fa-solid fa-circle-exclamation"></i><span></span>
+      </div>
+
+      <form id="loginForm" onsubmit="return false;" novalidate autocomplete="on">
+        <div class="form-field">
+          <label class="form-label" for="email">Email Address</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-envelope inp-icon"></i>
+            <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required/>
+          </div>
+          <div class="field-err" id="emailErr">Please enter a valid email address.</div>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock inp-icon"></i>
+            <input type="password" id="password" name="password" placeholder="Your password" autocomplete="current-password" required/>
+            <button type="button" class="toggle-pw" id="togglePw" aria-label="Toggle password visibility">
+              <i class="fa-regular fa-eye" id="eyeIcon"></i>
+            </button>
+          </div>
+          <div class="field-err" id="passErr">Password is required.</div>
+          <div class="attempt-info" id="attemptInfo"></div>
+        </div>
+
+        <button type="button" class="btn-auth-submit" id="loginBtn" onclick="doLogin()">
+          <i class="fa-solid fa-right-to-bracket" id="loginIcon"></i>
+          <span id="loginBtnText">Sign In</span>
+        </button>
+      </form>
+
+      <div class="lockout-bar" id="lockoutBar">
+        <div class="lockout-fill" id="lockoutFill" style="width:100%"></div>
+      </div>
+
+      <div class="security-badge">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>256-bit encrypted · Secure JWT authentication</span>
+      </div>
+
+      <div class="auth-links">
+        Don't have an account? <a href="transport-register.html">Register here</a><br/>
+        Back to main <a href="login.html">login →</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+  <script src="../js/auth-utils.js"></script>
+  <script>
+    if (isLoggedIn()) {
+      const u = getUser();
+      window.location.href = (u && u.role === 'owner') ? 'transport-dashboard.html' : 'transport.html';
+    }
+
+    let loginRole = 'renter';
+    AuthUtils.bindPasswordToggle('password', 'togglePw', 'eyeIcon');
+    AuthUtils.updateAttemptInfo('attemptInfo');
+
+    function setRole(role) {
+      loginRole = role;
+      document.getElementById('tabRenter').classList.toggle('active', role === 'renter');
+      document.getElementById('tabOwner').classList.toggle('active', role === 'owner');
+      document.getElementById('loginSubtitle').textContent = role === 'owner'
+        ? 'Owner login — manage vehicle listings and bookings'
+        : 'Login to book transport vehicles';
+      AuthUtils.clearAlert('alertBox');
+    }
+
+    function validate() {
+      let ok = true;
+      const emailVal = document.getElementById('email').value.trim();
+      const passVal  = document.getElementById('password').value;
+      document.getElementById('email').classList.remove('inp-error');
+      document.getElementById('password').classList.remove('inp-error');
+      document.getElementById('emailErr').style.display = 'none';
+      document.getElementById('passErr').style.display  = 'none';
+      if (!emailVal || !AuthUtils.isValidEmail(emailVal)) {
+        document.getElementById('email').classList.add('inp-error');
+        document.getElementById('emailErr').style.display = 'block'; ok = false;
+      }
+      if (!passVal) {
+        document.getElementById('password').classList.add('inp-error');
+        document.getElementById('passErr').style.display = 'block'; ok = false;
+      }
+      return ok;
+    }
+
+    async function doLogin() {
+      AuthUtils.clearAlert('alertBox');
+      const locked = AuthUtils.getLockoutMs();
+      if (locked > 0) {
+        AuthUtils.showAlert('alertBox', 'Too many failed attempts. Please wait before trying again.', 'warning');
+        AuthUtils.startLockout('loginBtn','lockoutBar','lockoutFill','loginBtnText','loginIcon','Sign In','fa-solid fa-right-to-bracket');
+        return;
+      }
+      if (!validate()) return;
+
+      const email    = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+      AuthUtils.setLoading('loginBtn','loginBtnText','loginIcon', true);
+
+      try {
+        const endpoint = loginRole === 'owner' ? '/auth/login-owner' : '/auth/login';
+        const res = await apiCall('POST', endpoint, { email, password });
+        if (res.token) {
+          AuthUtils.resetAttempts();
+          AuthUtils.saveSession(res);
+          document.getElementById('loginBtnText').textContent = 'Success!';
+          document.getElementById('loginIcon').className = 'fa-solid fa-circle-check';
+          AuthUtils.showAlert('alertBox', 'Login successful! Redirecting...', 'success');
+          setTimeout(() => {
+            const redirect = new URLSearchParams(window.location.search).get('redirect');
+            if (redirect) { window.location.href = redirect; return; }
+            const role = String((res.user && res.user.role) || '').toLowerCase();
+            if (role === 'owner') {
+              const kyc = String((res.user && res.user.kyc_status) || '').toLowerCase();
+              window.location.href = (kyc === 'approved') ? 'transport-dashboard.html' : 'owner-kyc.html';
+            } else {
+              window.location.href = 'transport.html';
+            }
+          }, 600);
+        } else {
+          throw new Error(res.error || 'Invalid credentials');
+        }
+      } catch (e) {
+        const data = AuthUtils.recordFailed();
+        AuthUtils.updateAttemptInfo('attemptInfo');
+        AuthUtils.showAlert('alertBox', e && e.message ? e.message : 'Cannot connect to server.', 'error');
+        AuthUtils.setLoading('loginBtn','loginBtnText','loginIcon', false);
+        document.getElementById('loginBtnText').textContent = 'Sign In';
+        document.getElementById('loginIcon').className = 'fa-solid fa-right-to-bracket';
+        if (data.lockedUntil && Date.now() < data.lockedUntil) {
+          AuthUtils.startLockout('loginBtn','lockoutBar','lockoutFill','loginBtnText','loginIcon','Sign In','fa-solid fa-right-to-bracket');
+          AuthUtils.showAlert('alertBox', 'Account temporarily locked after ' + AuthUtils.MAX_ATTEMPTS + ' failed attempts. Wait 2 minutes.', 'warning');
+        }
+      }
+    }
+
+    document.getElementById('email').addEventListener('keydown',    e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
+    document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+    document.getElementById('email').addEventListener('input',    () => { document.getElementById('email').classList.remove('inp-error'); document.getElementById('emailErr').style.display = 'none'; });
+    document.getElementById('password').addEventListener('input', () => { document.getElementById('password').classList.remove('inp-error'); document.getElementById('passErr').style.display = 'none'; });
+  </script>
+</body>
+</html>

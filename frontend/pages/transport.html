@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <title>Transport - KrishiYantra</title>
+  <link rel="stylesheet" href="../css/main.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    body { background: #f5f9f6; }
+    .page-hero { background: linear-gradient(135deg, #1d4d36, #2d7a4f); color: white; padding: 48px 24px; text-align: center; }
+    .page-hero h1 { font-family: 'Playfair Display', serif; font-size: 2.3rem; margin-bottom: 10px; }
+    .page-hero p { max-width: 700px; margin: 0 auto; color: rgba(255,255,255,0.85); }
+    .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; }
+    .filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; background: white; border-radius: 16px; box-shadow: var(--shadow-sm); padding: 18px; border: 1px solid #e4efe6; margin-bottom: 24px; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; }
+    .transport-card { background: white; border-radius: 18px; overflow: hidden; border: 1px solid #e4efe6; box-shadow: var(--shadow-sm); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .transport-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(29,77,54,0.12); }
+    .transport-card-img { width: 100%; height: 200px; object-fit: cover; display: block; background: linear-gradient(135deg, #d9f7e6, #b7e9c6); }
+    .transport-card-img-placeholder { width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; font-size: 4rem; background: linear-gradient(135deg, #d9f7e6, #b7e9c6); }
+    .transport-card-body { padding: 20px; }
+    .transport-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .badge { background: rgba(45,122,79,0.1); color: var(--green-dark); font-weight: 700; padding: 6px 10px; border-radius: 999px; font-size: 0.76rem; }
+    .meta { margin: 10px 0; color: var(--gray-600); font-size: 0.94rem; }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+    .pill { background: #f1f8f3; color: #1c5a3a; border: 1px solid #dfeee2; padding: 6px 9px; border-radius: 999px; font-size: 0.75rem; }
+    .price { font-size: 1.2rem; font-weight: 800; color: var(--green-dark); }
+    .btn-row { display: flex; gap: 10px; margin-top: 14px; }
+    .empty-state { text-align: center; color: var(--gray-600); padding: 30px 10px; }
+    .status { margin-top: 4px; font-size: 0.82rem; color: var(--gray-600); }
+    .availability-box { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: #fff7ed; color: #9a3412; font-size: 0.82rem; line-height: 1.5; }
+    .availability-box.available { background: #ecfdf3; color: #166534; }
+    .transport-rating { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--gray-600); margin-bottom: 8px; }
+    .transport-rating .star { color: #f59e0b; }
+    .transport-capacity-badge { display: inline-flex; align-items: center; gap: 4px; background: #eef2ff; color: #4338ca; font-weight: 600; padding: 4px 10px; border-radius: 999px; font-size: 0.76rem; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand"><i class="fa-solid fa-truck"></i><span>KrishiYantra</span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li id="farmerMyRentalsNav" hidden><a href="my-rentals.html">My Rentals</a></li>
+      <li id="farmerListEquipmentNav" hidden><a href="list-equipment.html">List Equipment</a></li>
+      <li id="farmerServicesNav" class="service-menu">
+        <button type="button" class="service-menu-toggle" aria-expanded="false">
+          Services <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="service-menu-dropdown">
+          <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
+          <a href="kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a>
+          <a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
+          <a href="transport.html" class="active"><i class="fa-solid fa-truck"></i> Transport</a>
+        </div>
+      </li>
+      <li id="transportDashboardNav" hidden><a href="transport-dashboard.html">Dashboard</a></li>
+      <li id="farmerOrdersNav" hidden><a href="my-transports.html">My Orders</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth"><a href="transport-login.html" class="btn-outline">Login</a><a href="transport-register.html" class="btn-primary">Register</a></div>
+    <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+  </nav>
+
+  <div class="page-hero">
+    <h1>Farm Transport Vehicles</h1>
+    <p>Book small trucks, big trucks, tractors with trolley, and pickups for farm produce and agricultural logistics.</p>
+    <a class="btn-outline service-back-link" href="../index.html"><i class="fa-solid fa-arrow-left"></i> Back</a>
+    <div class="filters">
+      <label>Location</label>
+      <input id="transportLocation" type="text" placeholder="Pune / Nashik / Kolhapur" />
+    </div>
+    <div class="form-group">
+      <label>Vehicle Type</label>
+      <select id="vehicleType" onchange="loadTransport()">
+        <option value="">All Farm Vehicles</option>
+        <option value="small_truck">Small Truck (Tata Ace, Dost)</option>
+        <option value="big_truck">Big Truck (Tata 407, Heavy Goods)</option>
+        <option value="tractor_trolley">Tractor with Trolley</option>
+        <option value="pickup">Pickup (Bolero, Camper, 4x4)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Max price per day</label>
+      <input id="maxPrice" type="number" placeholder="5000" />
+    </div>
+    <div class="form-group">
+      <label>Available only</label>
+      <select id="availableOnly">
+        <option value="false">All vehicles</option>
+        <option value="true">Available only</option>
+      </select>
+    </div>
+    <button class="btn-green" onclick="loadTransport()">Search Transport</button>
+  </div>
+
+  <div class="container">
+    <div id="transportResults" class="card-grid"></div>
+  </div>
+
+  <script src="../js/main.js"></script>
+  <script>
+    async function loadTransport(silent = false) {
+      const results = document.getElementById('transportResults');
+      const params = new URLSearchParams();
+      const location = document.getElementById('transportLocation').value.trim();
+      const vehicleType = document.getElementById('vehicleType').value.trim();
+      const maxPrice = document.getElementById('maxPrice').value.trim();
+      const availableOnly = document.getElementById('availableOnly').value;
+
+      if (location) params.append('location', location);
+      if (vehicleType) params.append('vehicle_type', vehicleType);
+      if (maxPrice) params.append('max_price', maxPrice);
+      params.append('available_only', availableOnly);
+
+      if (!silent) {
+        results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading transport...</div>';
+      }
+
+      try {
+        const res = await apiCall('GET', `/transport/?${params.toString()}`);
+        const vehicles = res.transport || [];
+        if (!vehicles.length) {
+          results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-truck"></i>No transport vehicles found for the selected filters.</div>';
+          return;
+        }
+        results.innerHTML = vehicles.map(vehicle => {
+          const ratingAvg = Number(vehicle.rating_avg || 0);
+          const ratingCount = Number(vehicle.rating_count || 0);
+          const starsHtml = ratingCount > 0
+            ? `<span class="star"><i class="fa-solid fa-star"></i></span> ${ratingAvg.toFixed(1)} <span style="opacity:0.7">(${ratingCount} reviews)</span>`
+            : `<span style="opacity:0.6"><i class="fa-regular fa-star"></i> No ratings yet</span>`;
+          const imageHtml = vehicle.image_url
+            ? `<img class="transport-card-img" src="${vehicle.image_url}" alt="${vehicle.name}" loading="lazy" onerror="this.outerHTML='<div class=\\'transport-card-img-placeholder\\'>🚛</div>'">`
+            : `<div class="transport-card-img-placeholder">🚛</div>`;
+          const vehicleTypeLabel = (vehicle.vehicle_type || 'other').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          return `
+            <div class="transport-card">
+              ${imageHtml}
+              <div class="transport-card-body">
+                <div class="transport-top">
+                  <h3 style="margin:0; font-size:1.1rem; font-weight:700; color:#1d4d36;">${vehicle.name}</h3>
+                  <span class="badge">${vehicleTypeLabel}</span>
+                </div>
+                <div class="transport-rating">${starsHtml}</div>
+                <div class="meta"><i class="fa-solid fa-location-dot"></i> ${vehicle.location || 'Location not provided'}</div>
+                <div class="meta" style="display:flex;align-items:center;gap:8px;">
+                  <i class="fa-solid fa-weight-hanging"></i> ${vehicle.capacity || 'Capacity not specified'}
+                  <span class="transport-capacity-badge"><i class="fa-solid fa-truck-moving"></i> ${vehicleTypeLabel}</span>
+                </div>
+                <div class="meta" style="font-size:0.88rem;line-height:1.6;">${vehicle.description || 'Transport vehicle available for hire.'}</div>
+                <div class="price">₹${Number(vehicle.price_per_day || 0).toLocaleString('en-IN')} <small style="font-size:0.8rem;font-weight:400;color:#6b7280;">/ day</small></div>
+                <div class="availability-box ${vehicle.available ? 'available' : ''}">
+                  <i class="fa-solid ${vehicle.available ? 'fa-circle-check' : 'fa-calendar-day'}"></i>
+                  ${vehicle.available
+                    ? 'Available for new bookings'
+                    : vehicle.unavailable_until_label
+                      ? `Available again after ${vehicle.unavailable_until_label} (${vehicle.days_until_available} day${vehicle.days_until_available === 1 ? '' : 's'})`
+                      : 'Availability will be updated by owner'}
+                </div>
+                <div class="btn-row">
+                  <a class="btn-green" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;width:100%;" href="transport-detail.html?id=${vehicle._id}">
+                    <i class="fa-solid ${vehicle.available ? 'fa-calendar-check' : 'fa-eye'}" style="margin-right:6px;"></i>
+                    ${vehicle.available ? 'Book Now' : 'View Details'}
+                  </a>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        if (!silent) {
+          results.innerHTML = `<div class="empty-state"><i class="fa-solid fa-plug-circle-xmark"></i>${error.message || 'Unable to fetch transport vehicles.'}</div>`;
+        }
+      }
+    }
+
+    loadTransport();
+    setInterval(() => {
+      if (!document.hidden) loadTransport(true);
+    }, 15000);
+  </script>
+</body>
+</html>

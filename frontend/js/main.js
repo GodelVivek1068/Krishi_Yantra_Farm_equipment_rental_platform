@@ -2,10 +2,42 @@ const API_BASE = (() => {
   const configured = (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || '';
   if (configured) return configured.replace(/\/$/, '');
 
-  const hostname = window.location.hostname;
-  const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
+  const hostname = window.location.hostname || '';
+  const port = window.location.port || '';
+  const protocol = window.location.protocol || '';
+
+  // If Flask itself is serving the page (e.g. on port 5000), use relative /api
+  if (port === '5000') return '/api';
+
+  // If running from file:// or localhost / LAN IP
+  const isLocal = !hostname ||
+                  hostname === 'localhost' ||
+                  hostname === '127.0.0.1' ||
+                  hostname.startsWith('192.168.') ||
+                  hostname.startsWith('10.') ||
+                  hostname.startsWith('172.') ||
+                  protocol === 'file:';
+
   return isLocal ? 'http://localhost:5000/api' : '/api';
 })();
+
+function getBasePathContext() {
+  const p = window.location.pathname.replace(/\\/g, '/');
+  if (p.includes('/pages/') || (p.endsWith('.html') && !p.endsWith('index.html') && !p.endsWith('/'))) {
+    return 'pages';
+  }
+  return 'root';
+}
+
+function resolvePageHref(pageName) {
+  const isRoot = getBasePathContext() === 'root';
+  if (pageName === 'index.html' || pageName === '../index.html') {
+    return isRoot ? 'index.html' : '../index.html';
+  }
+  const clean = pageName.replace(/^\.?\/?pages\//, '').replace(/^\.\.\//, '');
+  return isRoot ? `pages/${clean}` : clean;
+}
+
 const TRANSLATION_STORAGE_KEY = 'siteLanguage';
 const TRANSLATION_LANGUAGES = [
   { value: 'en', label: 'English' },
@@ -38,7 +70,7 @@ function isFarmerLoggedIn() {
 function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
-  window.location.href = '/index.html';
+  window.location.href = resolvePageHref('index.html');
 }
 
 function setUser(user) {
@@ -70,7 +102,15 @@ async function apiCall(method, endpoint, data = null, auth = false) {
   if (auth && getToken()) headers['Authorization'] = `Bearer ${getToken()}`;
   const opts = { method, headers };
   if (data) opts.body = JSON.stringify(data);
-  const res = await fetch(`${API_BASE}${endpoint}`, opts);
+
+  let res;
+  try {
+    res = await fetch(`${API_BASE}${endpoint}`, opts);
+  } catch (err) {
+    console.error(`Network error calling ${endpoint}:`, err);
+    throw new Error(`Cannot connect to KrishiYantra backend server. Please make sure the Flask backend is running on port 5000 (${API_BASE}).`);
+  }
+
   let payload = null;
   try {
     payload = await res.json();
@@ -79,6 +119,10 @@ async function apiCall(method, endpoint, data = null, auth = false) {
   }
 
   if (!res.ok) {
+    if (res.status === 401 && auth) {
+      console.warn('Session expired or unauthorized for endpoint:', endpoint);
+      localStorage.removeItem('token');
+    }
     const message = (payload && payload.error) ? payload.error : `Request failed (${res.status})`;
     throw new Error(message);
   }
@@ -89,9 +133,52 @@ async function apiCall(method, endpoint, data = null, auth = false) {
 // ===== NAVBAR: Hamburger =====
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
-if (hamburger) {
+if (hamburger && navLinks) {
   hamburger.addEventListener('click', () => {
     navLinks.classList.toggle('open');
+  });
+}
+
+// ===== SERVICE MENU DROPDOWN (Accessible to all visitors & farmers) =====
+function bindFarmerServicesMenu() {
+  bindServicesDropdown();
+}
+
+function bindServicesDropdown() {
+  const menus = document.querySelectorAll('.service-menu, #farmerServicesNav, #servicesNav');
+  menus.forEach(menu => {
+    if (!menu || menu.dataset.bound === 'true') return;
+    menu.dataset.bound = 'true';
+    const toggle = menu.querySelector('.service-menu-toggle, .dropbtn');
+    if (!toggle) return;
+
+    toggle.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopPropagation();
+      const isOpen = menu.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    menu.querySelectorAll('.service-menu-dropdown a, .dropdown-content a').forEach(link => {
+      link.addEventListener('click', () => {
+        menu.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    document.addEventListener('click', event => {
+      if (!menu.contains(event.target)) {
+        menu.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && menu.classList.contains('open')) {
+        menu.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
   });
 }
 
@@ -100,12 +187,30 @@ function updateNavAuth() {
   const navAuth = document.getElementById('navAuth');
   if (!navAuth) return;
   const user = getUser();
+
+  // Hide farmer-specific personal tabs from non-farmers, but Services menu stays VISIBLE to everyone
+  const farmerRestrictedItems = [
+    document.getElementById('farmerMyRentalsNav'),
+    document.getElementById('farmerListEquipmentNav'),
+    document.getElementById('farmerOrdersNav')
+  ].filter(Boolean);
+
+  const userRole = String((user && user.role) || '').toLowerCase();
+  const isFarmer = userRole === 'farmer' || userRole === 'renter';
+  farmerRestrictedItems.forEach(item => { item.hidden = !isFarmer; });
+
+  const transportDashboardNav = document.getElementById('transportDashboardNav');
+  if (transportDashboardNav) transportDashboardNav.hidden = (userRole !== 'owner' && userRole !== 'transport');
+
+  // Bind service menu dropdown
+  bindServicesDropdown();
+
   if (user) {
     const role = String(user.role || '').toLowerCase();
     const isOwner = role === 'owner';
     const isSupplier = role === 'supplier';
     const isAdmin = role === 'admin';
-    const isFarmer = role === 'farmer' || role === 'renter' || role === 'kamgar' || role === 'supplier';
+    const isFarmer = role === 'farmer' || role === 'renter';
     const kycStatus = String(user.kyc_status || '').toLowerCase();
     const firstName = (user.name || 'User').split(' ')[0];
     const accountInitials = String(user.name || 'U')
@@ -116,13 +221,16 @@ function updateNavAuth() {
       .map(part => part.charAt(0).toUpperCase())
       .join('') || 'U';
     const roleLabel = roleToLabel(role);
-    const ownerPortalHref = (kycStatus === 'approved') ? '/pages/owner-dashboard.html' : '/pages/owner-kyc.html';
+    const ownerPortalHref = (kycStatus === 'approved') ? resolvePageHref('owner-dashboard.html') : resolvePageHref('owner-kyc.html');
     const ownerPortalLabel = (kycStatus === 'approved') ? 'Owner Dashboard' : 'Complete KYC';
     const ownerEquipmentLink = (isOwner && kycStatus === 'approved')
-      ? '<a href="/pages/owner-dashboard.html#equipmentList" class="btn-outline" style="margin-left:8px">Equipment</a>'
+      ? `<a href="${resolvePageHref('owner-dashboard.html')}#equipmentList" class="btn-outline" style="margin-left:8px">Equipment</a>`
       : '';
     const supplierLink = isSupplier
-      ? '<a href="/pages/supplier-dashboard.html" class="btn-outline" style="margin-left:8px">Supplier Dashboard</a>'
+      ? `<a href="${resolvePageHref('supplier-dashboard.html')}" class="btn-outline" style="margin-left:8px">Supplier Dashboard</a>`
+      : '';
+    const kamgarLink = role === 'kamgar'
+      ? `<a href="${resolvePageHref('kamgar-dashboard.html')}" class="btn-outline" style="margin-left:8px">Worker Dashboard</a>`
       : '';
     const ownerLink = isOwner
       ? `<a href="${ownerPortalHref}" class="btn-outline" style="margin-left:8px">${ownerPortalLabel}</a>`
@@ -137,7 +245,7 @@ function updateNavAuth() {
     if (isFarmer) {
       navAuth.classList.add('nav-auth-has-account');
       navAuth.innerHTML = `
-        <a href="/pages/notifications.html" class="account-icon-btn" title="Notifications">
+        <a href="${resolvePageHref('notifications.html')}" class="account-icon-btn" title="Notifications">
           <i class="fa-solid fa-bell"></i>
           <span class="notification-badge" id="notificationBadge" style="display: none;"></span>
         </a>
@@ -202,8 +310,8 @@ function updateNavAuth() {
       <span style="color:rgba(255,255,255,0.8);font-size:0.88rem;">${roleLabel}: <strong>${firstName}</strong>${statusTag}</span>
       ${ownerLink}
       ${supplierLink}
+      ${kamgarLink}
       ${ownerEquipmentLink}
-      ${adminLink}
       <button class="btn-outline" onclick="logout()">Logout</button>
     `;
   } else {

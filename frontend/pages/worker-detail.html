@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <title>Worker Detail - KrishiYantra</title>
+  <link rel="stylesheet" href="../css/main.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    .detail-page { max-width: 960px; margin: 40px auto; padding: 0 24px; }
+    .back-link { color: var(--green-mid); font-size: 0.9rem; font-weight: 600; margin-bottom: 24px; display: inline-flex; align-items: center; gap: 6px; background: transparent; border: 0; cursor: pointer; font-family: inherit; padding: 0; }
+    .back-link:hover { color: var(--green-dark); }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    .detail-image {
+      width: 100%; height: 320px; background: var(--green-pale);
+      border-radius: var(--radius); display: flex; align-items: center;
+      justify-content: center; font-size: 7rem; border: 1px solid var(--gray-200);
+    }
+    .detail-name { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; color: var(--green-dark); margin-bottom: 10px; }
+    .detail-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; font-size: 0.88rem; color: var(--gray-600); }
+    .detail-meta span { display: flex; align-items: center; gap: 5px; }
+    .detail-rating { margin-bottom: 14px; font-size: 0.9rem; color: var(--gray-600); display: flex; align-items: center; gap: 8px; }
+    .detail-rating .star { color: #f59e0b; }
+    .detail-price { font-size: 2rem; font-weight: 900; color: var(--green-mid); margin-bottom: 20px; }
+    .detail-price small { font-size: 0.9rem; color: var(--gray-400); font-weight: 400; }
+    .detail-desc { color: var(--gray-600); line-height: 1.7; margin-bottom: 24px; font-size: 0.93rem; }
+    .worker-card-detail {
+      background: var(--green-pale); border-radius: var(--radius); padding: 16px;
+      display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
+    }
+    .worker-avatar {
+      width: 50px; height: 50px; background: var(--green-mid); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 1.2rem; font-weight: 700; flex-shrink: 0;
+    }
+    .worker-info h4 { font-weight: 700; color: var(--green-dark); margin-bottom: 2px; }
+    .worker-info span { font-size: 0.82rem; color: var(--gray-600); }
+
+    .booking-form { background: var(--white); border: 1.5px solid var(--gray-200); border-radius: var(--radius); padding: 24px; margin-top: 32px; }
+    .booking-form h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--green-dark); margin-bottom: 20px; }
+    .booking-summary {
+      background: var(--green-pale); border-radius: var(--radius-sm); padding: 14px;
+      margin: 16px 0; font-size: 0.9rem;
+    }
+    .booking-summary .summary-row { display: flex; justify-content: space-between; padding: 4px 0; }
+    .booking-summary .summary-total { font-weight: 700; border-top: 1px solid var(--gray-200); padding-top: 8px; margin-top: 4px; color: var(--green-dark); font-size: 1rem; }
+
+    .alt-wrap {
+      margin-top: 24px;
+      background: #fffdf3;
+      border: 1px solid #f5de8d;
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    .alt-title {
+      color: #7c4a03;
+      font-weight: 800;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .alt-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .alt-card {
+      background: var(--white);
+      border: 1px solid #f2d27a;
+      border-radius: var(--radius-sm);
+      padding: 12px;
+    }
+    .alt-name { font-weight: 700; color: var(--green-dark); margin-bottom: 6px; }
+    .alt-meta { color: var(--gray-600); font-size: 0.84rem; margin-bottom: 8px; }
+    .alt-price { color: var(--green-mid); font-weight: 800; margin-bottom: 8px; }
+
+    @media(max-width:700px) {
+      .detail-grid { grid-template-columns: 1fr; }
+      .alt-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li id="farmerMyRentalsNav" hidden><a href="my-rentals.html">My Rentals</a></li>
+      <li id="farmerListEquipmentNav" hidden><a href="list-equipment.html">List Equipment</a></li>
+      <li id="farmerServicesNav" class="service-menu">
+        <button type="button" class="service-menu-toggle" aria-expanded="false">
+          Services <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="service-menu-dropdown">
+          <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
+          <a href="kamgar.html" class="active"><i class="fa-solid fa-person-digging"></i> Worker</a>
+          <a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
+          <a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a>
+        </div>
+      </li>
+      <li><a href="my-worker-bookings.html">My Worker Bookings</a></li>
+      <li><a href="my-orders.html">My Orders</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth">
+      <a href="login.html" class="btn-outline">Login</a>
+      <a href="register.html" class="btn-primary">Register</a>
+    </div>
+    <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+  </nav>
+
+  <div class="detail-page">
+    <button type="button" class="back-link" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    <div id="alertBox"></div>
+    <div id="detailContent"><div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div></div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-brand"><i class="fa-solid fa-tractor"></i> KrishiYantra</div>
+    <p>Empowering Indian Farmers</p>
+    <p class="footer-copy">© 2024 KrishiYantra</p>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const workerId = urlParams.get('id');
+    let currentWorker = null;
+    let bookingDraft = {
+      startDate: '',
+      endDate: '',
+      workHours: '8 hours',
+      jobType: 'field_work',
+      description: ''
+    };
+    const ICONS = { tractor:'🚜', harvester:'🌾', rotavator:'⚙️', sprayer:'💧', thresher:'🌿', plough:'🔧', seeder:'🌱', pump:'🪣' };
+    const safeText = (value) => String(value || '').replace(/[&<>"']/g, (m) => {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      if (m === '"') return '&quot;';
+      return '&#39;';
+    });
+
+    function goBack() {
+      if (window.history.length > 1) {
+        window.history.back();
+        return;
+      }
+      window.location.href = 'kamgar.html';
+    }
+
+    function formatShortDate(rawDate) {
+      const value = String(rawDate || '').trim();
+      if (!value) return '';
+      const parsed = new Date(`${value}T00:00:00`);
+      if (Number.isNaN(parsed.getTime())) return value;
+      return parsed.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    async function loadDetail() {
+      if (!workerId) {
+        showAlert('alertBox', 'Invalid worker link. Please open worker profile again from the list.', 'error');
+        document.getElementById('detailContent').innerHTML = '';
+        return;
+      }
+
+      if (!/^[a-f\d]{24}$/i.test(workerId)) {
+        showAlert('alertBox', 'This worker link is outdated. Please open the profile again from the Workers page.', 'error');
+        document.getElementById('detailContent').innerHTML = '<div class="no-results">Invalid worker ID format.</div>';
+        return;
+      }
+
+      try {
+        const res = await apiCall('GET', `/kamgar/profiles/${workerId}`);
+        if (!res.worker) {
+          throw new Error(res.error || 'Worker not found');
+        }
+        renderDetail(res.worker);
+      } catch(e) {
+        showAlert('alertBox', e.message || 'Unable to load worker from backend.', 'error');
+        document.getElementById('detailContent').innerHTML = '<div class="no-results">Could not load worker details.</div>';
+      }
+    }
+
+    function captureBookingDraft() {
+      const startDate = document.getElementById('startDate');
+      const endDate = document.getElementById('endDate');
+      const workHours = document.getElementById('workHours');
+      const jobType = document.getElementById('jobType');
+      const description = document.getElementById('description');
+      if (!startDate || !endDate || !workHours || !jobType || !description) return;
+
+      bookingDraft = {
+        startDate: startDate.value || '',
+        endDate: endDate.value || '',
+        workHours: workHours.value || '8 hours',
+        jobType: jobType.value || 'field_work',
+        description: description.value || ''
+      };
+    }
+
+    function restoreBookingDraft(hourlyRate, isAvailable) {
+      if (!isAvailable) return;
+
+      const startDate = document.getElementById('startDate');
+      const endDate = document.getElementById('endDate');
+      const workHours = document.getElementById('workHours');
+      const jobType = document.getElementById('jobType');
+      const description = document.getElementById('description');
+      if (!startDate || !endDate || !workHours || !jobType || !description) return;
+
+      if (bookingDraft.startDate) startDate.value = bookingDraft.startDate;
+      if (bookingDraft.endDate) endDate.value = bookingDraft.endDate;
+      if (bookingDraft.workHours) workHours.value = bookingDraft.workHours;
+      if (bookingDraft.jobType) jobType.value = bookingDraft.jobType;
+      if (bookingDraft.description) description.value = bookingDraft.description;
+
+      if (startDate.value && endDate.value) {
+        calcTotal(hourlyRate);
+      }
+    }
+
+    function wireBookingDraftListeners() {
+      const ids = ['startDate', 'endDate', 'workHours', 'jobType', 'description'];
+      ids.forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', captureBookingDraft);
+        el.addEventListener('change', captureBookingDraft);
+      });
+    }
+
+    function renderDetail(worker) {
+      captureBookingDraft();
+      currentWorker = worker;
+      const isAvailable = worker.available !== false;
+      const hourlyRate = Number(worker.hourly_rate || 0);
+      const dailyRate = Number(worker.daily_rate || 0);
+      const ratingAvg = Number(worker.rating_avg || 0);
+      const ratingCount = Number(worker.rating_count || 0);
+      const ratingLine = ratingCount > 0
+        ? `<div class="detail-rating"><i class="fa-solid fa-star star"></i> ${ratingAvg.toFixed(1)} average rating from ${ratingCount} reviews</div>`
+        : '<div class="detail-rating"><i class="fa-regular fa-star"></i> No ratings yet</div>';
+      const imageHtml = worker.photo_url
+        ? `<img src="${safeText(worker.photo_url)}" alt="${safeText(worker.name)}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.textContent='👷'"/>`
+        : '👷';
+      const bookedDays = Number(worker.unavailable_booked_days || worker.days_until_available || 0);
+      const availableOn = worker.unavailable_until_label || formatShortDate(worker.unavailable_until_date);
+      const unavailabilityMessage = bookedDays > 0 && availableOn
+        ? `This worker is already hired for ${bookedDays} day${bookedDays === 1 ? '' : 's'} and is expected to be available on ${availableOn}.`
+        : (availableOn
+          ? `This worker is already hired and is expected to be available on ${availableOn}.`
+          : 'This worker is currently unavailable.');
+
+      document.title = `${worker.name} - KrishiYantra`;
+      document.getElementById('detailContent').innerHTML = `
+        <div class="detail-grid">
+          <div>
+            <div class="detail-image">${imageHtml}</div>
+          </div>
+          <div class="detail-info">
+            <span class="badge badge-green">${worker.job_type || 'field_work'}</span>
+            <h1 class="detail-name" style="margin-top:10px">${worker.name}</h1>
+            <div class="detail-meta">
+              <span><i class="fa-solid fa-location-dot"></i> ${worker.location}</span>
+              ${isAvailable ? `<span><i class="fa-solid fa-circle" style="color:#22c55e;font-size:0.6rem"></i> Available</span>` : `<span><i class="fa-solid fa-circle" style="color:#ef4444;font-size:0.6rem"></i> Unavailable</span>`}
+            </div>
+            ${ratingLine}
+            <div class="detail-price">₹${hourlyRate}<small>/hour</small> <span style="font-size:1rem;color:var(--gray-400);font-weight:400">₹${dailyRate}<small>/day</small></span></div>
+            <p class="detail-desc">${worker.description || 'Skilled farm worker available for field and farm labour work.'}</p>
+            <div class="worker-card-detail">
+              <div class="worker-avatar">${(worker.name || 'W').split(' ').map(p => p[0]).slice(0,2).join('').toUpperCase()}</div>
+              <div class="worker-info">
+                <h4>${worker.name || 'Worker'}</h4>
+                <span><i class="fa-solid fa-phone"></i> ${worker.phone || 'Contact via platform'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="booking-form">
+          <h3><i class="fa-solid fa-calendar-check"></i> Hire This Worker</h3>
+          ${!isAvailable ? `<div class="alert alert-warning">${unavailabilityMessage}</div>` : ''}
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="form-group">
+              <label>Start Date</label>
+              <input type="date" id="startDate" min="${new Date().toISOString().split('T')[0]}" onchange="calcTotal(${hourlyRate})" ${isAvailable ? '' : 'disabled'}/>
+            </div>
+            <div class="form-group">
+              <label>End Date</label>
+              <input type="date" id="endDate" min="${new Date().toISOString().split('T')[0]}" onchange="calcTotal(${hourlyRate})" ${isAvailable ? '' : 'disabled'}/>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="form-group">
+              <label>Work Hours</label>
+              <select id="workHours" ${isAvailable ? '' : 'disabled'}>
+                <option value="4 hours">4 hours</option>
+                <option value="6 hours">6 hours</option>
+                <option value="8 hours" selected>8 hours</option>
+                <option value="10 hours">10 hours</option>
+                <option value="12 hours">12 hours</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Job Type</label>
+              <select id="jobType" ${isAvailable ? '' : 'disabled'}>
+                <option value="field_work">Field Work</option>
+                <option value="harvesting">Harvesting</option>
+                <option value="spraying">Spraying</option>
+                <option value="weeding">Weeding</option>
+                <option value="planting">Planting / Transplanting</option>
+                <option value="irrigation">Irrigation</option>
+                <option value="labour">General Labour</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Job Description</label>
+            <textarea id="description" placeholder="Describe the work to be done..." ${isAvailable ? '' : 'disabled'}></textarea>
+          </div>
+          <div class="booking-summary" id="bookingSummary" style="display:none">
+            <div class="summary-row"><span>Hourly rate</span><span>₹${hourlyRate}</span></div>
+            <div class="summary-row"><span>Work hours per day</span><span id="workHoursSummary">-</span></div>
+            <div class="summary-row"><span>Number of days</span><span id="numDays">-</span></div>
+            <div class="summary-row summary-total"><span>Total Amount (approx.)</span><span id="totalAmt">-</span></div>
+          </div>
+          <button id="bookBtn" class="btn-green" style="width:100%;justify-content:center;padding:13px;" onclick="bookWorker('${worker.id}', ${hourlyRate})" ${isAvailable ? '' : 'disabled'}>
+            <i class="fa-solid fa-check-circle"></i> ${isAvailable ? 'Confirm & Pay' : 'Currently Hired'}
+          </button>
+        </div>
+      `;
+
+      restoreBookingDraft(hourlyRate, isAvailable);
+      wireBookingDraftListeners();
+    }
+
+    function calcTotal(hourlyRate) {
+      const s = document.getElementById('startDate').value;
+      const e = document.getElementById('endDate').value;
+      const workHoursSelect = document.getElementById('workHours');
+      if (!s || !e || !workHoursSelect) return;
+      const days = Math.ceil((new Date(e) - new Date(s)) / 86400000);
+      if (days <= 0) { document.getElementById('bookingSummary').style.display='none'; return; }
+      const hoursPerDay = Number((workHoursSelect.value || '8').split(' ')[0]);
+      const totalHours = days * hoursPerDay;
+      const totalAmount = totalHours * hourlyRate;
+      document.getElementById('workHoursSummary').textContent = workHoursSelect.value;
+      document.getElementById('numDays').textContent = `${days} day${days === 1 ? '' : 's'} × ${hoursPerDay} hrs/day`;
+      document.getElementById('totalAmt').textContent = `₹${totalAmount}`;
+      document.getElementById('bookingSummary').style.display = 'block';
+    }
+
+    async function bookWorker(workerIdParam, hourlyRate) {
+      if (!isLoggedIn()) {
+        window.location.href = `login.html?redirect=worker-detail.html?id=${workerIdParam}`;
+        return;
+      }
+      if (typeof Razorpay === 'undefined') {
+        showAlert('alertBox', 'Payment gateway failed to load. Please refresh and try again.', 'error');
+        return;
+      }
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+      const workHours = document.getElementById('workHours').value;
+      const jobType = document.getElementById('jobType').value;
+      const description = document.getElementById('description').value;
+      if (!startDate || !endDate) {
+        showAlert('alertBox', 'Please select start and end dates', 'error'); return;
+      }
+      const days = Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000);
+      if (days <= 0) { showAlert('alertBox', 'End date must be after start date', 'error'); return; }
+
+      const hoursPerDay = Number((workHours || '8 hours').split(' ')[0]);
+      const totalAmount = days * hoursPerDay * hourlyRate;
+      const bookBtn = document.getElementById('bookBtn');
+      if (bookBtn) {
+        bookBtn.disabled = true;
+        bookBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing Payment...';
+      }
+
+      const bookingPayload = {
+        worker_id: workerIdParam,
+        start_date: startDate,
+        end_date: endDate,
+        work_hours: workHours,
+        job_type: jobType,
+        description,
+        estimated_cost: totalAmount
+      };
+
+      try {
+        const order = await apiCall('POST', '/kamgar/payment/order', bookingPayload, true);
+        const user = getUser() || {};
+
+        const options = {
+          key: order.key_id,
+          amount: order.amount,
+          currency: order.currency || 'INR',
+          name: 'KrishiYantra',
+          description: 'Worker Hire Payment',
+          order_id: order.order_id,
+          prefill: {
+            name: (order.prefill && order.prefill.name) || user.name || '',
+            email: (order.prefill && order.prefill.email) || user.email || '',
+            contact: (order.prefill && order.prefill.contact) || user.phone || ''
+          },
+          theme: { color: '#2d7a4f' },
+          handler: async function (paymentResponse) {
+            try {
+              const verifyPayload = {
+                ...bookingPayload,
+                razorpay_order_id: paymentResponse.razorpay_order_id,
+                razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                razorpay_signature: paymentResponse.razorpay_signature
+              };
+              const verifyRes = await apiCall('POST', '/kamgar/payment/verify', verifyPayload, true);
+              if (verifyRes.job) {
+                bookingDraft = { startDate: '', endDate: '', workHours: '8 hours', jobType: 'field_work', description: '' };
+                showAlert('alertBox', 'Payment successful. Worker hire request sent.', 'success');
+                setTimeout(() => window.location.href = 'my-worker-bookings.html', 1800);
+              } else {
+                showAlert('alertBox', 'Payment verified but hire request could not be created.', 'error');
+              }
+            } catch (verifyErr) {
+              showAlert('alertBox', verifyErr.message || 'Payment verification failed.', 'error');
+            } finally {
+              if (bookBtn) {
+                bookBtn.disabled = false;
+                bookBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Confirm & Pay';
+              }
+            }
+          },
+          modal: {
+            ondismiss: function () {
+              showAlert('alertBox', 'Payment cancelled. Hire request was not created.', 'info');
+              if (bookBtn) {
+                bookBtn.disabled = false;
+                bookBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Confirm & Pay';
+              }
+            }
+          }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+      } catch(e) {
+        if (bookBtn) {
+          bookBtn.disabled = false;
+          bookBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Confirm & Pay';
+        }
+        if ((e.message || '').toLowerCase().includes('currently unavailable') || (e.message || '').toLowerCase().includes('worker is unavailable')) {
+          showAlert('alertBox', 'This worker became unavailable. Please choose another worker.', 'error');
+          if (currentWorker) {
+            currentWorker.available = false;
+            renderDetail(currentWorker);
+          }
+          return;
+        }
+        showAlert('alertBox', e.message || 'Payment initialization failed. Please try again.', 'error');
+      }
+    }
+
+    loadDetail();
+  </script>
+</body>
+</html>

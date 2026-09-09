@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
   <title>Kamgar Hiring - KrishiYantra</title>
   <link rel="stylesheet" href="../css/main.css" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
@@ -27,6 +28,11 @@
     .empty-state { text-align: center; color: var(--gray-600); padding: 30px 10px; }
     .inline-form { display: grid; gap: 12px; }
     .status { margin-top: 10px; font-size: 0.82rem; color: var(--gray-600); }
+    .availability-box { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: #fff7ed; color: #9a3412; font-size: 0.82rem; line-height: 1.5; }
+    .availability-box.available { background: #ecfdf3; color: #166534; }
+    .page-actions { margin-top: 22px; display: flex; justify-content: center; }
+    .back-btn { border-color: rgba(255,255,255,0.72); background: rgba(255,255,255,0.08); display: inline-flex; align-items: center; gap: 8px; }
+    .back-btn:hover { background: rgba(255,255,255,0.18); }
   </style>
 </head>
 <body>
@@ -34,50 +40,61 @@
     <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
     <ul class="nav-links" id="navLinks">
       <li><a href="../index.html">Home</a></li>
-      <li><a href="equipment.html">Equipment</a></li>
-      <li><a href="kamgar.html" class="active">Workers</a></li>
-      <li><a href="fertilizer.html">Fertilizer</a></li>
+      <li id="farmerMyRentalsNav" hidden><a href="my-rentals.html">My Rentals</a></li>
+      <li id="farmerListEquipmentNav" hidden><a href="list-equipment.html">List Equipment</a></li>
+      <li id="farmerServicesNav" class="service-menu">
+        <button type="button" class="service-menu-toggle" aria-expanded="false">
+          Services <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="service-menu-dropdown">
+          <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
+          <a href="kamgar.html" class="active"><i class="fa-solid fa-person-digging"></i> Worker</a>
+          <a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
+          <a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a>
+        </div>
+      </li>
+      <li id="farmerOrdersNav" hidden><a href="my-worker-bookings.html">My Orders</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
-    <div class="nav-auth" id="navAuth"><a href="login.html" class="btn-outline">Login</a><a href="register.html" class="btn-primary">Register</a></div>
+    <div class="nav-auth" id="navAuth"><a href="worker-login.html" class="btn-outline">Login</a><a href="register.html" class="btn-primary">Register</a></div>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
   </nav>
 
   <div class="page-hero">
     <h1>Find Skilled Farm Workers</h1>
     <p>Hire local Kamgar workers for harvesting, transplanting, field work, irrigation, spraying, and daily labour needs.</p>
+    <div class="page-actions">
+      <button type="button" class="btn-outline back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    </div>
+    <div class="filters">
+      <label>Location</label>
+      <input id="workerLocation" type="text" placeholder="Pune / Nashik / Solapur" />
+    </div>
+    <div class="form-group">
+      <label>Skill</label>
+      <input id="workerSkill" type="text" placeholder="Harvesting / Weeding / Spraying" />
+    </div>
+    <div class="form-group">
+      <label>Min rate</label>
+      <input id="workerMinRate" type="number" placeholder="200" />
+    </div>
+    <div class="form-group">
+      <label>Available only</label>
+      <select id="workerAvailableOnly">
+        <option value="false">All workers</option>
+        <option value="true">Available only</option>
+      </select>
+    </div>
+    <button class="btn-green" onclick="loadWorkers()">Search Workers</button>
   </div>
 
   <div class="container">
-    <div class="filters">
-      <div class="form-group">
-        <label>Location</label>
-        <input id="workerLocation" type="text" placeholder="Pune / Nashik / Solapur" />
-      </div>
-      <div class="form-group">
-        <label>Skill</label>
-        <input id="workerSkill" type="text" placeholder="Harvesting / Weeding / Spraying" />
-      </div>
-      <div class="form-group">
-        <label>Min rate</label>
-        <input id="workerMinRate" type="number" placeholder="200" />
-      </div>
-      <div class="form-group">
-        <label>Available only</label>
-        <select id="workerAvailableOnly">
-          <option value="true">Yes</option>
-          <option value="false">All</option>
-        </select>
-      </div>
-      <button class="btn-green" onclick="loadWorkers()">Search Workers</button>
-    </div>
-
     <div id="workerResults" class="card-grid"></div>
   </div>
 
   <script src="../js/main.js"></script>
   <script>
-    async function loadWorkers() {
+    async function loadWorkers(silent = false) {
       const results = document.getElementById('workerResults');
       const params = new URLSearchParams();
       const location = document.getElementById('workerLocation').value.trim();
@@ -90,7 +107,9 @@
       if (minRate) params.append('min_rate', minRate);
       params.append('available_only', availableOnly);
 
-      results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading workers...</div>';
+      if (!silent) {
+        results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading workers...</div>';
+      }
 
       try {
         const res = await apiCall('GET', `/kamgar/profiles?${params.toString()}`);
@@ -117,14 +136,24 @@
             <div class="pills">${(worker.skills || []).map(skillName => `<span class="pill">${skillName}</span>`).join('')}</div>
             <div class="price">₹${Number(worker.hourly_rate || 0)} / hour</div>
             <div class="status">${worker.description || 'Skilled worker for field and farm labour work.'}</div>
+            <div class="availability-box ${worker.available ? 'available' : ''}">
+              <i class="fa-solid ${worker.available ? 'fa-circle-check' : 'fa-calendar-day'}"></i>
+              ${worker.available
+                ? 'Available for new hire requests'
+                : worker.unavailable_until_label
+                  ? `Available again after ${worker.unavailable_until_label} (${worker.days_until_available} day${worker.days_until_available === 1 ? '' : 's'})`
+                  : 'Availability will be updated by the worker'}
+            </div>
             <div class="btn-row">
-              <button class="btn-green" onclick="bookWorker('${worker.id}')">Hire Now</button>
+              <a class="btn-green" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;" href="worker-detail.html?id=${worker.id}">${worker.available ? 'Hire Now' : 'View Profile'}</a>
               <button class="btn-outline" onclick="showWorkerContact('${worker.phone || ''}')">Call</button>
             </div>
           </div>
         `).join('');
       } catch (error) {
-        results.innerHTML = `<div class="empty-state"><i class="fa-solid fa-plug-circle-xmark"></i>${error.message || 'Unable to fetch workers.'}</div>`;
+        if (!silent) {
+          results.innerHTML = `<div class="empty-state"><i class="fa-solid fa-plug-circle-xmark"></i>${error.message || 'Unable to fetch workers.'}</div>`;
+        }
       }
     }
 
@@ -136,52 +165,18 @@
       alert('Worker mobile: ' + phone);
     }
 
-    async function bookWorker(workerId) {
-      if (!isLoggedIn()) {
-        window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.pathname + '#workers');
+    function goBack() {
+      if (window.history.length > 1) {
+        window.history.back();
         return;
       }
-
-      const title = prompt('Job title (e.g. Harvesting, Spray, Weeding):', 'Farm Labour Work');
-      if (!title) return;
-
-      const description = prompt('Short job description:', 'Need help for field work and labour support.');
-      if (!description) return;
-
-      const location = prompt('Work location:', 'Nearby farm field');
-      if (!location) return;
-
-      const startDate = prompt('Start date (YYYY-MM-DD):', new Date().toISOString().slice(0, 10));
-      if (!startDate) return;
-
-      const endDate = prompt('End date (YYYY-MM-DD):', new Date(Date.now()+86400000).toISOString().slice(0,10));
-      if (!endDate) return;
-
-      const estimatedCost = prompt('Estimated cost (₹):', '2500');
-      if (!estimatedCost) return;
-
-      try {
-        const payload = {
-          worker_id: workerId,
-          title,
-          description,
-          location,
-          start_date: startDate,
-          end_date: endDate,
-          work_hours: '8 hours',
-          estimated_cost: Number(estimatedCost) || 0,
-          job_type: 'field_work'
-        };
-
-        const res = await apiCall('POST', '/kamgar/jobs', payload, true);
-        alert('Worker request sent successfully!');
-        console.log(res);
-      } catch (error) {
-        alert(error.message || 'Unable to book worker.');
-      }
+      window.location.href = '../index.html';
     }
 
     loadWorkers();
+    setInterval(() => {
+      if (!document.hidden) loadWorkers(true);
+    }, 15000);
   </script>
 </body>
 </html>

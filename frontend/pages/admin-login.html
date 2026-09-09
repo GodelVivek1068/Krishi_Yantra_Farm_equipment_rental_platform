@@ -3,39 +3,56 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
   <title>Admin Login - KrishiYantra</title>
   <link rel="stylesheet" href="../css/main.css"/>
+  <link rel="stylesheet" href="../css/auth.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
-    body { min-height: 100vh; background: linear-gradient(135deg, #0b2239 0%, #1f5f8b 100%); display: flex; flex-direction: column; }
-    .auth-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 16px; }
-    .auth-card {
-      background: var(--white); border-radius: 20px; padding: 40px 36px;
-      width: 100%; max-width: 430px; box-shadow: var(--shadow-lg);
+    body { background: linear-gradient(135deg, #0a1628 0%, #0f2545 50%, #1a3a6e 100%); }
+    .auth-icon { background: linear-gradient(135deg, #0f2545, #1a3a6e); box-shadow: 0 8px 24px rgba(15,37,69,0.5); }
+    .auth-header h1 { color: #0a1628; }
+    .auth-header p { color: #64748b; }
+    .btn-auth-submit { background: linear-gradient(135deg, #0f2545, #1a3a6e); box-shadow: 0 4px 16px rgba(15,37,69,0.5); }
+    .btn-auth-submit:hover:not(:disabled) { background: linear-gradient(135deg, #0a1e3a, #142e5a); }
+    .lockout-fill { background: linear-gradient(90deg, #1a3a6e, #dc2626); }
+    .security-badge { background: #eff6ff; border-color: #bfdbfe; }
+    .security-badge i { color: #1a3a6e; }
+    .security-badge span { color: #1e40af; }
+    .auth-links a { color: #1a3a6e; }
+    .input-wrap input:focus { border-color: #1a3a6e; box-shadow: 0 0 0 4px rgba(26,58,110,0.1); }
+    .admin-warning {
+      background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 20px; display: flex;
+      align-items: flex-start; gap: 10px; font-size: 0.85rem; color: #7f1d1d;
     }
-    .auth-logo { text-align: center; margin-bottom: 26px; }
-    .auth-logo i { font-size: 2rem; color: #1f5f8b; }
-    .auth-logo h2 { font-family: 'Playfair Display', serif; color: #0f3a56; margin-top: 8px; font-size: 1.5rem; }
-    .auth-note {
-      background: #eef7ff;
-      border: 1px solid #cde6ff;
-      border-radius: var(--radius-sm);
-      color: #0f3a56;
-      font-size: 0.84rem;
-      padding: 10px;
-      margin-bottom: 14px;
+    .admin-warning i { color: #dc2626; flex-shrink: 0; margin-top: 2px; font-size: 1rem; }
+    .admin-shield {
+      text-align: center; margin: 16px 0 4px;
+      font-size: 2.5rem; opacity: 0.12; user-select: none;
     }
-    .btn-submit { width: 100%; padding: 13px; font-size: 1rem; justify-content: center; border-radius: var(--radius-sm); }
-    .auth-switch { text-align: center; margin-top: 20px; font-size: 0.88rem; color: var(--gray-600); }
-    .auth-switch a { color: #0f3a56; font-weight: 600; }
   </style>
 </head>
-<body>
+<body class="auth-body">
   <nav class="navbar">
     <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
-    <ul class="nav-links"><li><a href="../index.html">Home</a></li><li><a href="equipment.html">Equipment</a></li></ul>
-    <div class="nav-auth">
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li id="farmerServicesNav" class="service-menu">
+        <button type="button" class="service-menu-toggle" aria-expanded="false">
+          Services <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="service-menu-dropdown">
+          <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
+          <a href="kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a>
+          <a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
+          <a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a>
+        </div>
+      </li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth">
       <a href="login.html" class="btn-outline">User Login</a>
     </div>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
@@ -43,76 +60,184 @@
 
   <div class="auth-wrapper">
     <div class="auth-card">
-      <div class="auth-logo">
+      <div class="auth-header">
+        <div class="auth-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <h1>Admin Portal</h1>
+        <p>KYC approvals · Marketplace controls · Analytics</p>
+      </div>
+
+      <!-- Warning -->
+      <div class="admin-warning">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <div>
+          <strong>Restricted Access</strong> — Only authorised admin accounts can access this portal.
+          Unauthorised login attempts are logged and may result in account suspension.
+        </div>
+      </div>
+
+      <div class="auth-alert" id="alertBox" role="alert">
+        <i class="fa-solid fa-circle-exclamation"></i><span></span>
+      </div>
+
+      <form id="loginForm" onsubmit="return false;" novalidate autocomplete="off">
+        <div class="form-field">
+          <label class="form-label" for="email">Admin Email</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-envelope inp-icon"></i>
+            <input type="email" id="email" name="email" placeholder="admin@krishiplatform.com" autocomplete="off" required/>
+          </div>
+          <div class="field-err" id="emailErr">Please enter a valid email address.</div>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="password">Admin Password</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock inp-icon"></i>
+            <input type="password" id="password" name="password" placeholder="Admin password" autocomplete="new-password" required/>
+            <button type="button" class="toggle-pw" id="togglePw" aria-label="Toggle password visibility">
+              <i class="fa-regular fa-eye" id="eyeIcon"></i>
+            </button>
+          </div>
+          <div class="field-err" id="passErr">Password is required.</div>
+          <div class="attempt-info" id="attemptInfo"></div>
+        </div>
+
+        <button type="button" class="btn-auth-submit" id="loginBtn" onclick="doAdminLogin()">
+          <i class="fa-solid fa-shield-halved" id="loginIcon"></i>
+          <span id="loginBtnText">Login as Admin</span>
+        </button>
+      </form>
+
+      <div class="lockout-bar" id="lockoutBar">
+        <div class="lockout-fill" id="lockoutFill" style="width:100%"></div>
+      </div>
+
+      <div class="security-badge">
         <i class="fa-solid fa-shield-halved"></i>
-        <h2>Admin Login</h2>
-        <p>Access KYC approvals and marketplace controls</p>
+        <span>All admin sessions are monitored and logged</span>
       </div>
-      <div id="alertBox"></div>
-      <div class="auth-note">
-        Only admin accounts can login here.
+
+      <div class="auth-links">
+        Owner / Farmer login? <a href="login.html">Go to User Login →</a>
       </div>
-      <div class="form-group">
-        <label>Admin Email</label>
-        <input type="email" id="email" placeholder="admin@email.com"/>
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="password" placeholder="Your password"/>
-      </div>
-      <button class="btn-green btn-submit" onclick="doAdminLogin()">
-        <i class="fa-solid fa-right-to-bracket"></i> Login As Admin
-      </button>
-      <div class="auth-switch">
-        Owner/Farmer login? <a href="login.html">Go to User Login</a>
-      </div>
+
+      <div class="admin-shield">🔒</div>
     </div>
   </div>
 
   <script src="../js/main.js"></script>
+  <script src="../js/auth-utils.js"></script>
   <script>
+    // Admin uses separate lockout key for stricter security
+    const ADMIN_LOCKOUT_KEY = 'ky_admin_attempts';
+    const ADMIN_MAX         = 3;  // only 3 attempts for admin!
+    const ADMIN_LOCKOUT_MS  = 5 * 60 * 1000; // 5 min lockout
+
     if (isLoggedIn()) {
-      const user = getUser() || {};
-      if (String(user.role || '').toLowerCase() === 'admin') {
-        window.location.href = 'admin-panel.html';
-      } else {
-        window.location.href = '../index.html';
+      const u = getUser() || {};
+      window.location.href = String(u.role || '').toLowerCase() === 'admin' ? 'admin-panel.html' : '../index.html';
+    }
+
+    AuthUtils.bindPasswordToggle('password', 'togglePw', 'eyeIcon');
+
+    // Override attempt tracking with stricter admin config
+    function getAdminAttempts() {
+      try { return JSON.parse(localStorage.getItem(ADMIN_LOCKOUT_KEY)) || {}; } catch(e) { return {}; }
+    }
+    function recordAdminFail() {
+      const d = getAdminAttempts();
+      d.count = (d.count || 0) + 1;
+      d.lastAttempt = Date.now();
+      if (d.count >= ADMIN_MAX) d.lockedUntil = Date.now() + ADMIN_LOCKOUT_MS;
+      localStorage.setItem(ADMIN_LOCKOUT_KEY, JSON.stringify(d));
+      return d;
+    }
+    function getAdminLockoutMs() {
+      const d = getAdminAttempts();
+      if (d.lockedUntil && Date.now() < d.lockedUntil) return d.lockedUntil - d.lastAttempt > 0 ? d.lockedUntil - Date.now() : 0;
+      if (d.lockedUntil) localStorage.removeItem(ADMIN_LOCKOUT_KEY);
+      return 0;
+    }
+    function updateAdminAttemptInfo() {
+      const el = document.getElementById('attemptInfo');
+      if (!el) return;
+      const d = getAdminAttempts();
+      const remaining = ADMIN_MAX - (d.count || 0);
+      if (d.count > 0 && !d.lockedUntil) {
+        el.textContent = remaining + ' attempt' + (remaining !== 1 ? 's' : '') + ' remaining before 5-minute lockout';
+        el.style.color = '#dc2626';
+      } else { el.textContent = ''; }
+    }
+
+    updateAdminAttemptInfo();
+
+    function validate() {
+      let ok = true;
+      const emailVal = document.getElementById('email').value.trim();
+      const passVal  = document.getElementById('password').value;
+      document.getElementById('email').classList.remove('inp-error');
+      document.getElementById('password').classList.remove('inp-error');
+      document.getElementById('emailErr').style.display = 'none';
+      document.getElementById('passErr').style.display  = 'none';
+      if (!emailVal || !AuthUtils.isValidEmail(emailVal)) {
+        document.getElementById('email').classList.add('inp-error');
+        document.getElementById('emailErr').style.display = 'block'; ok = false;
       }
+      if (!passVal) {
+        document.getElementById('password').classList.add('inp-error');
+        document.getElementById('passErr').style.display = 'block'; ok = false;
+      }
+      return ok;
     }
 
     async function doAdminLogin() {
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      if (!email || !password) {
-        showAlert('alertBox', 'Please fill all fields', 'error');
+      AuthUtils.clearAlert('alertBox');
+      const locked = getAdminLockoutMs();
+      if (locked > 0) {
+        AuthUtils.showAlert('alertBox', 'Admin portal locked due to failed attempts. Please wait ' + Math.ceil(locked/60000) + ' minute(s).', 'warning');
+        AuthUtils.startLockout('loginBtn','lockoutBar','lockoutFill','loginBtnText','loginIcon','Login as Admin','fa-solid fa-shield-halved');
         return;
       }
+      if (!validate()) return;
+
+      const email    = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+      AuthUtils.setLoading('loginBtn','loginBtnText','loginIcon', true);
 
       try {
         const res = await apiCall('POST', '/auth/login-admin', { email, password });
-        if (!res.token) {
-          showAlert('alertBox', res.error || 'Login failed', 'error');
-          return;
+        if (res.token) {
+          localStorage.removeItem(ADMIN_LOCKOUT_KEY);
+          AuthUtils.saveSession(res);
+          document.getElementById('loginBtnText').textContent = 'Access Granted';
+          document.getElementById('loginIcon').className = 'fa-solid fa-circle-check';
+          AuthUtils.showAlert('alertBox', 'Admin login successful! Redirecting to panel...', 'success');
+          setTimeout(() => {
+            const redirect = new URLSearchParams(window.location.search).get('redirect');
+            window.location.href = redirect || 'admin-panel.html';
+          }, 700);
+        } else {
+          throw new Error(res.error || 'Login failed');
         }
-
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('user', JSON.stringify(res.user));
-
-        const redirect = new URLSearchParams(window.location.search).get('redirect');
-        if (redirect) {
-          window.location.href = redirect;
-          return;
-        }
-
-        window.location.href = 'admin-panel.html';
       } catch (e) {
-        showAlert('alertBox', e.message || 'Unable to login as admin.', 'error');
+        const data = recordAdminFail();
+        updateAdminAttemptInfo();
+        const msg = e && e.message ? e.message : 'Cannot connect to server.';
+        AuthUtils.showAlert('alertBox', msg, 'error');
+        AuthUtils.setLoading('loginBtn','loginBtnText','loginIcon', false);
+        document.getElementById('loginBtnText').textContent = 'Login as Admin';
+        document.getElementById('loginIcon').className = 'fa-solid fa-shield-halved';
+        if (data.lockedUntil && Date.now() < data.lockedUntil) {
+          AuthUtils.startLockout('loginBtn','lockoutBar','lockoutFill','loginBtnText','loginIcon','Login as Admin','fa-solid fa-shield-halved');
+          AuthUtils.showAlert('alertBox', 'Admin portal locked after ' + ADMIN_MAX + ' failed attempts. 5-minute lockout in effect.', 'warning');
+        }
       }
     }
 
-    document.getElementById('password').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') doAdminLogin();
-    });
+    document.getElementById('email').addEventListener('keydown',    e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
+    document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') doAdminLogin(); });
+    document.getElementById('email').addEventListener('input',    () => { document.getElementById('email').classList.remove('inp-error'); document.getElementById('emailErr').style.display = 'none'; });
+    document.getElementById('password').addEventListener('input', () => { document.getElementById('password').classList.remove('inp-error'); document.getElementById('passErr').style.display = 'none'; });
   </script>
 </body>
 </html>

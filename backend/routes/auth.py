@@ -3,10 +3,47 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 import datetime
 import os
+import time
+import threading
 from config.db import mongo
 from utils.auth_middleware import get_current_user, require_auth
 
 auth_bp = Blueprint('auth', __name__)
+
+# ── Server-side brute-force protection ──────────────────────────
+_login_attempts = {}   # { ip: {'count': int, 'locked_until': float, 'last_reset': float} }
+_attempts_lock  = threading.Lock()
+
+FAILED_LIMIT        = 10    # max failures before server lockout (regular users)
+ADMIN_FAILED_LIMIT  = 5     # stricter limit for admin
+LOCKOUT_SECONDS     = 120   # 2 minute lockout
+ADMIN_LOCKOUT_SEC   = 300   # 5 minute admin lockout
+
+def _get_client_ip():
+    xff = request.headers.get('X-Forwarded-For', '')
+    return xff.split(',')[0].strip() if xff else (request.remote_addr or '0.0.0.0')
+
+def _check_rate_limit(ip, limit=FAILED_LIMIT, lockout_sec=LOCKOUT_SECONDS):
+    """Returns (allowed: bool, seconds_remaining: int)"""
+    with _attempts_lock:
+        data = _login_attempts.get(ip, {})
+        locked_until = data.get('locked_until', 0)
+        if locked_until > time.time():
+            return False, int(locked_until - time.time())
+        return True, 0
+
+def _record_failed_attempt(ip, limit=FAILED_LIMIT, lockout_sec=LOCKOUT_SECONDS):
+    with _attempts_lock:
+        data = _login_attempts.get(ip, {'count': 0, 'locked_until': 0})
+        data['count'] += 1
+        data['last_attempt'] = time.time()
+        if data['count'] >= limit:
+            data['locked_until'] = time.time() + lockout_sec
+        _login_attempts[ip] = data
+
+def _reset_attempts(ip):
+    with _attempts_lock:
+        _login_attempts.pop(ip, None)
 
 
 def _serialize_user(user):
@@ -15,8 +52,10 @@ def _serialize_user(user):
     if not kyc_status:
         kyc_status = 'approved' if role in {'owner', 'supplier', 'admin'} else 'not_required'
 
+    user_id_str = str(user['_id'])
     return {
-        'id': str(user['_id']),
+        'id': user_id_str,
+        '_id': user_id_str,
         'name': user.get('name', ''),
         'email': user.get('email', ''),
         'role': role,
@@ -96,6 +135,11 @@ def register():
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
+    ip = _get_client_ip()
+    allowed, wait_sec = _check_rate_limit(ip)
+    if not allowed:
+        return jsonify({'error': f'Too many failed attempts. Please wait {wait_sec} seconds before trying again.'}), 429
+
     data = request.get_json() or {}
     email = data.get('email', '').strip().lower()
     password = data.get('password', '')
@@ -105,8 +149,15 @@ def login():
 
     user = mongo.db.users.find_one({'email': email})
     if not user or not check_password_hash(user['password'], password):
+        _record_failed_attempt(ip)
         return jsonify({'error': 'Invalid email or password'}), 401
 
+    role = str(user.get('role', 'renter')).lower()
+    if role not in ('renter', 'farmer'):
+        _record_failed_attempt(ip)
+        return jsonify({'error': 'Please use the login page for your account type'}), 403
+
+    _reset_attempts(ip)
     token = generate_token(user['_id'])
     return jsonify({
         'token': token,
@@ -116,6 +167,11 @@ def login():
 
 @auth_bp.route('/login-owner', methods=['POST'])
 def login_owner():
+    ip = _get_client_ip()
+    allowed, wait_sec = _check_rate_limit(ip)
+    if not allowed:
+        return jsonify({'error': f'Too many failed attempts. Please wait {wait_sec} seconds before trying again.'}), 429
+
     data = request.get_json() or {}
     email = data.get('email', '').strip().lower()
     password = data.get('password', '')
@@ -125,11 +181,14 @@ def login_owner():
 
     user = mongo.db.users.find_one({'email': email})
     if not user or not check_password_hash(user['password'], password):
+        _record_failed_attempt(ip)
         return jsonify({'error': 'Invalid email or password'}), 401
 
-    if user.get('role', 'renter') != 'owner':
+    if str(user.get('role', 'renter')).lower() != 'owner':
+        _record_failed_attempt(ip)
         return jsonify({'error': 'This account is not registered as owner'}), 403
 
+    _reset_attempts(ip)
     token = generate_token(user['_id'])
     return jsonify({
         'token': token,
@@ -139,6 +198,11 @@ def login_owner():
 
 @auth_bp.route('/login-supplier', methods=['POST'])
 def login_supplier():
+    ip = _get_client_ip()
+    allowed, wait_sec = _check_rate_limit(ip)
+    if not allowed:
+        return jsonify({'error': f'Too many failed attempts. Please wait {wait_sec} seconds before trying again.'}), 429
+
     data = request.get_json() or {}
     email = data.get('email', '').strip().lower()
     password = data.get('password', '')
@@ -148,11 +212,45 @@ def login_supplier():
 
     user = mongo.db.users.find_one({'email': email})
     if not user or not check_password_hash(user['password'], password):
+        _record_failed_attempt(ip)
         return jsonify({'error': 'Invalid email or password'}), 401
 
     if str(user.get('role', 'renter')).lower() != 'supplier':
+        _record_failed_attempt(ip)
         return jsonify({'error': 'This account is not registered as supplier'}), 403
 
+    _reset_attempts(ip)
+    token = generate_token(user['_id'])
+    return jsonify({
+        'token': token,
+        'user': _serialize_user(user)
+    })
+
+
+@auth_bp.route('/login-kamgar', methods=['POST'])
+def login_kamgar():
+    ip = _get_client_ip()
+    allowed, wait_sec = _check_rate_limit(ip)
+    if not allowed:
+        return jsonify({'error': f'Too many failed attempts. Please wait {wait_sec} seconds before trying again.'}), 429
+
+    data = request.get_json() or {}
+    email = data.get('email', '').strip().lower()
+    password = data.get('password', '')
+
+    if not email or not password:
+        return jsonify({'error': 'Email and password are required'}), 400
+
+    user = mongo.db.users.find_one({'email': email})
+    if not user or not check_password_hash(user['password'], password):
+        _record_failed_attempt(ip)
+        return jsonify({'error': 'Invalid email or password'}), 401
+
+    if str(user.get('role', 'renter')).lower() != 'kamgar':
+        _record_failed_attempt(ip)
+        return jsonify({'error': 'This account is not registered as worker'}), 403
+
+    _reset_attempts(ip)
     token = generate_token(user['_id'])
     return jsonify({
         'token': token,
@@ -162,6 +260,12 @@ def login_supplier():
 
 @auth_bp.route('/login-admin', methods=['POST'])
 def login_admin():
+    ip = _get_client_ip()
+    # Stricter rate limiting for admin endpoint
+    allowed, wait_sec = _check_rate_limit(ip + '_admin', limit=ADMIN_FAILED_LIMIT, lockout_sec=ADMIN_LOCKOUT_SEC)
+    if not allowed:
+        return jsonify({'error': f'Admin portal locked. Please wait {wait_sec} seconds before trying again.'}), 429
+
     data = request.get_json() or {}
     email = data.get('email', '').strip().lower()
     password = data.get('password', '')
@@ -171,11 +275,14 @@ def login_admin():
 
     user = mongo.db.users.find_one({'email': email})
     if not user or not check_password_hash(user['password'], password):
-        return jsonify({'error': 'Invalid email or password'}), 401
+        _record_failed_attempt(ip + '_admin', limit=ADMIN_FAILED_LIMIT, lockout_sec=ADMIN_LOCKOUT_SEC)
+        return jsonify({'error': 'Invalid admin credentials'}), 401
 
     if str(user.get('role', 'renter')).lower() != 'admin':
-        return jsonify({'error': 'This account is not registered as admin'}), 403
+        _record_failed_attempt(ip + '_admin', limit=ADMIN_FAILED_LIMIT, lockout_sec=ADMIN_LOCKOUT_SEC)
+        return jsonify({'error': 'This account does not have admin access'}), 403
 
+    _reset_attempts(ip + '_admin')
     token = generate_token(user['_id'])
     return jsonify({
         'token': token,

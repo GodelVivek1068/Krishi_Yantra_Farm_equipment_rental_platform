@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <title>Worker Login - KrishiYantra</title>
+  <link rel="stylesheet" href="../css/main.css"/>
+  <link rel="stylesheet" href="../css/auth.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    body { background: linear-gradient(135deg, #1a3a1a 0%, #2d5a2d 50%, #3d7a3d 100%); }
+    .auth-icon { background: linear-gradient(135deg, #2d5a2d, #3d7a3d); box-shadow: 0 8px 24px rgba(45,90,45,0.35); }
+    .auth-header h1 { color: #1a3a1a; }
+    .btn-auth-submit { background: linear-gradient(135deg, #2d5a2d, #3d7a3d); box-shadow: 0 4px 16px rgba(45,90,45,0.35); }
+    .btn-auth-submit:hover:not(:disabled) { background: linear-gradient(135deg, #24491e, #346a2a); box-shadow: 0 6px 20px rgba(45,90,45,0.4); }
+    .lockout-fill { background: linear-gradient(90deg, #3d7a3d, #f59e0b); }
+    .security-badge i { color: #3d7a3d; }
+    .auth-links a { color: #2d5a2d; }
+    .role-tab.active { border-color: #3d7a3d; color: #1a3a1a; }
+    .role-tab:hover { border-color: #3d7a3d; color: #2d5a2d; background: #f0f8f0; }
+  </style>
+</head>
+<body class="auth-body">
+  <nav class="navbar">
+    <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li id="farmerServicesNav" class="service-menu">
+        <button type="button" class="service-menu-toggle" aria-expanded="false">
+          Services <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="service-menu-dropdown">
+          <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
+          <a href="kamgar.html" class="active"><i class="fa-solid fa-person-digging"></i> Worker</a>
+          <a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
+          <a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a>
+        </div>
+      </li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth"><a href="register.html" class="btn-primary">Register</a></div>
+    <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+  </nav>
+
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-icon"><i class="fa-solid fa-person-digging"></i></div>
+        <h1>Worker Login</h1>
+        <p>Manage your farm worker profile and jobs</p>
+      </div>
+
+      <div class="auth-note" style="background:#f0f8f0;border:1px solid #c3e6c3;color:#1a3a1a;">
+        <i class="fa-solid fa-circle-info" style="margin-top:2px;color:#3d7a3d;flex-shrink:0"></i>
+        <span>This portal is for <strong>registered Kamgar workers</strong> only. Farmers/owners should use the <a href="login.html" style="color:#2d5a2d;font-weight:700;">main login</a>.</span>
+      </div>
+
+      <div class="auth-alert" id="alertBox" role="alert">
+        <i class="fa-solid fa-circle-exclamation"></i><span></span>
+      </div>
+
+      <form id="loginForm" onsubmit="return false;" novalidate autocomplete="on">
+        <div class="form-field">
+          <label class="form-label" for="email">Email Address</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-envelope inp-icon"></i>
+            <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required/>
+          </div>
+          <div class="field-err" id="emailErr">Please enter a valid email address.</div>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock inp-icon"></i>
+            <input type="password" id="password" name="password" placeholder="Your password" autocomplete="current-password" required/>
+            <button type="button" class="toggle-pw" id="togglePw" aria-label="Toggle password visibility">
+              <i class="fa-regular fa-eye" id="eyeIcon"></i>
+            </button>
+          </div>
+          <div class="field-err" id="passErr">Password is required.</div>
+          <div class="attempt-info" id="attemptInfo"></div>
+        </div>
+
+        <button type="button" class="btn-auth-submit" id="loginBtn" onclick="doLogin()">
+          <i class="fa-solid fa-right-to-bracket" id="loginIcon"></i>
+          <span id="loginBtnText">Sign In as Worker</span>
+        </button>
+      </form>
+
+      <div class="lockout-bar" id="lockoutBar">
+        <div class="lockout-fill" id="lockoutFill" style="width:100%"></div>
+      </div>
+
+      <div class="security-badge">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>256-bit encrypted · Secure JWT authentication</span>
+      </div>
+
+      <div class="auth-links">
+        Don't have a worker account? <a href="register.html">Register here</a><br/>
+        Farmer or owner? <a href="login.html">Main login →</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/main.js"></script>
+  <script src="../js/auth-utils.js"></script>
+  <script>
+    if (isLoggedIn()) window.location.href = 'kamgar-dashboard.html';
+
+    AuthUtils.bindPasswordToggle('password', 'togglePw', 'eyeIcon');
+    AuthUtils.updateAttemptInfo('attemptInfo');
+
+    function validate() {
+      let ok = true;
+      const emailVal = document.getElementById('email').value.trim();
+      const passVal  = document.getElementById('password').value;
+      document.getElementById('email').classList.remove('inp-error');
+      document.getElementById('password').classList.remove('inp-error');
+      document.getElementById('emailErr').style.display = 'none';
+      document.getElementById('passErr').style.display  = 'none';
+      if (!emailVal || !AuthUtils.isValidEmail(emailVal)) {
+        document.getElementById('email').classList.add('inp-error');
+        document.getElementById('emailErr').style.display = 'block';
+        ok = false;
+      }
+      if (!passVal) {
+        document.getElementById('password').classList.add('inp-error');
+        document.getElementById('passErr').style.display = 'block';
+        ok = false;
+      }
+      return ok;
+    }
+
+    async function doLogin() {
+      AuthUtils.clearAlert('alertBox');
+      const locked = AuthUtils.getLockoutMs();
+      if (locked > 0) {
+        AuthUtils.showAlert('alertBox', 'Too many failed attempts. Please wait before trying again.', 'warning');
+        AuthUtils.startLockout('loginBtn','lockoutBar','lockoutFill','loginBtnText','loginIcon','Sign In as Worker','fa-solid fa-right-to-bracket');
+        return;
+      }
+      if (!validate()) return;
+
+      const email    = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+      AuthUtils.setLoading('loginBtn','loginBtnText','loginIcon', true);
+
+      try {
+        const res = await apiCall('POST', '/auth/login-kamgar', { email, password });
+        if (res.token) {
+          AuthUtils.resetAttempts();
+          AuthUtils.saveSession(res);
+          document.getElementById('loginBtnText').textContent = 'Success!';
+          document.getElementById('loginIcon').className = 'fa-solid fa-circle-check';
+          AuthUtils.showAlert('alertBox', 'Login successful! Redirecting...', 'success');
+          setTimeout(() => AuthUtils.redirectAfterLogin('kamgar-dashboard.html'), 600);
+        } else {
+          throw new Error(res.error || 'Invalid credentials');
+        }
+      } catch (e) {
+        const data = AuthUtils.recordFailed();
+        AuthUtils.updateAttemptInfo('attemptInfo');
+        AuthUtils.showAlert('alertBox', e && e.message ? e.message : 'Cannot connect to server.', 'error');
+        AuthUtils.setLoading('loginBtn','loginBtnText','loginIcon', false);
+        document.getElementById('loginBtnText').textContent = 'Sign In as Worker';
+        document.getElementById('loginIcon').className = 'fa-solid fa-right-to-bracket';
+        if (data.lockedUntil && Date.now() < data.lockedUntil) {
+          AuthUtils.startLockout('loginBtn','lockoutBar','lockoutFill','loginBtnText','loginIcon','Sign In as Worker','fa-solid fa-right-to-bracket');
+          AuthUtils.showAlert('alertBox', 'Account temporarily locked after ' + AuthUtils.MAX_ATTEMPTS + ' failed attempts. Wait 2 minutes.', 'warning');
+        }
+      }
+    }
+
+    document.getElementById('email').addEventListener('keydown',    e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
+    document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+    document.getElementById('email').addEventListener('input',    () => { document.getElementById('email').classList.remove('inp-error'); document.getElementById('emailErr').style.display = 'none'; });
+    document.getElementById('password').addEventListener('input', () => { document.getElementById('password').classList.remove('inp-error'); document.getElementById('passErr').style.display = 'none'; });
+  </script>
+</body>
+</html>

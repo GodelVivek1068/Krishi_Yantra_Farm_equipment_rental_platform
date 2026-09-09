@@ -3,41 +3,151 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
   <title>Login - KrishiYantra</title>
   <link rel="stylesheet" href="../css/main.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
-    body { min-height: 100vh; background: linear-gradient(135deg, var(--green-dark) 0%, #2d6a4f 100%); display: flex; flex-direction: column; }
-    .auth-wrapper { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 16px; }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0d3320 0%, #1d5c3a 50%, #2d7a4f 100%);
+      display: flex; flex-direction: column;
+      font-family: 'DM Sans', sans-serif;
+    }
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .auth-wrapper {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 32px 16px; position: relative; z-index: 1;
+    }
     .auth-card {
-      background: var(--white); border-radius: 20px; padding: 40px 36px;
-      width: 100%; max-width: 420px; box-shadow: var(--shadow-lg);
+      background: #fff; border-radius: 24px; padding: 44px 40px;
+      width: 100%; max-width: 440px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1);
+      animation: slideUp 0.4s ease;
     }
-    .auth-logo { text-align: center; margin-bottom: 28px; }
-    .auth-logo i { font-size: 2rem; color: var(--amber); }
-    .auth-logo h2 { font-family: 'Playfair Display', serif; color: var(--green-dark); margin-top: 8px; font-size: 1.5rem; }
-    .auth-logo p { color: var(--gray-600); font-size: 0.88rem; margin-top: 4px; }
-    .auth-switch { text-align: center; margin-top: 20px; font-size: 0.88rem; color: var(--gray-600); }
-    .auth-switch a { color: var(--green-mid); font-weight: 600; }
-    .btn-submit { width: 100%; padding: 13px; font-size: 1rem; justify-content: center; border-radius: var(--radius-sm); }
-    .divider { text-align: center; margin: 16px 0; color: var(--gray-400); font-size: 0.82rem; position: relative; }
-    .divider::before, .divider::after { content: ''; position: absolute; top: 50%; width: 42%; height: 1px; background: var(--gray-200); }
-    .divider::before { left: 0; } .divider::after { right: 0; }
-    .role-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-    .role-btn {
-      border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm); padding: 10px;
-      background: var(--white); font-family: inherit; font-size: 0.88rem; font-weight: 600;
-      color: var(--gray-600); cursor: pointer;
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
-    .role-btn.active { border-color: var(--green-mid); color: var(--green-dark); background: var(--green-pale); }
+    .auth-header { text-align: center; margin-bottom: 32px; }
+    .auth-icon {
+      width: 68px; height: 68px; border-radius: 20px;
+      background: linear-gradient(135deg, #1d5c3a, #2d7a4f);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; color: #f59e0b; margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(29,92,58,0.35);
+    }
+    .auth-header h1 { font-family: 'Playfair Display', serif; color: #1d3a2a; font-size: 1.7rem; margin: 0 0 6px; }
+    .auth-header p { color: #6b7280; font-size: 0.9rem; margin: 0; }
+
+    /* Role tabs */
+    .role-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 24px; }
+    .role-tab {
+      border: 2px solid #e5e7eb; border-radius: 12px; padding: 12px 8px;
+      background: #fff; font-family: inherit; font-size: 0.88rem; font-weight: 600;
+      color: #6b7280; cursor: pointer; transition: all 0.2s;
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+    }
+    .role-tab i { font-size: 1.2rem; }
+    .role-tab:hover { border-color: #2d7a4f; color: #1d5c3a; background: #f0faf4; }
+    .role-tab.active { border-color: #2d7a4f; color: #1d5c3a; background: linear-gradient(135deg, #e8f5ee, #d1edda); box-shadow: 0 4px 12px rgba(45,122,79,0.2); }
+
+    /* Form */
+    .form-label { display: block; font-size: 0.85rem; font-weight: 600; color: #374151; margin-bottom: 6px; }
+    .input-wrap { position: relative; }
+    .input-wrap i.inp-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: #9ca3af; font-size: 0.95rem; pointer-events: none;
+    }
+    .input-wrap input {
+      width: 100%; padding: 13px 44px 13px 42px;
+      border: 2px solid #e5e7eb; border-radius: 12px;
+      font-family: inherit; font-size: 0.95rem; color: #1f2937;
+      background: #fafafa; transition: all 0.2s; outline: none;
+    }
+    .input-wrap input:focus { border-color: #2d7a4f; background: #fff; box-shadow: 0 0 0 4px rgba(45,122,79,0.1); }
+    .input-wrap input.error { border-color: #ef4444; background: #fef2f2; }
+    .toggle-pw {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: #9ca3af;
+      font-size: 0.95rem; padding: 4px; transition: color 0.2s;
+    }
+    .toggle-pw:hover { color: #2d7a4f; }
+    .field-error { color: #ef4444; font-size: 0.8rem; margin-top: 5px; display: none; }
+    .form-field { margin-bottom: 18px; }
+
+    /* Alert */
+    .alert-box { border-radius: 12px; padding: 12px 16px; margin-bottom: 18px; font-size: 0.88rem; display: none; align-items: center; gap: 10px; }
+    .alert-box.error { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; display: flex; }
+    .alert-box.success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; display: flex; }
+    .alert-box.warning { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; display: flex; }
+
+    /* Submit button */
+    .btn-login {
+      width: 100%; padding: 14px; border: none; border-radius: 12px;
+      background: linear-gradient(135deg, #1d5c3a, #2d7a4f);
+      color: #fff; font-family: inherit; font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      box-shadow: 0 4px 16px rgba(29,92,58,0.35);
+    }
+    .btn-login:hover:not(:disabled) { background: linear-gradient(135deg, #155233, #267345); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(29,92,58,0.4); }
+    .btn-login:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .btn-login .spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Lockout */
+    .lockout-bar { height: 4px; background: #e5e7eb; border-radius: 2px; margin-top: 10px; overflow: hidden; }
+    .lockout-fill { height: 100%; background: linear-gradient(90deg, #2d7a4f, #f59e0b); border-radius: 2px; transition: width 1s linear; }
+
+    /* Security badge */
+    .security-badge {
+      display: flex; align-items: center; gap: 8px; justify-content: center;
+      margin-top: 20px; padding: 10px 14px; background: #f0faf4;
+      border: 1px solid #d1edda; border-radius: 10px; font-size: 0.8rem; color: #1d5c3a;
+    }
+    .security-badge i { color: #2d7a4f; }
+
+    /* Links */
+    .auth-links { text-align: center; margin-top: 20px; font-size: 0.88rem; color: #6b7280; line-height: 1.9; }
+    .auth-links a { color: #2d7a4f; font-weight: 600; text-decoration: none; }
+    .auth-links a:hover { text-decoration: underline; }
+
+    /* Attempt counter */
+    .attempt-info { text-align: right; font-size: 0.78rem; color: #9ca3af; margin-top: 5px; }
+
+    @media (max-width: 480px) {
+      .auth-card { padding: 32px 22px; }
+      .auth-header h1 { font-size: 1.4rem; }
+    }
   </style>
 </head>
 <body>
   <nav class="navbar">
     <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
-    <ul class="nav-links"><li><a href="../index.html">Home</a></li><li><a href="equipment.html">Equipment</a></li></ul>
-    <div class="nav-auth">
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li id="farmerServicesNav" class="service-menu">
+        <button type="button" class="service-menu-toggle" aria-expanded="false">
+          Services <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="service-menu-dropdown">
+          <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
+          <a href="kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a>
+          <a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
+          <a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a>
+        </div>
+      </li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth">
       <a href="register.html" class="btn-primary">Register</a>
     </div>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
@@ -45,102 +155,297 @@
 
   <div class="auth-wrapper">
     <div class="auth-card">
-      <div class="auth-logo">
-        <i class="fa-solid fa-tractor"></i>
-        <h2>Welcome Back</h2>
-        <p id="loginSubtitle">Login to your KrishiYantra account</p>
+      <div class="auth-header">
+        <div class="auth-icon"><i class="fa-solid fa-tractor"></i></div>
+        <h1>Welcome Back</h1>
+        <p id="loginSubtitle">Sign in to your KrishiYantra account</p>
       </div>
-      <div id="alertBox"></div>
-      <div class="role-switch" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
-        <button type="button" id="renterLoginBtn" class="role-btn active" onclick="setLoginMode('renter')">Farmer / Renter</button>
-        <button type="button" id="ownerLoginBtn" class="role-btn" onclick="setLoginMode('owner')">Owner</button>
-        <button type="button" id="kamgarLoginBtn" class="role-btn" onclick="setLoginMode('kamgar')">Kamgar / Worker</button>
-        <button type="button" id="supplierLoginBtn" class="role-btn" onclick="setLoginMode('supplier')">Supplier</button>
+
+      <!-- Role selector -->
+      <div class="role-tabs">
+        <button type="button" class="role-tab active" id="tabRenter" onclick="setRole('renter')">
+          <i class="fa-solid fa-user"></i> Farmer / Renter
+        </button>
+        <button type="button" class="role-tab" id="tabOwner" onclick="setRole('owner')">
+          <i class="fa-solid fa-warehouse"></i> Equipment Owner
+        </button>
       </div>
-      <div class="form-group">
-        <label>Email Address</label>
-        <input type="email" id="email" placeholder="your@email.com"/>
+
+      <!-- Alert -->
+      <div class="alert-box" id="alertBox" role="alert">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span id="alertMsg"></span>
       </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="password" placeholder="Your password"/>
+
+      <!-- Form -->
+      <form id="loginForm" onsubmit="return false;" novalidate autocomplete="on">
+        <div class="form-field">
+          <label class="form-label" for="email">Email Address</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-envelope inp-icon"></i>
+            <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required/>
+          </div>
+          <div class="field-error" id="emailErr">Please enter a valid email address.</div>
+        </div>
+
+        <div class="form-field">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock inp-icon"></i>
+            <input type="password" id="password" name="password" placeholder="Your password" autocomplete="current-password" required/>
+            <button type="button" class="toggle-pw" id="togglePw" aria-label="Show/hide password">
+              <i class="fa-regular fa-eye" id="eyeIcon"></i>
+            </button>
+          </div>
+          <div class="field-error" id="passErr">Password is required.</div>
+          <div class="attempt-info" id="attemptInfo"></div>
+        </div>
+
+        <button type="button" class="btn-login" id="loginBtn" onclick="doLogin()">
+          <i class="fa-solid fa-right-to-bracket" id="loginIcon"></i>
+          <span id="loginBtnText">Sign In</span>
+        </button>
+      </form>
+
+      <!-- Lockout progress -->
+      <div class="lockout-bar" id="lockoutBar" style="display:none">
+        <div class="lockout-fill" id="lockoutFill" style="width:100%"></div>
       </div>
-      <button class="btn-green btn-submit" onclick="doLogin()">
-        <i class="fa-solid fa-right-to-bracket"></i> Login
-      </button>
-      <div class="auth-switch">
-        Don't have an account? <a href="register.html">Register here</a>
-        <br/>Equipment owner? <a href="owner-register.html">Owner register</a>
-        <br/>Admin? <a href="admin-login.html">Admin login</a>
+
+      <!-- Security badge -->
+      <div class="security-badge">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>256-bit encrypted · Secure JWT authentication</span>
+      </div>
+
+      <!-- Links -->
+      <div class="auth-links">
+        Don't have an account? <a href="register.html">Register here</a><br/>
+        Equipment owner? <a href="owner-register.html">Owner register</a><br/>
+        Worker / Supplier? <a href="worker-login.html">Worker</a> ·
+        <a href="fertilizer-login.html">Supplier</a> ·
+        <a href="transport-login.html">Transport</a><br/>
+        <a href="admin-login.html" style="color:#6b7280;font-size:0.8rem">Admin portal →</a>
       </div>
     </div>
   </div>
 
   <script src="../js/main.js"></script>
   <script>
-    if (isLoggedIn()) window.location.href = '../index.html';
-    let loginMode = 'renter';
-
-    function setLoginMode(mode) {
-      loginMode = mode;
-      document.getElementById('renterLoginBtn').classList.toggle('active', mode === 'renter');
-      document.getElementById('ownerLoginBtn').classList.toggle('active', mode === 'owner');
-      document.getElementById('kamgarLoginBtn').classList.toggle('active', mode === 'kamgar');
-      document.getElementById('supplierLoginBtn').classList.toggle('active', mode === 'supplier');
-      document.getElementById('loginSubtitle').textContent = mode === 'owner'
-        ? 'Owner login to manage listings and bookings'
-        : mode === 'kamgar'
-          ? 'Worker login to manage availability and hired jobs'
-          : mode === 'supplier'
-            ? 'Supplier login to manage fertilizer listings and orders'
-            : 'Login to your KrishiYantra account';
+    // ── Redirect if already logged in ──
+    if (isLoggedIn()) {
+      const u = getUser();
+      const role = String((u && u.role) || '').toLowerCase();
+      if (role === 'owner') window.location.href = 'owner-dashboard.html';
+      else window.location.href = '../index.html';
     }
 
+    // ── State ──
+    let loginRole = 'renter';
+    const MAX_ATTEMPTS = 5;
+    const LOCKOUT_MS   = 2 * 60 * 1000; // 2 minutes
+    const STORAGE_KEY  = 'ky_login_attempts';
+    let lockoutTimer   = null;
+
+    // ── Role switch ──
+    function setRole(role) {
+      loginRole = role;
+      document.getElementById('tabRenter').classList.toggle('active', role === 'renter');
+      document.getElementById('tabOwner').classList.toggle('active', role === 'owner');
+      document.getElementById('loginSubtitle').textContent = role === 'owner'
+        ? 'Owner login — manage equipment listings & bookings'
+        : 'Sign in to your KrishiYantra account';
+      clearAlert();
+    }
+
+    // ── Password toggle ──
+    document.getElementById('togglePw').addEventListener('click', function() {
+      const inp = document.getElementById('password');
+      const icon = document.getElementById('eyeIcon');
+      const show = inp.type === 'password';
+      inp.type = show ? 'text' : 'password';
+      icon.className = show ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+    });
+
+    // ── Alert helpers ──
+    function showAlert(msg, type) {
+      const box = document.getElementById('alertBox');
+      const msgEl = document.getElementById('alertMsg');
+      box.className = 'alert-box ' + type;
+      box.querySelector('i').className = type === 'error'
+        ? 'fa-solid fa-circle-exclamation'
+        : (type === 'warning' ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-circle-check');
+      msgEl.textContent = msg;
+    }
+    function clearAlert() {
+      document.getElementById('alertBox').className = 'alert-box';
+    }
+
+    // ── Brute-force protection (localStorage based) ──
+    function getAttemptData() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; }
+    }
+    function saveAttemptData(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+    function recordFailedAttempt() {
+      const data = getAttemptData();
+      data.count = (data.count || 0) + 1;
+      data.lastAttempt = Date.now();
+      if (data.count >= MAX_ATTEMPTS) {
+        data.lockedUntil = Date.now() + LOCKOUT_MS;
+      }
+      saveAttemptData(data);
+      return data;
+    }
+    function resetAttempts() {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+    function checkLockout() {
+      const data = getAttemptData();
+      if (data.lockedUntil && Date.now() < data.lockedUntil) {
+        return data.lockedUntil - Date.now();
+      }
+      if (data.lockedUntil && Date.now() >= data.lockedUntil) {
+        resetAttempts();
+      }
+      return 0;
+    }
+    function updateAttemptInfo() {
+      const data = getAttemptData();
+      const info = document.getElementById('attemptInfo');
+      const remaining = MAX_ATTEMPTS - (data.count || 0);
+      if (data.count > 0 && !data.lockedUntil) {
+        info.textContent = remaining + ' attempt' + (remaining !== 1 ? 's' : '') + ' remaining before lockout';
+        info.style.color = remaining <= 2 ? '#ef4444' : '#9ca3af';
+      } else {
+        info.textContent = '';
+      }
+    }
+    function startLockoutCountdown(msRemaining) {
+      const btn = document.getElementById('loginBtn');
+      const bar = document.getElementById('lockoutBar');
+      const fill = document.getElementById('lockoutFill');
+      btn.disabled = true;
+      bar.style.display = 'block';
+      const totalMs = LOCKOUT_MS;
+      function tick() {
+        const left = checkLockout();
+        if (left <= 0) {
+          btn.disabled = false;
+          bar.style.display = 'none';
+          document.getElementById('loginBtnText').textContent = 'Sign In';
+          document.getElementById('loginIcon').className = 'fa-solid fa-right-to-bracket';
+          document.getElementById('attemptInfo').textContent = '';
+          clearAlert();
+          return;
+        }
+        const secs = Math.ceil(left / 1000);
+        document.getElementById('loginBtnText').textContent = 'Locked — wait ' + secs + 's';
+        fill.style.width = ((left / totalMs) * 100) + '%';
+        lockoutTimer = setTimeout(tick, 500);
+      }
+      tick();
+    }
+
+    // ── Validate ──
+    function validate() {
+      let ok = true;
+      const email = document.getElementById('email');
+      const emailErr = document.getElementById('emailErr');
+      const pass = document.getElementById('password');
+      const passErr = document.getElementById('passErr');
+
+      email.classList.remove('error');
+      pass.classList.remove('error');
+      emailErr.style.display = 'none';
+      passErr.style.display = 'none';
+
+      const emailVal = email.value.trim();
+      if (!emailVal || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+        email.classList.add('error');
+        emailErr.style.display = 'block';
+        ok = false;
+      }
+      if (!pass.value) {
+        pass.classList.add('error');
+        passErr.style.display = 'block';
+        ok = false;
+      }
+      return ok;
+    }
+
+    // ── Main login ──
     async function doLogin() {
-      const email = document.getElementById('email').value.trim();
+      clearAlert();
+      const locked = checkLockout();
+      if (locked > 0) {
+        showAlert('Too many failed attempts. Please wait before trying again.', 'warning');
+        startLockoutCountdown(locked);
+        return;
+      }
+      if (!validate()) return;
+
+      const email = document.getElementById('email').value.trim().toLowerCase();
       const password = document.getElementById('password').value;
-      if (!email || !password) { showAlert('alertBox','Please fill all fields','error'); return; }
+      const btn = document.getElementById('loginBtn');
+      const btnText = document.getElementById('loginBtnText');
+      const icon = document.getElementById('loginIcon');
+
+      btn.disabled = true;
+      btnText.textContent = 'Signing in...';
+      icon.className = '';
+      const spinner = document.createElement('div');
+      spinner.className = 'spinner';
+      btn.insertBefore(spinner, btn.firstChild);
+
       try {
-        let endpoint = '/auth/login';
-        if (loginMode === 'owner') endpoint = '/auth/login-owner';
-        if (loginMode === 'supplier') endpoint = '/auth/login-supplier';
+        const endpoint = loginRole === 'owner' ? '/auth/login-owner' : '/auth/login';
         const res = await apiCall('POST', endpoint, { email, password });
+
         if (res.token) {
+          resetAttempts();
           localStorage.setItem('token', res.token);
           localStorage.setItem('user', JSON.stringify(res.user));
-          const redirect = new URLSearchParams(window.location.search).get('redirect');
-          if (redirect) {
-            window.location.href = redirect;
-            return;
-          }
-          if ((res.user && res.user.role) === 'owner') {
-            const kycStatus = String((res.user && res.user.kyc_status) || '').toLowerCase();
-            if (!kycStatus || kycStatus === 'pending' || kycStatus === 'rejected') {
-              window.location.href = 'owner-kyc.html';
+          btnText.textContent = 'Success!';
+          icon.className = 'fa-solid fa-circle-check';
+          showAlert('Login successful! Redirecting...', 'success');
+
+          setTimeout(() => {
+            const redirect = new URLSearchParams(window.location.search).get('redirect');
+            if (redirect) { window.location.href = redirect; return; }
+            const role = String((res.user && res.user.role) || '').toLowerCase();
+            if (role === 'owner') {
+              const kyc = String((res.user && res.user.kyc_status) || '').toLowerCase();
+              window.location.href = (kyc === 'approved') ? 'owner-dashboard.html' : 'owner-kyc.html';
             } else {
-              window.location.href = 'owner-dashboard.html';
+              window.location.href = '../index.html';
             }
-            return;
-          }
-          if ((res.user && res.user.role) === 'supplier') {
-            window.location.href = 'supplier-dashboard.html';
-            return;
-          }
-          if ((res.user && res.user.role) === 'kamgar') {
-            window.location.href = 'kamgar-dashboard.html';
-            return;
-          }
-          window.location.href = '../index.html';
+          }, 600);
         } else {
-          showAlert('alertBox', res.error || 'Invalid credentials', 'error');
+          throw new Error(res.error || 'Invalid credentials');
         }
-      } catch(e) {
-        const message = e && e.message ? e.message : 'Cannot connect to server. Please start the backend.';
-        showAlert('alertBox', message, 'error');
+      } catch (e) {
+        const data = recordFailedAttempt();
+        updateAttemptInfo();
+        const msg = e && e.message ? e.message : 'Cannot connect to server. Please start the backend.';
+        showAlert(msg, 'error');
+        btn.disabled = false;
+        btnText.textContent = 'Sign In';
+        icon.className = 'fa-solid fa-right-to-bracket';
+        if (spinner.parentNode) spinner.remove();
+        if (data.lockedUntil && Date.now() < data.lockedUntil) {
+          startLockoutCountdown(data.lockedUntil - Date.now());
+          showAlert('Account temporarily locked after ' + MAX_ATTEMPTS + ' failed attempts. Wait 2 minutes.', 'warning');
+        }
       }
     }
 
-    document.getElementById('password').addEventListener('keypress', e => { if(e.key==='Enter') doLogin(); });
+    updateAttemptInfo();
+    document.getElementById('email').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
+    document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+    document.getElementById('email').addEventListener('input', () => { document.getElementById('email').classList.remove('error'); document.getElementById('emailErr').style.display = 'none'; });
+    document.getElementById('password').addEventListener('input', () => { document.getElementById('password').classList.remove('error'); document.getElementById('passErr').style.display = 'none'; });
   </script>
 </body>
 </html>

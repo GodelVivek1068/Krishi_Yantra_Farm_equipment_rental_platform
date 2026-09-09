@@ -90,6 +90,10 @@ def list_products():
     available_only = request.args.get('available_only', '').strip().lower() == 'true'
     max_price = request.args.get('max_price', '').strip()
     supplier_id = request.args.get('supplier_id', '').strip()
+    try:
+        limit = int(request.args.get('limit', 0)) or None
+    except (TypeError, ValueError):
+        limit = None
 
     user = None
     try:
@@ -126,7 +130,10 @@ def list_products():
         except ValueError:
             pass
 
-    products = list(mongo.db.fertilizer_products.find(query).sort('created_at', -1))
+    cursor = mongo.db.fertilizer_products.find(query).sort('created_at', -1)
+    if limit:
+        cursor = cursor.limit(limit)
+    products = list(cursor)
     return jsonify({'products': [_serialize_product(product) for product in products]})
 
 

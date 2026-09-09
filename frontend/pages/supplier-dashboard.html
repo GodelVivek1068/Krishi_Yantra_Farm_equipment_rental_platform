@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
   <title>Supplier Dashboard - KrishiYantra</title>
   <link rel="stylesheet" href="../css/main.css" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
@@ -39,6 +40,8 @@
     .empty { color: var(--gray-400); text-align: center; padding: 20px; }
     .quick-options { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
     .option-chip { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--gray-200); padding: 8px 14px; border-radius: 999px; background: #f7fffb; color: var(--green-dark); font-size: 0.84rem; font-weight: 700; }
+    .profile-panel { background: white; border: 1px solid var(--gray-200); border-radius: 12px; padding: 18px; margin-bottom: 24px; box-shadow: var(--shadow-sm); }
+    .profile-panel h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--green-dark); margin-bottom: 14px; }
     @media(max-width:980px) { .stats-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } .dashboard-grid { grid-template-columns: 1fr; } }
     @media(max-width:640px) { .stats-grid { grid-template-columns: 1fr; } .form-grid { grid-template-columns: 1fr; } }
   </style>
@@ -48,12 +51,21 @@
     <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
     <ul class="nav-links" id="navLinks">
       <li><a href="../index.html">Home</a></li>
-      <li><a href="equipment.html">Equipment</a></li>
-      <li><a href="fertilizer.html">Fertilizer</a></li>
+      <li id="farmerServicesNav" class="service-menu">
+        <button type="button" class="service-menu-toggle" aria-expanded="false">
+          Services <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="service-menu-dropdown">
+          <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
+          <a href="kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a>
+          <a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
+          <a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a>
+        </div>
+      </li>
       <li><a href="supplier-dashboard.html" class="active">Supplier Dashboard</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
-    <div class="nav-auth" id="navAuth"><a href="login.html" class="btn-outline">Login</a><a href="register.html" class="btn-primary">Register</a></div>
+    <div class="nav-auth" id="navAuth"><a href="fertilizer-login.html" class="btn-outline">Login</a><a href="register.html" class="btn-primary">Register</a></div>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
   </nav>
 
@@ -66,9 +78,26 @@
     <div id="alertBox"></div>
     <div class="quick-options">
       <a class="option-chip" href="fertilizer.html"><i class="fa-solid fa-seedling"></i> View Catalog</a>
+      <a class="option-chip" href="notifications.html"><i class="fa-solid fa-bell"></i> Notifications</a>
       <button type="button" class="option-chip" onclick="toggleAddForm()"><i class="fa-solid fa-plus"></i> Add Product</button>
       <button type="button" class="option-chip" onclick="toggleBulkUpload()"><i class="fa-solid fa-cloud-arrow-up"></i> Bulk Upload</button>
+      <button type="button" class="option-chip" onclick="toggleSupplierProfile()"><i class="fa-solid fa-building"></i> Supplier Profile</button>
     </div>
+
+    <section class="profile-panel" id="supplierProfilePanel" style="display:none;">
+      <h3><i class="fa-solid fa-building"></i> Supplier profile</h3>
+      <div class="form-grid">
+        <div class="form-group"><label>Company name</label><input id="companyName" type="text"></div>
+        <div class="form-group"><label>Phone</label><input id="supplierPhone" type="text"></div>
+        <div class="form-group"><label>Location</label><input id="supplierLocation" type="text"></div>
+        <div class="form-group"><label>Website</label><input id="companyWebsite" type="url" placeholder="https://example.com"></div>
+        <div class="form-group full"><label>Company description</label><textarea id="companyDescription" placeholder="Tell farmers about your products and service"></textarea></div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+        <button type="button" class="btn-mini no" onclick="toggleSupplierProfile(false)">Cancel</button>
+        <button type="button" class="btn-mini ok" onclick="saveSupplierProfile()">Save Profile</button>
+      </div>
+    </section>
 
     <div class="stats-grid" id="statsGrid">
       <div class="stat-card"><div class="stat-label">Listings</div><div class="stat-value">-</div></div>
@@ -141,16 +170,17 @@
   <script>
     let products = [];
     let orders = [];
+    let supplierProfile = null;
 
     function requireSupplier() {
       const user = getUser();
       if (!isLoggedIn()) {
-        window.location.href = 'login.html?redirect=supplier-dashboard.html';
+        window.location.href = 'fertilizer-login.html?redirect=supplier-dashboard.html';
         return false;
       }
       if (!user || user.role !== 'supplier') {
         showAlert('alertBox', 'Supplier account required for dashboard access.', 'error');
-        setTimeout(() => window.location.href = 'login.html?redirect=supplier-dashboard.html', 1200);
+        setTimeout(() => window.location.href = 'fertilizer-login.html?redirect=supplier-dashboard.html', 1200);
         return false;
       }
       return true;
@@ -223,8 +253,57 @@
 
     async function loadDashboard() {
       if (!requireSupplier()) return;
-      await Promise.all([loadProducts(), loadOrders(), loadAnalytics()]);
+      await Promise.all([loadProducts(), loadOrders(), loadAnalytics(), loadSupplierProfile()]);
       renderStats();
+    }
+
+    function toggleSupplierProfile(show = null) {
+      const panel = document.getElementById('supplierProfilePanel');
+      if (!panel) return;
+      const visible = show === null ? panel.style.display === 'none' : show;
+      panel.style.display = visible ? 'block' : 'none';
+      if (visible) document.getElementById('companyName').focus();
+    }
+
+    async function loadSupplierProfile() {
+      const user = getUser();
+      if (!user || !user.id) return;
+      try {
+        const res = await apiCall('GET', `/fertilizer/supplier/${encodeURIComponent(user.id)}/profile`);
+        supplierProfile = res.profile || null;
+        if (!supplierProfile) return;
+        document.getElementById('companyName').value = supplierProfile.company_name || '';
+        document.getElementById('supplierPhone').value = supplierProfile.phone || user.phone || '';
+        document.getElementById('supplierLocation').value = supplierProfile.location || user.location || '';
+        document.getElementById('companyWebsite').value = supplierProfile.company_website || '';
+        document.getElementById('companyDescription').value = supplierProfile.company_description || '';
+      } catch (e) {
+        console.log('Supplier profile unavailable:', e.message);
+      }
+    }
+
+    async function saveSupplierProfile() {
+      const payload = {
+        company_name: document.getElementById('companyName').value.trim(),
+        phone: document.getElementById('supplierPhone').value.trim(),
+        location: document.getElementById('supplierLocation').value.trim(),
+        company_website: document.getElementById('companyWebsite').value.trim(),
+        company_description: document.getElementById('companyDescription').value.trim()
+      };
+      if (!payload.company_name || !payload.phone || !payload.location) {
+        showAlert('alertBox', 'Company name, phone, and location are required.', 'error');
+        return;
+      }
+      try {
+        const res = await apiCall('PUT', '/fertilizer/supplier/profile', payload, true);
+        supplierProfile = { ...(supplierProfile || {}), ...res.user };
+        const user = getUser() || {};
+        setUser({ ...user, name: user.name, phone: res.user.phone, location: res.user.location });
+        showAlert('alertBox', 'Supplier profile updated.', 'success');
+        toggleSupplierProfile(false);
+      } catch (e) {
+        showAlert('alertBox', e.message || 'Unable to update supplier profile.', 'error');
+      }
     }
 
     async function loadAnalytics() {
@@ -446,6 +525,9 @@
     }
 
     loadDashboard();
+    setInterval(() => {
+      if (!document.hidden) loadDashboard();
+    }, 15000);
   </script>
 </body>
 </html>

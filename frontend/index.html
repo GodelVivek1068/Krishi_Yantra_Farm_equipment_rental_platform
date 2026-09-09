@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
   <title>KrishiYantra - Farm Equipment Rental</title>
   <link rel="stylesheet" href="css/main.css"/>
   <link rel="stylesheet" href="css/home.css"/>
@@ -18,11 +19,11 @@
     </div>
     <ul class="nav-links" id="navLinks">
       <li><a href="index.html" class="active">Home</a></li>
-      <li><a href="pages/equipment.html">Equipment</a></li>
-      <li><a href="pages/kamgar.html">Workers</a></li>
-      <li><a href="pages/fertilizer.html">Fertilizer</a></li>
-      <li><a href="pages/my-rentals.html">My Rentals</a></li>
-      <li><a href="pages/list-equipment.html">List Equipment</a></li>
+      <li id="farmerMyRentalsNav" hidden><a href="pages/my-rentals.html">My Rentals</a></li>
+      <li id="farmerListEquipmentNav" hidden><a href="pages/list-equipment.html">List Equipment</a></li>
+      <li><a href="pages/kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a></li>
+      <li><a href="pages/fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a></li>
+      <li><a href="pages/transport.html"><i class="fa-solid fa-truck"></i> Transport</a></li>
       <li><a href="pages/contact.html">Contact</a></li>
     </ul>
     <div class="nav-auth" id="navAuth">
@@ -83,6 +84,15 @@
       <a href="pages/equipment.html?cat=pump" class="cat-card">
         <div class="cat-icon">🪣</div><span>Water Pumps</span>
       </a>
+      <a href="pages/kamgar.html" class="cat-card">
+        <div class="cat-icon">👷</div><span>Workers</span>
+      </a>
+      <a href="pages/transport.html" class="cat-card">
+        <div class="cat-icon">🚛</div><span>Transport</span>
+      </a>
+      <a href="pages/fertilizer.html" class="cat-card">
+        <div class="cat-icon">🌿</div><span>Fertilizer</span>
+      </a>
     </div>
   </section>
 
@@ -94,15 +104,74 @@
     </div>
   </section>
 
+  <!-- OUR SERVICES -->
+  <section class="section services-section">
+    <h2 class="section-title">Our Services</h2>
+    <p class="section-subtitle">One platform for all your farm needs — equipment, workers, transport &amp; fertilizer</p>
+    <div class="service-tabs">
+      <button class="svc-tab active" id="svcTabWorker" onclick="switchServiceTab('worker')">
+        <i class="fa-solid fa-person-digging"></i> Workers
+      </button>
+      <button class="svc-tab" id="svcTabTransport" onclick="switchServiceTab('transport')">
+        <i class="fa-solid fa-truck"></i> Transport
+      </button>
+      <button class="svc-tab" id="svcTabFertilizer" onclick="switchServiceTab('fertilizer')">
+        <i class="fa-solid fa-seedling"></i> Fertilizer
+      </button>
+    </div>
+
+    <!-- WORKERS PANEL -->
+    <div class="svc-panel" id="svcPanelWorker">
+      <div class="svc-panel-header">
+        <div>
+          <h3><i class="fa-solid fa-person-digging"></i> Skilled Farm Workers</h3>
+          <p>Hire experienced Kamgar workers for harvesting, transplanting, irrigation, spraying &amp; more.</p>
+        </div>
+        <a href="pages/kamgar.html" class="svc-view-all btn-green">View All Workers <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+      <div class="svc-card-grid" id="workerPreviewGrid">
+        <div class="svc-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading workers...</div>
+      </div>
+    </div>
+
+    <!-- TRANSPORT PANEL -->
+    <div class="svc-panel" id="svcPanelTransport" style="display:none">
+      <div class="svc-panel-header">
+        <div>
+          <h3><i class="fa-solid fa-truck"></i> Transport Vehicles</h3>
+          <p>Book trucks, vans, pickers &amp; trailers for farm produce transport and field logistics.</p>
+        </div>
+        <a href="pages/transport.html" class="svc-view-all btn-green">View All Vehicles <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+      <div class="svc-card-grid" id="transportPreviewGrid">
+        <div class="svc-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading transport...</div>
+      </div>
+    </div>
+
+    <!-- FERTILIZER PANEL -->
+    <div class="svc-panel" id="svcPanelFertilizer" style="display:none">
+      <div class="svc-panel-header">
+        <div>
+          <h3><i class="fa-solid fa-seedling"></i> Fertilizer &amp; Crop Inputs</h3>
+          <p>Compare trusted brands and order fertilizer bags delivered directly to your farm.</p>
+        </div>
+        <a href="pages/fertilizer.html" class="svc-view-all btn-green">View All Products <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+      <div class="svc-card-grid" id="fertilizerPreviewGrid">
+        <div class="svc-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading products...</div>
+      </div>
+    </div>
+  </section>
+
   <!-- HOW IT WORKS -->
   <section class="section how-it-works">
     <h2 class="section-title">How It Works</h2>
     <div class="steps">
-      <div class="step"><div class="step-num">1</div><h3>Search Equipment</h3><p>Find tractors, harvesters & more near your location.</p></div>
+      <div class="step"><div class="step-num">1</div><h3>Search Equipment</h3><p>Find tractors, harvesters &amp; more near your location.</p></div>
       <div class="step-arrow"><i class="fa-solid fa-arrow-right"></i></div>
       <div class="step"><div class="step-num">2</div><h3>Book Online</h3><p>Select dates and confirm your rental instantly.</p></div>
       <div class="step-arrow"><i class="fa-solid fa-arrow-right"></i></div>
-      <div class="step"><div class="step-num">3</div><h3>Use & Return</h3><p>Owner delivers to your farm. Use and return on time.</p></div>
+      <div class="step"><div class="step-num">3</div><h3>Use &amp; Return</h3><p>Owner delivers to your farm. Use and return on time.</p></div>
     </div>
   </section>
 

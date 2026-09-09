@@ -66,6 +66,78 @@ img { max-width: 100%; }
 
 .nav-auth { display: flex; gap: 10px; align-items: center; }
 
+.service-menu {
+  position: relative;
+}
+
+.service-menu-toggle {
+  border: 0;
+  background: transparent;
+  color: rgba(255,255,255,0.82);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.service-menu-toggle:hover,
+.service-menu.open .service-menu-toggle {
+  color: var(--white);
+  background: rgba(255,255,255,0.12);
+}
+
+.service-menu-toggle i {
+  margin-left: 5px;
+  font-size: 0.72rem;
+  transition: transform 0.2s ease;
+}
+
+.service-menu.open .service-menu-toggle i {
+  transform: rotate(180deg);
+}
+
+.service-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 190px;
+  padding: 7px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  display: none;
+  z-index: 1100;
+}
+
+.service-menu.open .service-menu-dropdown {
+  display: grid;
+  gap: 2px;
+}
+
+.service-menu-dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  color: var(--gray-800);
+  font-size: 0.88rem;
+}
+
+.service-menu-dropdown a:hover {
+  color: var(--green-dark);
+  background: var(--green-pale);
+}
+
+.service-menu-dropdown i {
+  width: 16px;
+  color: var(--green-mid);
+  text-align: center;
+}
+
 .nav-auth.nav-auth-has-account {
   position: relative;
 }
@@ -571,6 +643,35 @@ img { max-width: 100%; }
     top: 64px; left: 0; right: 0;
     background: var(--green-dark); padding: 16px;
     gap: 4px; z-index: 998;
+  }
+  .service-menu {
+    width: 100%;
+    position: relative;
+  }
+  .service-menu-toggle {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    color: rgba(255,255,255,0.88);
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+  .service-menu.open .service-menu-dropdown {
+    position: static;
+    display: grid;
+    gap: 4px;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin-top: 6px;
+    border-radius: 8px;
+    padding: 8px;
+  }
+  .service-menu-dropdown a {
+    color: var(--gray-800);
+    padding: 8px 12px;
   }
   .section { padding: 40px 16px; }
   .section-title { font-size: 1.6rem; }

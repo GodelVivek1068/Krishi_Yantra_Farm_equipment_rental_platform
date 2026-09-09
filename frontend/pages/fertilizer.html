@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
   <title>Fertilizer Booking - KrishiYantra</title>
   <link rel="stylesheet" href="../css/main.css" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
@@ -37,19 +38,30 @@
     <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
     <ul class="nav-links" id="navLinks">
       <li><a href="../index.html">Home</a></li>
-      <li><a href="equipment.html">Equipment</a></li>
-      <li><a href="kamgar.html">Workers</a></li>
-      <li><a href="fertilizer.html" class="active">Fertilizer</a></li>
-      <li><a href="my-orders.html">My Orders</a></li>
+      <li id="farmerMyRentalsNav" hidden><a href="my-rentals.html">My Rentals</a></li>
+      <li id="farmerListEquipmentNav" hidden><a href="list-equipment.html">List Equipment</a></li>
+      <li id="farmerServicesNav" class="service-menu">
+        <button type="button" class="service-menu-toggle" aria-expanded="false">
+          Services <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="service-menu-dropdown">
+          <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
+          <a href="kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a>
+          <a href="fertilizer.html" class="active"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
+          <a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a>
+        </div>
+      </li>
+      <li id="farmerOrdersNav" hidden><a href="my-orders.html">My Orders</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
-    <div class="nav-auth" id="navAuth"><a href="login.html" class="btn-outline">Login</a><a href="register.html" class="btn-primary">Register</a></div>
+    <div class="nav-auth" id="navAuth"><a href="fertilizer-login.html" class="btn-outline">Login</a><a href="register.html" class="btn-primary">Register</a></div>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
   </nav>
 
   <div class="page-hero">
     <h1>Buy Fertilizer & Crop Inputs</h1>
     <p>Compare trusted product brands and place a booking request for fertilizer bags delivered to your farm.</p>
+    <a class="btn-outline service-back-link" href="../index.html"><i class="fa-solid fa-arrow-left"></i> Back</a>
   </div>
 
   <div class="container">

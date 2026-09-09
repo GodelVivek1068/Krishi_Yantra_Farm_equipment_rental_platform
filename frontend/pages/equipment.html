@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
   <title>Browse Equipment - KrishiYantra</title>
   <link rel="stylesheet" href="../css/main.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
@@ -56,9 +57,20 @@
     <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
     <ul class="nav-links" id="navLinks">
       <li><a href="../index.html">Home</a></li>
-      <li><a href="equipment.html" class="active">Equipment</a></li>
-      <li><a href="my-rentals.html">My Rentals</a></li>
-      <li><a href="list-equipment.html">List Equipment</a></li>
+      <li id="farmerMyRentalsNav" hidden><a href="my-rentals.html">My Rentals</a></li>
+      <li id="farmerListEquipmentNav" hidden><a href="list-equipment.html">List Equipment</a></li>
+      <li id="farmerServicesNav" class="service-menu">
+        <button type="button" class="service-menu-toggle" aria-expanded="false">
+          Services <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="service-menu-dropdown">
+          <a href="equipment.html" class="active"><i class="fa-solid fa-tractor"></i> Equipment</a>
+          <a href="kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a>
+          <a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
+          <a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a>
+        </div>
+      </li>
+      <li id="farmerOrdersNav" hidden><a href="my-orders.html">My Orders</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
     <div class="nav-auth" id="navAuth">
@@ -71,6 +83,7 @@
   <div class="page-header">
     <h1>Browse Farm Equipment</h1>
     <p>Find the right tool for your farm, near your location</p>
+    <a class="btn-outline service-back-link" href="../index.html"><i class="fa-solid fa-arrow-left"></i> Back</a>
   </div>
 
   <div class="equipment-page">
@@ -144,7 +157,7 @@
       if (equipmentRefreshTimer) clearInterval(equipmentRefreshTimer);
       equipmentRefreshTimer = setInterval(() => {
         if (document.hidden) return; // Pause if tab is not visible
-        loadEquipment();
+        loadEquipment(true);
       }, EQUIPMENT_REFRESH_INTERVAL);
     }
 
@@ -210,12 +223,14 @@
       }
     }
 
-    async function loadEquipment() {
+    async function loadEquipment(silent = false) {
       const grid = document.getElementById('equipmentGrid');
       const count = document.getElementById('resultsCount');
       const altBox = document.getElementById('fallbackAlternatives');
-      altBox.innerHTML = '';
-      grid.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>';
+      if (!silent) {
+        altBox.innerHTML = '';
+        grid.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>';
+      }
 
       const params = new URLSearchParams();
       const search = document.getElementById('searchQ').value;
@@ -254,9 +269,11 @@
           grid.innerHTML = equipment.map(renderEquipmentCard).join('');
         }
       } catch (e) {
-        count.textContent = '0 equipment found';
-        altBox.innerHTML = '';
-        grid.innerHTML = `<div class="no-results"><i class="fa-solid fa-plug-circle-xmark"></i>${e.message || 'Unable to connect to backend. Please start the API server.'}</div>`;
+        if (!silent) {
+          count.textContent = '0 equipment found';
+          altBox.innerHTML = '';
+          grid.innerHTML = `<div class="no-results"><i class="fa-solid fa-plug-circle-xmark"></i>${e.message || 'Unable to connect to backend. Please start the API server.'}</div>`;
+        }
       }
     }
 
@@ -264,6 +281,12 @@
       ['searchQ','locFilter','priceFilter'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('catFilter').value = '';
       loadEquipment();
+    }
+
+    function startEquipmentRefresh() {
+      setInterval(() => {
+        loadEquipment(true);
+      }, 15000);
     }
 
     loadEquipment();

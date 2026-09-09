@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Fertilizer Orders - KrishiYantra</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <title>My Orders - KrishiYantra</title>
   <link rel="stylesheet" href="../css/main.css" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
@@ -22,6 +23,10 @@
     .badge-amber { background: #fef3c7; color: #92400e; }
     .badge-red { background: #fee2e2; color: #b91c1c; }
     .amount { font-weight: 800; color: var(--green-mid); font-size: 1.12rem; white-space: nowrap; }
+    .order-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .order-filter { border: 1px solid var(--gray-200); background: white; color: var(--gray-600); border-radius: 999px; padding: 8px 14px; cursor: pointer; font: inherit; }
+    .order-filter.active { background: var(--green-dark); border-color: var(--green-dark); color: white; }
+    .order-service { color: var(--green-mid); font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
     .no-orders { text-align: center; padding: 60px; color: var(--gray-400); }
     .login-prompt { text-align: center; padding: 60px; }
     .login-prompt h3 { font-family: 'Playfair Display', serif; color: var(--green-dark); margin-bottom: 16px; }
@@ -32,9 +37,19 @@
     <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
     <ul class="nav-links" id="navLinks">
       <li><a href="../index.html">Home</a></li>
-      <li><a href="equipment.html">Equipment</a></li>
-      <li><a href="kamgar.html">Workers</a></li>
-      <li><a href="fertilizer.html">Fertilizer</a></li>
+      <li id="farmerMyRentalsNav" hidden><a href="my-rentals.html">My Rentals</a></li>
+      <li id="farmerListEquipmentNav" hidden><a href="list-equipment.html">List Equipment</a></li>
+      <li id="farmerServicesNav" class="service-menu">
+        <button type="button" class="service-menu-toggle" aria-expanded="false">
+          Services <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="service-menu-dropdown">
+          <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
+          <a href="kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a>
+          <a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
+          <a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a>
+        </div>
+      </li>
       <li><a href="my-orders.html" class="active">My Orders</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
@@ -43,8 +58,8 @@
   </nav>
 
   <div class="page-header">
-    <h1>My Fertilizer Orders</h1>
-    <p>Track your crop input bookings and deliveries</p>
+    <h1>My Orders</h1>
+    <p>Track your equipment, worker, transport, and fertilizer orders</p>
   </div>
 
   <div class="orders-page" id="pageContent">
@@ -60,13 +75,73 @@
       return 'badge-red';
     }
 
+    function orderValue(value, fallback = 'Not provided') {
+      return escapeHtml(value || fallback);
+    }
+
+    function formatAmount(value) {
+      return `₹${Number(value || 0).toLocaleString('en-IN')}`;
+    }
+
+    let allOrders = [];
+    let activeFilter = 'all';
+
+    function renderOrders() {
+      const page = document.getElementById('pageContent');
+      const orders = activeFilter === 'all'
+        ? allOrders
+        : allOrders.filter(order => order.service === activeFilter);
+
+      if (!orders.length) {
+        page.innerHTML = `<div class="no-orders"><i class="fa-solid fa-receipt"></i>No orders found for this service.<br/><a href="../index.html" class="btn-green" style="display:inline-flex;margin-top:20px">Browse Services</a></div>`;
+        return;
+      }
+
+      page.innerHTML = `
+        <div class="order-filters">
+          ${['all', 'equipment', 'workers', 'transport', 'fertilizer'].map(filter => `
+            <button class="order-filter ${activeFilter === filter ? 'active' : ''}" type="button" data-filter="${filter}">
+              ${filter === 'all' ? 'All Orders' : filter.charAt(0).toUpperCase() + filter.slice(1)}
+            </button>`).join('')}
+        </div>
+        ${orders.map(order => `
+          <div class="order-card">
+            <div class="order-top">
+              <div>
+                <div class="order-service">${order.serviceLabel}</div>
+                <div class="order-name">${orderValue(order.name)}</div>
+                <div class="order-meta">
+                  <span><i class="fa-solid fa-calendar"></i> ${orderValue(order.date)}</span>
+                  <span><i class="fa-solid fa-location-dot"></i> ${orderValue(order.location, 'Farm location')}</span>
+                </div>
+              </div>
+              <div class="order-actions">
+                <span class="badge ${statusClass(order.status)}">${orderValue(order.status, 'pending')}</span>
+                <span class="amount">${formatAmount(order.amount)}</span>
+              </div>
+            </div>
+            <div class="order-meta">
+              <span><i class="fa-solid fa-tag"></i> Order type: ${order.serviceLabel}</span>
+              ${order.detail ? `<span><i class="fa-solid fa-circle-info"></i> ${orderValue(order.detail)}</span>` : ''}
+            </div>
+          </div>
+        `).join('')}`;
+
+      page.querySelectorAll('[data-filter]').forEach(button => {
+        button.addEventListener('click', () => {
+          activeFilter = button.dataset.filter;
+          renderOrders();
+        });
+      });
+    }
+
     async function init() {
       const page = document.getElementById('pageContent');
       if (!isLoggedIn()) {
         page.innerHTML = `
           <div class="login-prompt">
             <h3>Please Login to View Your Orders</h3>
-            <p style="color:var(--gray-600);margin-bottom:24px">Track fertilizer orders and payment status in one place.</p>
+            <p style="color:var(--gray-600);margin-bottom:24px">Track equipment, worker, transport, and fertilizer orders in one place.</p>
             <a href="login.html?redirect=my-orders.html" class="btn-green" style="display:inline-flex">
               <i class="fa-solid fa-right-to-bracket"></i> Login Now
             </a>
@@ -74,37 +149,43 @@
         return;
       }
 
+      page.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading your orders...</div>';
       try {
-        const res = await apiCall('GET', '/fertilizer/orders/my', null, true);
-        const orders = res.orders || [];
-        if (!orders.length) {
-          page.innerHTML = `<div class="no-orders"><i class="fa-solid fa-basket-shopping"></i>No fertilizer orders yet.<br/><a href="fertilizer.html" class="btn-green" style="display:inline-flex;margin-top:20px">Browse Products</a></div>`;
-          return;
-        }
+        const responses = await Promise.allSettled([
+          apiCall('GET', '/rentals/my', null, true),
+          apiCall('GET', '/kamgar/jobs/my', null, true),
+          apiCall('GET', '/transport/my-bookings', null, true),
+          apiCall('GET', '/fertilizer/orders/my', null, true)
+        ]);
+        const [rentals, jobs, transports, fertilizer] = responses.map(response => response.status === 'fulfilled' ? response.value : {});
+        const user = getUser() || {};
 
-        page.innerHTML = orders.map(order => `
-          <div class="order-card">
-            <div class="order-top">
-              <div>
-                <div class="order-name">${order.product_name || 'Fertilizer Product'}</div>
-                <div class="order-meta">
-                  <span><i class="fa-solid fa-box"></i> Qty: ${order.quantity || 0} bags</span>
-                  <span><i class="fa-solid fa-location-dot"></i> ${order.delivery_location || 'Farm location'}</span>
-                  <span><i class="fa-solid fa-calendar"></i> ${order.delivery_date || 'Flexible schedule'}</span>
-                </div>
-              </div>
-              <div class="order-actions">
-                <span class="badge ${statusClass(order.status)}">${order.status || 'requested'}</span>
-                <span class="amount">₹${order.total_amount || 0}</span>
-              </div>
-            </div>
-            <div class="order-meta">
-              <span><i class="fa-solid fa-wallet"></i> Payment: ${order.payment_status || 'pending'}</span>
-              <span><i class="fa-solid fa-store"></i> Supplier: ${order.supplier_name || 'Supplier'}</span>
-              <span><i class="fa-solid fa-receipt"></i> Unit price: ₹${order.unit_price || 0}</span>
-            </div>
-          </div>
-        `).join('');
+        allOrders = [
+          ...(rentals.rentals || []).map(order => ({
+            service: 'equipment', serviceLabel: 'Equipment', name: order.equipment_name,
+            date: `${order.start_date || ''} → ${order.end_date || ''}`, location: order.delivery_address,
+            status: order.status, amount: order.total_amount, detail: 'Equipment rental'
+          })),
+          ...(jobs.jobs || []).filter(order => {
+            const uid = String(user._id || user.id || '');
+            return uid && String(order.farmer_id) === uid;
+          }).map(order => ({
+            service: 'workers', serviceLabel: 'Workers', name: order.title,
+            date: `${order.start_date || ''} → ${order.end_date || ''}`, location: order.location,
+            status: order.status, amount: order.estimated_cost, detail: `Worker: ${order.worker_name || 'Assigned worker'}`
+          })),
+          ...(transports.rentals || []).map(order => ({
+            service: 'transport', serviceLabel: 'Transport', name: order.transport_name,
+            date: `${order.start_date || ''} → ${order.end_date || ''}`, location: order.delivery_address,
+            status: order.status, amount: order.total_amount, detail: 'Transport booking'
+          })),
+          ...(fertilizer.orders || []).map(order => ({
+            service: 'fertilizer', serviceLabel: 'Fertilizer', name: order.product_name,
+            date: order.delivery_date, location: order.delivery_location,
+            status: order.status, amount: order.total_amount, detail: `Supplier: ${order.supplier_name || 'Supplier'}`
+          }))
+        ];
+        renderOrders();
       } catch (error) {
         page.innerHTML = `<div class="no-orders"><i class="fa-solid fa-circle-exclamation"></i>Unable to load orders.<br><small>${error.message || 'Please try again later.'}</small></div>`;
       }

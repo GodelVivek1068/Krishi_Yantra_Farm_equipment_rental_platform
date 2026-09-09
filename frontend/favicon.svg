@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff9f1c"/>
+      <stop offset="1" stop-color="#ffe66d"/>
+    </linearGradient>
+    <linearGradient id="field" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#65b32e"/>
+      <stop offset="1" stop-color="#006838"/>
+    </linearGradient>
+  </defs>
+  <circle cx="256" cy="256" r="244" fill="#fff" stroke="#006838" stroke-width="16"/>
+  <circle cx="256" cy="184" r="100" fill="url(#sun)"/>
+  <path d="M32 344c84-42 151-44 224-5 58-36 133-47 224-30v79H32z" fill="#67b32e"/>
+  <path d="M32 386c104-45 185-38 251-4 68-42 142-63 197-62-73 36-135 82-184 144H91z" fill="url(#field)"/>
+  <path d="M104 411c84-57 164-77 251-91M229 470c50-73 107-121 183-151" fill="none" stroke="#fff" stroke-width="12"/>
+  <path d="M365 297c-12-75 18-111 45-150 19 41 10 83-45 150zm-8 4c-48-59-78-88-105-91 1 46 34 80 105 91z" fill="#4d9f25"/>
+  <path d="M357 307c5-44 23-83 43-118" fill="none" stroke="#fff" stroke-width="7"/>
+  <g fill="#005437" stroke="#005437" stroke-linejoin="round">
+    <path d="M92 319h174l18-23h67c18 0 32 10 37 26l10 30H100z"/>
+    <path d="M127 319l12-82c2-13 12-21 25-21h76c17 0 27 9 30 24l12 79z" fill="#fff" stroke-width="10"/>
+    <path d="M143 235h91l11 72h-112z" fill="#fff" stroke-width="9"/>
+    <path d="M180 235v72M221 235l8 72" fill="none" stroke-width="9"/>
+    <circle cx="174" cy="264" r="13"/>
+    <path d="M174 278l-12 30m12-23 25 15m-1-15 10-15" fill="none" stroke-width="8" stroke-linecap="round"/>
+    <path d="M255 223v-34c0-18 10-27 24-27v10c-8 0-13 5-13 17v34z"/>
+    <rect x="260" y="219" width="13" height="84" rx="4"/>
+    <circle cx="139" cy="355" r="51" fill="#005437" stroke="#fff" stroke-width="13"/>
+    <circle cx="139" cy="355" r="14" fill="#fff" stroke="none"/>
+    <circle cx="291" cy="350" r="35" fill="#005437" stroke="#fff" stroke-width="11"/>
+    <circle cx="291" cy="350" r="10" fill="#fff" stroke="none"/>
+    <rect x="310" y="299" width="45" height="24" rx="4" fill="#fff" stroke="none"/>
+  </g>
+</svg>
