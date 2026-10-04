@@ -1,108 +1,581 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
-  <title>Transport - KrishiYantra</title>
-  <link rel="stylesheet" href="../css/main.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <title>Farm Transport Vehicles - KrishiYantra</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    body { background: #f5f9f6; }
-    .page-hero { background: linear-gradient(135deg, #1d4d36, #2d7a4f); color: white; padding: 48px 24px; text-align: center; }
-    .page-hero h1 { font-family: 'Playfair Display', serif; font-size: 2.3rem; margin-bottom: 10px; }
-    .page-hero p { max-width: 700px; margin: 0 auto; color: rgba(255,255,255,0.85); }
-    .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; }
-    .filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; background: white; border-radius: 16px; box-shadow: var(--shadow-sm); padding: 18px; border: 1px solid #e4efe6; margin-bottom: 24px; }
-    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; }
-    .transport-card { background: white; border-radius: 18px; overflow: hidden; border: 1px solid #e4efe6; box-shadow: var(--shadow-sm); transition: transform 0.2s ease, box-shadow 0.2s ease; }
-    .transport-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(29,77,54,0.12); }
-    .transport-card-img { width: 100%; height: 200px; object-fit: cover; display: block; background: linear-gradient(135deg, #d9f7e6, #b7e9c6); }
-    .transport-card-img-placeholder { width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; font-size: 4rem; background: linear-gradient(135deg, #d9f7e6, #b7e9c6); }
-    .transport-card-body { padding: 20px; }
-    .transport-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .badge { background: rgba(45,122,79,0.1); color: var(--green-dark); font-weight: 700; padding: 6px 10px; border-radius: 999px; font-size: 0.76rem; }
-    .meta { margin: 10px 0; color: var(--gray-600); font-size: 0.94rem; }
-    .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
-    .pill { background: #f1f8f3; color: #1c5a3a; border: 1px solid #dfeee2; padding: 6px 9px; border-radius: 999px; font-size: 0.75rem; }
-    .price { font-size: 1.2rem; font-weight: 800; color: var(--green-dark); }
-    .btn-row { display: flex; gap: 10px; margin-top: 14px; }
-    .empty-state { text-align: center; color: var(--gray-600); padding: 30px 10px; }
-    .status { margin-top: 4px; font-size: 0.82rem; color: var(--gray-600); }
-    .availability-box { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: #fff7ed; color: #9a3412; font-size: 0.82rem; line-height: 1.5; }
-    .availability-box.available { background: #ecfdf3; color: #166534; }
-    .transport-rating { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--gray-600); margin-bottom: 8px; }
-    .transport-rating .star { color: #f59e0b; }
-    .transport-capacity-badge { display: inline-flex; align-items: center; gap: 4px; background: #eef2ff; color: #4338ca; font-weight: 600; padding: 4px 10px; border-radius: 999px; font-size: 0.76rem; }
+    body {
+      background: #f8faf9;
+      color: #1e293b;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* Hero Section */
+    .page-hero {
+      background: radial-gradient(circle at 20% 25%, #2d7a4f 0%, #17422c 60%, #0d281a 100%);
+      color: white;
+      padding: 56px 24px 64px;
+      text-align: center;
+      position: relative;
+    }
+
+    .page-hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      margin: 0 0 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .page-hero p {
+      max-width: 680px;
+      margin: 0 auto 24px;
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 1.05rem;
+      line-height: 1.55;
+    }
+
+    .page-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.88rem;
+      text-decoration: none;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.24);
+      border-color: #fff;
+      transform: translateY(-1px);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* Filter Card */
+    .filter-card {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 12px 32px -4px rgba(15, 61, 36, 0.08), 0 4px 12px rgba(0, 0, 0, 0.03);
+      border: 1px solid #e3ede6;
+      padding: 24px 28px;
+      margin-top: -36px;
+      position: relative;
+      z-index: 10;
+      margin-bottom: 32px;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1.25fr 1fr 1.1fr auto;
+      gap: 16px;
+      align-items: flex-end;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #1b633e;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrap i {
+      position: absolute;
+      left: 14px;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      pointer-events: none;
+    }
+
+    .input-wrap input,
+    .input-wrap select {
+      padding-left: 38px !important;
+    }
+
+    .form-group input,
+    .form-group select {
+      height: 44px;
+      padding: 0 14px;
+      border: 1.5px solid #d8e6dc;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-family: inherit;
+      color: #1e293b;
+      background: #fbfdfc;
+      transition: all 0.2s ease;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #2d7a4f;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(45, 122, 79, 0.14);
+    }
+
+    .filter-btn-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-search {
+      height: 44px;
+      padding: 0 22px;
+      background: #1b633e;
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(27, 99, 62, 0.2);
+    }
+
+    .btn-search:hover {
+      background: #14532d;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(27, 99, 62, 0.28);
+    }
+
+    .btn-clear {
+      height: 44px;
+      padding: 0 16px;
+      background: #f1f5f3;
+      color: #475569;
+      border: 1px solid #d8e6dc;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .btn-clear:hover {
+      background: #e2ede5;
+      color: #0f172a;
+    }
+
+    /* Results Header */
+    .results-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e9f0ea;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .results-count {
+      font-size: 0.95rem;
+      color: #475569;
+      font-weight: 500;
+    }
+
+    .results-count strong {
+      color: #1b633e;
+      font-weight: 700;
+    }
+
+    /* Card Grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 22px;
+    }
+
+    .transport-card {
+      background: #ffffff;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid #e3ede6;
+      box-shadow: 0 4px 16px rgba(15, 61, 36, 0.04);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+
+    .transport-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 28px -4px rgba(15, 61, 36, 0.1);
+      border-color: #84cc99;
+    }
+
+    .transport-card-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+      background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    }
+
+    .transport-card-img-placeholder {
+      width: 100%;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    }
+
+    .transport-card-body {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      justify-content: space-between;
+    }
+
+    .transport-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .transport-top h3 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f3d24;
+    }
+
+    .badge-type {
+      background: rgba(45, 122, 79, 0.1);
+      color: #1b633e;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      white-space: nowrap;
+    }
+
+    .transport-rating {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.86rem;
+      color: #475569;
+      margin-bottom: 12px;
+    }
+
+    .star {
+      color: #f59e0b;
+    }
+
+    .transport-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+
+    .transport-meta-row i {
+      color: #1b633e;
+      width: 16px;
+      text-align: center;
+    }
+
+    .capacity-tag {
+      background: #eff6ff;
+      color: #2563eb;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 0.76rem;
+    }
+
+    .transport-desc {
+      color: #64748b;
+      font-size: 0.86rem;
+      line-height: 1.48;
+      margin: 10px 0 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-top: 14px;
+      border-top: 1px solid #f1f5f3;
+      margin-bottom: 14px;
+    }
+
+    .price-label {
+      font-size: 0.82rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .price {
+      font-size: 1.32rem;
+      font-weight: 800;
+      color: #1b633e;
+    }
+
+    .price span {
+      font-size: 0.82rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .availability-banner {
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .avail-now {
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #dcfce7;
+    }
+
+    .avail-later {
+      background: #fffbeb;
+      color: #92400e;
+      border: 1px solid #fef3c7;
+    }
+
+    .btn-book {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #1b633e;
+      color: #ffffff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.9rem;
+      width: 100%;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+    }
+
+    .btn-book:hover {
+      background: #14532d;
+      transform: translateY(-1px);
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #64748b;
+      padding: 50px 20px;
+      grid-column: 1 / -1;
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid #e2ece4;
+    }
+
+    .empty-state i {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 12px;
+      color: #94a3b8;
+    }
+
+    @media (max-width: 980px) {
+      .filter-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .filter-btn-group {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .filter-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page-hero {
+        padding: 40px 20px 48px;
+      }
+
+      .page-hero h1 {
+        font-size: 1.9rem;
+      }
+
+      .filter-card {
+        padding: 18px 16px;
+        margin-top: -24px;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
+
 <body>
+  <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-brand"><i class="fa-solid fa-truck"></i><span>KrishiYantra</span></div>
     <ul class="nav-links" id="navLinks">
       <li><a href="../index.html">Home</a></li>
+      <li id="farmerDashboardNav" hidden><a href="farmer-dashboard.html">Farmer Dashboard</a></li>
       <li id="farmerMyRentalsNav" hidden><a href="my-rentals.html">My Rentals</a></li>
       <li id="farmerListEquipmentNav" hidden><a href="list-equipment.html">List Equipment</a></li>
-      <li id="farmerServicesNav" class="service-menu">
-        <button type="button" class="service-menu-toggle" aria-expanded="false">
-          Services <i class="fa-solid fa-chevron-down"></i>
-        </button>
-        <div class="service-menu-dropdown">
-          <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
-          <a href="kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a>
-          <a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
-          <a href="transport.html" class="active"><i class="fa-solid fa-truck"></i> Transport</a>
-        </div>
-      </li>
+      <li><a href="kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a></li>
+      <li><a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a></li>
+      <li><a href="transport.html" class="active"><i class="fa-solid fa-truck"></i> Transport</a></li>
       <li id="transportDashboardNav" hidden><a href="transport-dashboard.html">Dashboard</a></li>
       <li id="farmerOrdersNav" hidden><a href="my-transports.html">My Orders</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
-    <div class="nav-auth" id="navAuth"><a href="transport-login.html" class="btn-outline">Login</a><a href="transport-register.html" class="btn-primary">Register</a></div>
+    <div class="nav-auth" id="navAuth">
+      <a href="transport-login.html" class="btn-outline">Login</a>
+      <a href="transport-register.html" class="btn-primary">Register</a>
+    </div>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
   </nav>
 
-  <div class="page-hero">
+  <!-- HERO HEADER -->
+  <header class="page-hero">
     <h1>Farm Transport Vehicles</h1>
-    <p>Book small trucks, big trucks, tractors with trolley, and pickups for farm produce and agricultural logistics.</p>
-    <a class="btn-outline service-back-link" href="../index.html"><i class="fa-solid fa-arrow-left"></i> Back</a>
-    <div class="filters">
-      <label>Location</label>
-      <input id="transportLocation" type="text" placeholder="Pune / Nashik / Kolhapur" />
+    <p>Book tractor trolleys, pickup mini-trucks, tempo vans, and heavy goods vehicles for farm produce and agricultural logistics.</p>
+    <div class="page-actions">
+      <button type="button" class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back</button>
     </div>
-    <div class="form-group">
-      <label>Vehicle Type</label>
-      <select id="vehicleType" onchange="loadTransport()">
-        <option value="">All Farm Vehicles</option>
-        <option value="small_truck">Small Truck (Tata Ace, Dost)</option>
-        <option value="big_truck">Big Truck (Tata 407, Heavy Goods)</option>
-        <option value="tractor_trolley">Tractor with Trolley</option>
-        <option value="pickup">Pickup (Bolero, Camper, 4x4)</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label>Max price per day</label>
-      <input id="maxPrice" type="number" placeholder="5000" />
-    </div>
-    <div class="form-group">
-      <label>Available only</label>
-      <select id="availableOnly">
-        <option value="false">All vehicles</option>
-        <option value="true">Available only</option>
-      </select>
-    </div>
-    <button class="btn-green" onclick="loadTransport()">Search Transport</button>
-  </div>
+  </header>
 
-  <div class="container">
+  <!-- MAIN CONTAINER WITH FILTER CARD -->
+  <main class="container">
+    <div class="filter-card">
+      <div class="filter-grid">
+        <div class="form-group">
+          <label for="transportLocation"><i class="fa-solid fa-location-dot"></i> Location</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input id="transportLocation" type="text" placeholder="Pune / Nashik / Kolhapur..." />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="vehicleType"><i class="fa-solid fa-truck-moving"></i> Vehicle Type</label>
+          <select id="vehicleType" onchange="loadTransport()">
+            <option value="">All Farm Vehicles</option>
+            <option value="small_truck">Small Truck (Tata Ace, Dost)</option>
+            <option value="big_truck">Big Truck (Tata 407, Heavy Goods)</option>
+            <option value="tractor_trolley">Tractor with Trolley</option>
+            <option value="pickup">Pickup (Bolero, Camper, 4x4)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="maxPrice"><i class="fa-solid fa-indian-rupee-sign"></i> Max Rate (₹/km)</label>
+          <input id="maxPrice" type="number" min="100" max="300" placeholder="e.g. 200" />
+        </div>
+
+        <div class="form-group">
+          <label for="availableOnly"><i class="fa-regular fa-calendar-check"></i> Availability</label>
+          <select id="availableOnly" onchange="loadTransport()">
+            <option value="false">All Vehicles</option>
+            <option value="true">Available Now Only</option>
+          </select>
+        </div>
+
+        <div class="filter-btn-group">
+          <button class="btn-search" onclick="loadTransport()"><i class="fa-solid fa-filter"></i> Search</button>
+          <button class="btn-clear" onclick="clearTransportFilters()"><i class="fa-solid fa-rotate-left"></i> Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS BAR -->
+    <div class="results-bar">
+      <div class="results-count" id="resultsCountSummary">Loading vehicles...</div>
+    </div>
+
+    <!-- VEHICLES GRID -->
     <div id="transportResults" class="card-grid"></div>
-  </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-brand"><i class="fa-solid fa-tractor"></i> KrishiYantra</div>
+    <p>Empowering Indian Farmers with Smart Agricultural Rental & Services</p>
+    <p class="footer-copy">© 2026 KrishiYantra</p>
+  </footer>
 
   <script src="../js/main.js"></script>
   <script>
     async function loadTransport(silent = false) {
       const results = document.getElementById('transportResults');
+      const countSummary = document.getElementById('resultsCountSummary');
       const params = new URLSearchParams();
       const location = document.getElementById('transportLocation').value.trim();
       const vehicleType = document.getElementById('vehicleType').value.trim();
@@ -111,58 +584,80 @@
 
       if (location) params.append('location', location);
       if (vehicleType) params.append('vehicle_type', vehicleType);
-      if (maxPrice) params.append('max_price', maxPrice);
+      if (maxPrice) params.append('max_rate', maxPrice);
       params.append('available_only', availableOnly);
 
       if (!silent) {
-        results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading transport...</div>';
+        results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading transport vehicles...</div>';
       }
 
       try {
         const res = await apiCall('GET', `/transport/?${params.toString()}`);
         const vehicles = res.transport || [];
+
+        if (countSummary) {
+          countSummary.innerHTML = `Showing <strong>${vehicles.length}</strong> transport vehicle${vehicles.length === 1 ? '' : 's'}`;
+        }
+
         if (!vehicles.length) {
-          results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-truck"></i>No transport vehicles found for the selected filters.</div>';
+          results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-truck"></i>No transport vehicles match your search criteria. Try clearing filters.</div>';
           return;
         }
+
         results.innerHTML = vehicles.map(vehicle => {
           const ratingAvg = Number(vehicle.rating_avg || 0);
           const ratingCount = Number(vehicle.rating_count || 0);
           const starsHtml = ratingCount > 0
-            ? `<span class="star"><i class="fa-solid fa-star"></i></span> ${ratingAvg.toFixed(1)} <span style="opacity:0.7">(${ratingCount} reviews)</span>`
-            : `<span style="opacity:0.6"><i class="fa-regular fa-star"></i> No ratings yet</span>`;
+            ? `<span class="star"><i class="fa-solid fa-star"></i></span> <strong>${ratingAvg.toFixed(1)}</strong> <span style="color:#94a3b8">(${ratingCount} review${ratingCount === 1 ? '' : 's'})</span>`
+            : `<span style="color:#94a3b8"><i class="fa-regular fa-star"></i> No ratings yet</span>`;
           const imageHtml = vehicle.image_url
-            ? `<img class="transport-card-img" src="${vehicle.image_url}" alt="${vehicle.name}" loading="lazy" onerror="this.outerHTML='<div class=\\'transport-card-img-placeholder\\'>🚛</div>'">`
+            ? `<img class="transport-card-img" src="${vehicle.image_url}" alt="${escapeHtml(vehicle.name || 'Vehicle')}" loading="lazy" onerror="this.outerHTML='<div class=\\'transport-card-img-placeholder\\'>🚛</div>'">`
             : `<div class="transport-card-img-placeholder">🚛</div>`;
           const vehicleTypeLabel = (vehicle.vehicle_type || 'other').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          const isAvail = Boolean(vehicle.available);
+
           return `
             <div class="transport-card">
               ${imageHtml}
               <div class="transport-card-body">
-                <div class="transport-top">
-                  <h3 style="margin:0; font-size:1.1rem; font-weight:700; color:#1d4d36;">${vehicle.name}</h3>
-                  <span class="badge">${vehicleTypeLabel}</span>
+                <div>
+                  <div class="transport-top">
+                    <h3>${escapeHtml(vehicle.name || 'Transport Vehicle')}</h3>
+                    <span class="badge-type">${escapeHtml(vehicleTypeLabel)}</span>
+                  </div>
+
+                  <div class="transport-rating">${starsHtml}</div>
+
+                  <div class="transport-meta-row">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>${escapeHtml(vehicle.location || 'Maharashtra, India')}</span>
+                  </div>
+
+                  <div class="transport-meta-row">
+                    <i class="fa-solid fa-weight-hanging"></i>
+                    <span>${escapeHtml(vehicle.capacity || 'Load capacity')}</span>
+                    <span class="capacity-tag">${escapeHtml(vehicleTypeLabel)}</span>
+                  </div>
+
+                  <div class="transport-desc">
+                    ${escapeHtml(vehicle.description || 'Reliable agricultural logistics and field transport vehicle.')}
+                  </div>
                 </div>
-                <div class="transport-rating">${starsHtml}</div>
-                <div class="meta"><i class="fa-solid fa-location-dot"></i> ${vehicle.location || 'Location not provided'}</div>
-                <div class="meta" style="display:flex;align-items:center;gap:8px;">
-                  <i class="fa-solid fa-weight-hanging"></i> ${vehicle.capacity || 'Capacity not specified'}
-                  <span class="transport-capacity-badge"><i class="fa-solid fa-truck-moving"></i> ${vehicleTypeLabel}</span>
-                </div>
-                <div class="meta" style="font-size:0.88rem;line-height:1.6;">${vehicle.description || 'Transport vehicle available for hire.'}</div>
-                <div class="price">₹${Number(vehicle.price_per_day || 0).toLocaleString('en-IN')} <small style="font-size:0.8rem;font-weight:400;color:#6b7280;">/ day</small></div>
-                <div class="availability-box ${vehicle.available ? 'available' : ''}">
-                  <i class="fa-solid ${vehicle.available ? 'fa-circle-check' : 'fa-calendar-day'}"></i>
-                  ${vehicle.available
-                    ? 'Available for new bookings'
-                    : vehicle.unavailable_until_label
-                      ? `Available again after ${vehicle.unavailable_until_label} (${vehicle.days_until_available} day${vehicle.days_until_available === 1 ? '' : 's'})`
-                      : 'Availability will be updated by owner'}
-                </div>
-                <div class="btn-row">
-                  <a class="btn-green" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;width:100%;" href="transport-detail.html?id=${vehicle._id}">
-                    <i class="fa-solid ${vehicle.available ? 'fa-calendar-check' : 'fa-eye'}" style="margin-right:6px;"></i>
-                    ${vehicle.available ? 'Book Now' : 'View Details'}
+
+                <div>
+                  <div class="availability-banner ${isAvail ? 'avail-now' : 'avail-later'}">
+                    <i class="fa-solid ${isAvail ? 'fa-circle-check' : 'fa-calendar-clock'}"></i>
+                    <span>${isAvail ? 'Available for booking today' : (vehicle.unavailable_until_label ? `Available after ${escapeHtml(vehicle.unavailable_until_label)}` : 'Schedule booking in advance')}</span>
+                  </div>
+
+                  <div class="price-row">
+                    <span class="price-label">Rate per km</span>
+                    <div class="price">₹${Number(vehicle.rate_per_km || 0).toLocaleString('en-IN')} <span>/ km</span></div>
+                  </div>
+
+                  <a class="btn-book" href="transport-detail.html?id=${vehicle._id}">
+                    <i class="fa-solid ${isAvail ? 'fa-calendar-check' : 'fa-eye'}"></i>
+                    <span>${isAvail ? 'Book Transport' : 'View Details'}</span>
                   </a>
                 </div>
               </div>
@@ -171,10 +666,36 @@
         }).join('');
       } catch (error) {
         if (!silent) {
-          results.innerHTML = `<div class="empty-state"><i class="fa-solid fa-plug-circle-xmark"></i>${error.message || 'Unable to fetch transport vehicles.'}</div>`;
+          results.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i>${error.message || 'Unable to fetch transport vehicles.'}</div>`;
         }
       }
     }
+
+    function clearTransportFilters() {
+      document.getElementById('transportLocation').value = '';
+      document.getElementById('vehicleType').value = '';
+      document.getElementById('maxPrice').value = '';
+      document.getElementById('availableOnly').value = 'false';
+      loadTransport();
+    }
+
+    function goBack() {
+      if (window.history.length > 1) {
+        window.history.back();
+        return;
+      }
+      window.location.href = '../index.html';
+    }
+
+    // Attach Enter key listener
+    ['transportLocation', 'maxPrice'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('keydown', e => {
+          if (e.key === 'Enter') loadTransport();
+        });
+      }
+    });
 
     loadTransport();
     setInterval(() => {
@@ -182,4 +703,5 @@
     }, 15000);
   </script>
 </body>
+
 </html>

@@ -6,7 +6,7 @@ Fields:
   - name           : str
   - vehicle_type   : str ('truck'|'van'|'picker'|'trailer'|'container'|'tanker'|'other')
   - capacity       : str (e.g. '5 tons', '500 kg')
-  - price_per_day  : int (in INR)
+  - rate_per_km    : int (in INR, between MIN_RATE_PER_KM and MAX_RATE_PER_KM)
   - location       : str
   - city           : str
   - district       : str
@@ -24,7 +24,7 @@ TRANSPORT_SCHEMA = {
     'name': str,
     'vehicle_type': str,
     'capacity': str,
-    'price_per_day': int,
+    'rate_per_km': int,
     'location': str,
     'city': str,
     'district': str,
@@ -39,3 +39,6 @@ TRANSPORT_SCHEMA = {
 }
 
 VALID_VEHICLE_TYPES = ['truck', 'van', 'picker', 'trailer', 'container', 'tanker', 'other']
+
+MIN_RATE_PER_KM = 100
+MAX_RATE_PER_KM = 300

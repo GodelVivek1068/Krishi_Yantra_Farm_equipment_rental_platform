@@ -1,101 +1,608 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
-  <title>Kamgar Hiring - KrishiYantra</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <title>Find Skilled Farm Workers - KrishiYantra</title>
   <link rel="stylesheet" href="../css/main.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    body { background: #f5f9f6; }
-    .page-hero { background: linear-gradient(135deg, #1d4d36, #2d7a4f); color: white; padding: 48px 24px; text-align: center; }
-    .page-hero h1 { font-family: 'Playfair Display', serif; font-size: 2.3rem; margin-bottom: 10px; }
-    .page-hero p { max-width: 700px; margin: 0 auto; color: rgba(255,255,255,0.85); }
-    .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; }
-    .filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; background: white; border-radius: 16px; box-shadow: var(--shadow-sm); padding: 18px; border: 1px solid #e4efe6; margin-bottom: 24px; }
-    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
-    .worker-card { background: white; border-radius: 18px; padding: 20px; border: 1px solid #e4efe6; box-shadow: var(--shadow-sm); }
-    .worker-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #d9f7e6, #b7e9c6); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #1d4d36; }
-    .badge { background: rgba(45,122,79,0.1); color: var(--green-dark); font-weight: 700; padding: 6px 10px; border-radius: 999px; font-size: 0.76rem; }
-    .meta { margin: 10px 0; color: var(--gray-600); font-size: 0.94rem; }
-    .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
-    .pill { background: #f1f8f3; color: #1c5a3a; border: 1px solid #dfeee2; padding: 6px 9px; border-radius: 999px; font-size: 0.75rem; }
-    .price { font-size: 1.2rem; font-weight: 800; color: var(--green-dark); }
-    .btn-row { display: flex; gap: 10px; margin-top: 14px; }
-    .empty-state { text-align: center; color: var(--gray-600); padding: 30px 10px; }
-    .inline-form { display: grid; gap: 12px; }
-    .status { margin-top: 10px; font-size: 0.82rem; color: var(--gray-600); }
-    .availability-box { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: #fff7ed; color: #9a3412; font-size: 0.82rem; line-height: 1.5; }
-    .availability-box.available { background: #ecfdf3; color: #166534; }
-    .page-actions { margin-top: 22px; display: flex; justify-content: center; }
-    .back-btn { border-color: rgba(255,255,255,0.72); background: rgba(255,255,255,0.08); display: inline-flex; align-items: center; gap: 8px; }
-    .back-btn:hover { background: rgba(255,255,255,0.18); }
+    body {
+      background: #f8faf9;
+      color: #1e293b;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* Hero Section */
+    .page-hero {
+      background: radial-gradient(circle at 20% 25%, #2d7a4f 0%, #17422c 60%, #0d281a 100%);
+      color: white;
+      padding: 56px 24px 64px;
+      text-align: center;
+      position: relative;
+    }
+
+    .page-hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      margin: 0 0 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .page-hero p {
+      max-width: 680px;
+      margin: 0 auto 24px;
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 1.05rem;
+      line-height: 1.55;
+    }
+
+    .page-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.88rem;
+      text-decoration: none;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.24);
+      border-color: #fff;
+      transform: translateY(-1px);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* Filter Card */
+    .filter-card {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 12px 32px -4px rgba(15, 61, 36, 0.08), 0 4px 12px rgba(0, 0, 0, 0.03);
+      border: 1px solid #e3ede6;
+      padding: 24px 28px;
+      margin-top: -36px;
+      position: relative;
+      z-index: 10;
+      margin-bottom: 32px;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1.25fr 1fr 1.1fr auto;
+      gap: 16px;
+      align-items: flex-end;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #1b633e;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrap i {
+      position: absolute;
+      left: 14px;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      pointer-events: none;
+    }
+
+    .input-wrap input,
+    .input-wrap select {
+      padding-left: 38px !important;
+    }
+
+    .form-group input,
+    .form-group select {
+      height: 44px;
+      padding: 0 14px;
+      border: 1.5px solid #d8e6dc;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-family: inherit;
+      color: #1e293b;
+      background: #fbfdfc;
+      transition: all 0.2s ease;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #2d7a4f;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(45, 122, 79, 0.14);
+    }
+
+    .filter-btn-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-search {
+      height: 44px;
+      padding: 0 22px;
+      background: #1b633e;
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(27, 99, 62, 0.2);
+    }
+
+    .btn-search:hover {
+      background: #14532d;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(27, 99, 62, 0.28);
+    }
+
+    .btn-clear {
+      height: 44px;
+      padding: 0 16px;
+      background: #f1f5f3;
+      color: #475569;
+      border: 1px solid #d8e6dc;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .btn-clear:hover {
+      background: #e2ede5;
+      color: #0f172a;
+    }
+
+    /* Results Header */
+    .results-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e9f0ea;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .results-count {
+      font-size: 0.95rem;
+      color: #475569;
+      font-weight: 500;
+    }
+
+    .results-count strong {
+      color: #1b633e;
+      font-weight: 700;
+    }
+
+    /* Worker Cards Grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 22px;
+    }
+
+    .worker-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 24px;
+      border: 1px solid #e3ede6;
+      box-shadow: 0 4px 16px rgba(15, 61, 36, 0.04);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+
+    .worker-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 28px -4px rgba(15, 61, 36, 0.1);
+      border-color: #84cc99;
+    }
+
+    .worker-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .worker-identity {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: #166534;
+      box-shadow: inset 0 0 0 1px rgba(22, 101, 52, 0.15);
+      flex-shrink: 0;
+    }
+
+    .worker-title-group h3 {
+      margin: 0 0 4px;
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: #0f3d24;
+    }
+
+    .worker-exp-badge {
+      font-size: 0.78rem;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .badge-status {
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge-available {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+
+    .badge-busy {
+      background: #fef3c7;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    .worker-location {
+      color: #475569;
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .worker-location i {
+      color: #1b633e;
+    }
+
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .pill {
+      background: #f1f8f4;
+      color: #166534;
+      border: 1px solid #dcf2e3;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      font-weight: 600;
+    }
+
+    .worker-desc {
+      color: #64748b;
+      font-size: 0.86rem;
+      line-height: 1.48;
+      margin-bottom: 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-top: 14px;
+      border-top: 1px solid #f1f5f3;
+      margin-bottom: 16px;
+    }
+
+    .price-label {
+      font-size: 0.82rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .price {
+      font-size: 1.32rem;
+      font-weight: 800;
+      color: #1b633e;
+    }
+
+    .price span {
+      font-size: 0.82rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .availability-banner {
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .avail-now {
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #dcfce7;
+    }
+
+    .avail-later {
+      background: #fffbeb;
+      color: #92400e;
+      border: 1px solid #fef3c7;
+    }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 10px;
+    }
+
+    .btn-hire {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #1b633e;
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.88rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-hire:hover {
+      background: #14532d;
+      transform: translateY(-1px);
+    }
+
+    .btn-call {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: #ffffff;
+      color: #1b633e;
+      border: 1.5px solid #d1e3d6;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-call:hover {
+      background: #f0fdf4;
+      border-color: #1b633e;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #64748b;
+      padding: 50px 20px;
+      grid-column: 1 / -1;
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid #e2ece4;
+    }
+
+    .empty-state i {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 12px;
+      color: #94a3b8;
+    }
+
+    @media (max-width: 980px) {
+      .filter-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .filter-btn-group {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .filter-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page-hero {
+        padding: 40px 20px 48px;
+      }
+
+      .page-hero h1 {
+        font-size: 1.9rem;
+      }
+
+      .filter-card {
+        padding: 18px 16px;
+        margin-top: -24px;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
+
 <body>
+  <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
     <ul class="nav-links" id="navLinks">
       <li><a href="../index.html">Home</a></li>
+      <li id="farmerDashboardNav" hidden><a href="farmer-dashboard.html">Farmer Dashboard</a></li>
       <li id="farmerMyRentalsNav" hidden><a href="my-rentals.html">My Rentals</a></li>
       <li id="farmerListEquipmentNav" hidden><a href="list-equipment.html">List Equipment</a></li>
-      <li id="farmerServicesNav" class="service-menu">
-        <button type="button" class="service-menu-toggle" aria-expanded="false">
-          Services <i class="fa-solid fa-chevron-down"></i>
-        </button>
-        <div class="service-menu-dropdown">
-          <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
-          <a href="kamgar.html" class="active"><i class="fa-solid fa-person-digging"></i> Worker</a>
-          <a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
-          <a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a>
-        </div>
-      </li>
+      <li><a href="kamgar.html" class="active"><i class="fa-solid fa-person-digging"></i> Worker</a></li>
+      <li><a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a></li>
+      <li><a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a></li>
       <li id="farmerOrdersNav" hidden><a href="my-worker-bookings.html">My Orders</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
-    <div class="nav-auth" id="navAuth"><a href="worker-login.html" class="btn-outline">Login</a><a href="register.html" class="btn-primary">Register</a></div>
+    <div class="nav-auth" id="navAuth">
+      <a href="worker-login.html" class="btn-outline">Login</a>
+      <a href="worker-register.html" class="btn-primary">Register</a>
+    </div>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
   </nav>
 
-  <div class="page-hero">
+  <!-- HERO HEADER -->
+  <header class="page-hero">
     <h1>Find Skilled Farm Workers</h1>
-    <p>Hire local Kamgar workers for harvesting, transplanting, field work, irrigation, spraying, and daily labour needs.</p>
+    <p>Hire verified Kamgar workers for harvesting, transplanting, field work, irrigation, spraying, and daily farm labour needs.</p>
     <div class="page-actions">
-      <button type="button" class="btn-outline back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+      <button type="button" class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back</button>
     </div>
-    <div class="filters">
-      <label>Location</label>
-      <input id="workerLocation" type="text" placeholder="Pune / Nashik / Solapur" />
-    </div>
-    <div class="form-group">
-      <label>Skill</label>
-      <input id="workerSkill" type="text" placeholder="Harvesting / Weeding / Spraying" />
-    </div>
-    <div class="form-group">
-      <label>Min rate</label>
-      <input id="workerMinRate" type="number" placeholder="200" />
-    </div>
-    <div class="form-group">
-      <label>Available only</label>
-      <select id="workerAvailableOnly">
-        <option value="false">All workers</option>
-        <option value="true">Available only</option>
-      </select>
-    </div>
-    <button class="btn-green" onclick="loadWorkers()">Search Workers</button>
-  </div>
+  </header>
 
-  <div class="container">
+  <!-- MAIN CONTAINER WITH FILTER CARD -->
+  <main class="container">
+    <div class="filter-card">
+      <div class="filter-grid">
+        <div class="form-group">
+          <label for="workerLocation"><i class="fa-solid fa-location-dot"></i> Location</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input id="workerLocation" type="text" placeholder="Pune / Nashik / Solapur..." />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="workerSkill"><i class="fa-solid fa-screwdriver-wrench"></i> Skill / Specialty</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-person-digging"></i>
+            <input id="workerSkill" type="text" placeholder="Harvesting, Spraying, Sowing..." />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="workerMinRate"><i class="fa-solid fa-indian-rupee-sign"></i> Min Rate (₹/hr)</label>
+          <input id="workerMinRate" type="number" placeholder="e.g. 150" />
+        </div>
+
+        <div class="form-group">
+          <label for="workerAvailableOnly"><i class="fa-regular fa-calendar-check"></i> Availability</label>
+          <select id="workerAvailableOnly" onchange="loadWorkers()">
+            <option value="false">All Workers</option>
+            <option value="true">Available Now Only</option>
+          </select>
+        </div>
+
+        <div class="filter-btn-group">
+          <button class="btn-search" onclick="loadWorkers()"><i class="fa-solid fa-filter"></i> Search</button>
+          <button class="btn-clear" onclick="clearWorkerFilters()"><i class="fa-solid fa-rotate-left"></i> Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS BAR -->
+    <div class="results-bar">
+      <div class="results-count" id="resultsCountSummary">Loading available workers...</div>
+    </div>
+
+    <!-- WORKER CARDS GRID -->
     <div id="workerResults" class="card-grid"></div>
-  </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-brand"><i class="fa-solid fa-tractor"></i> KrishiYantra</div>
+    <p>Empowering Indian Farmers with Smart Agricultural Rental & Services</p>
+    <p class="footer-copy">© 2026 KrishiYantra</p>
+  </footer>
 
   <script src="../js/main.js"></script>
   <script>
     async function loadWorkers(silent = false) {
       const results = document.getElementById('workerResults');
+      const countSummary = document.getElementById('resultsCountSummary');
       const params = new URLSearchParams();
       const location = document.getElementById('workerLocation').value.trim();
       const skill = document.getElementById('workerSkill').value.trim();
@@ -108,61 +615,105 @@
       params.append('available_only', availableOnly);
 
       if (!silent) {
-        results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading workers...</div>';
+        results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading verified farm workers...</div>';
       }
 
       try {
         const res = await apiCall('GET', `/kamgar/profiles?${params.toString()}`);
         const workers = res.workers || [];
+
+        if (countSummary) {
+          countSummary.innerHTML = `Showing <strong>${workers.length}</strong> farm worker${workers.length === 1 ? '' : 's'}`;
+        }
+
         if (!workers.length) {
-          results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-user-slash"></i>No workers found for the selected filters.</div>';
+          results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-user-slash"></i>No workers match your search criteria. Try clearing filters.</div>';
           return;
         }
 
-        results.innerHTML = workers.map(worker => `
-          <div class="worker-card">
-            <div class="worker-top">
-              <div style="display:flex;align-items:center;gap:12px;">
-                <div class="avatar">${(worker.name || 'W').split(' ').map(p => p[0]).slice(0,2).join('').toUpperCase()}</div>
-                <div>
-                  <h3 style="margin:0; font-size:1.1rem;">${worker.name}</h3>
-                  <div class="status">${worker.available ? 'Available now' : 'Busy this week'}</div>
+        results.innerHTML = workers.map(worker => {
+          const initials = (worker.name || 'W').split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+          const isAvail = Boolean(worker.available);
+          const rate = Number(worker.hourly_rate || 0);
+          const skillsList = Array.isArray(worker.skills) ? worker.skills : [];
+
+          return `
+            <div class="worker-card">
+              <div>
+                <div class="worker-top">
+                  <div class="worker-identity">
+                    <div class="avatar">${initials}</div>
+                    <div class="worker-title-group">
+                      <h3>${escapeHtml(worker.name || 'Kamgar Worker')}</h3>
+                      <div class="worker-exp-badge">
+                        <i class="fa-solid fa-briefcase"></i> ${worker.experience_years || 0} yrs experience
+                      </div>
+                    </div>
+                  </div>
+                  <span class="badge-status ${isAvail ? 'badge-available' : 'badge-busy'}">
+                    ${isAvail ? '● Available' : '● Busy'}
+                  </span>
+                </div>
+
+                <div class="worker-location">
+                  <i class="fa-solid fa-location-dot"></i>
+                  <span>${escapeHtml(worker.location || 'Maharashtra, India')}</span>
+                </div>
+
+                <div class="pills">
+                  ${skillsList.map(s => `<span class="pill">${escapeHtml(s)}</span>`).join('')}
+                </div>
+
+                <div class="worker-desc">
+                  ${escapeHtml(worker.description || 'Experienced agricultural worker proficient in manual field operations, crop care, and harvesting.')}
                 </div>
               </div>
-              <span class="badge">${worker.availability || 'Immediate'}</span>
+
+              <div>
+                <div class="availability-banner ${isAvail ? 'avail-now' : 'avail-later'}">
+                  <i class="fa-solid ${isAvail ? 'fa-circle-check' : 'fa-calendar-clock'}"></i>
+                  <span>${isAvail ? 'Available for immediate field hiring' : (worker.unavailable_until_label ? `Available after ${escapeHtml(worker.unavailable_until_label)}` : 'Schedule booking in advance')}</span>
+                </div>
+
+                <div class="price-row">
+                  <span class="price-label">Wage Rate</span>
+                  <div class="price">₹${rate} <span>/ hour</span></div>
+                </div>
+
+                <div class="btn-row">
+                  <a class="btn-hire" href="worker-detail.html?id=${worker.id}">
+                    <span>${isAvail ? 'Hire Worker' : 'View Profile'}</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                  </a>
+                  <button type="button" class="btn-call" onclick="showWorkerContact('${escapeHtml(worker.phone || '')}')">
+                    <i class="fa-solid fa-phone"></i> Call
+                  </button>
+                </div>
+              </div>
             </div>
-            <div class="meta"><i class="fa-solid fa-location-dot"></i> ${worker.location || 'Location not provided'}</div>
-            <div class="meta"><i class="fa-solid fa-briefcase"></i> ${worker.experience_years || 0} years experience</div>
-            <div class="pills">${(worker.skills || []).map(skillName => `<span class="pill">${skillName}</span>`).join('')}</div>
-            <div class="price">₹${Number(worker.hourly_rate || 0)} / hour</div>
-            <div class="status">${worker.description || 'Skilled worker for field and farm labour work.'}</div>
-            <div class="availability-box ${worker.available ? 'available' : ''}">
-              <i class="fa-solid ${worker.available ? 'fa-circle-check' : 'fa-calendar-day'}"></i>
-              ${worker.available
-                ? 'Available for new hire requests'
-                : worker.unavailable_until_label
-                  ? `Available again after ${worker.unavailable_until_label} (${worker.days_until_available} day${worker.days_until_available === 1 ? '' : 's'})`
-                  : 'Availability will be updated by the worker'}
-            </div>
-            <div class="btn-row">
-              <a class="btn-green" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;" href="worker-detail.html?id=${worker.id}">${worker.available ? 'Hire Now' : 'View Profile'}</a>
-              <button class="btn-outline" onclick="showWorkerContact('${worker.phone || ''}')">Call</button>
-            </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       } catch (error) {
         if (!silent) {
-          results.innerHTML = `<div class="empty-state"><i class="fa-solid fa-plug-circle-xmark"></i>${error.message || 'Unable to fetch workers.'}</div>`;
+          results.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i>${error.message || 'Unable to fetch workers.'}</div>`;
         }
       }
     }
 
+    function clearWorkerFilters() {
+      document.getElementById('workerLocation').value = '';
+      document.getElementById('workerSkill').value = '';
+      document.getElementById('workerMinRate').value = '';
+      document.getElementById('workerAvailableOnly').value = 'false';
+      loadWorkers();
+    }
+
     function showWorkerContact(phone) {
       if (!phone) {
-        alert('Phone number not available.');
+        alert('Worker phone contact is temporarily unavailable.');
         return;
       }
-      alert('Worker mobile: ' + phone);
+      alert('Worker mobile contact: ' + phone);
     }
 
     function goBack() {
@@ -173,10 +724,21 @@
       window.location.href = '../index.html';
     }
 
+    // Attach Enter key listener
+    ['workerLocation', 'workerSkill', 'workerMinRate'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('keydown', e => {
+          if (e.key === 'Enter') loadWorkers();
+        });
+      }
+    });
+
     loadWorkers();
     setInterval(() => {
       if (!document.hidden) loadWorkers(true);
     }, 15000);
   </script>
 </body>
+
 </html>

@@ -24,6 +24,23 @@ def _parse_float(value, default=0.0):
         return float(default)
 
 
+def _resolve_availability(stock_available, manual_unavailable):
+    return stock_available > 0 and not bool(manual_unavailable)
+
+
+def _ensure_supplier_kyc_approved():
+    """Suppliers must clear admin KYC review before they can publish fertilizer products."""
+    user = get_current_user()
+    if str(user.get('role', '')).lower() != 'supplier':
+        return None, None
+    kyc_status = str(user.get('kyc_status') or 'pending').lower()
+    if kyc_status == 'approved':
+        return None, None
+    return jsonify({
+        'error': 'Supplier KYC is not approved yet. Submit KYC and wait for admin approval before listing products.'
+    }), 403
+
+
 def _sync_product_availability(product_id):
     try:
         product_obj_id = ObjectId(product_id)
@@ -35,12 +52,13 @@ def _sync_product_availability(product_id):
     stock_available = int(product.get('stock_available', 0) or 0)
     mongo.db.fertilizer_products.update_one(
         {'_id': product_obj_id},
-        {'$set': {'available': stock_available > 0, 'updated_at': datetime.datetime.utcnow()}}
+        {'$set': {'available': _resolve_availability(stock_available, product.get('manual_unavailable', False)), 'updated_at': datetime.datetime.utcnow()}}
     )
 
 
 def _serialize_product(product):
     stock_available = int(product.get('stock_available', 0) or 0)
+    manual_unavailable = bool(product.get('manual_unavailable', False))
     return {
         'id': str(product['_id']),
         'name': product.get('name', ''),
@@ -49,7 +67,9 @@ def _serialize_product(product):
         'variant': product.get('variant', ''),
         'price_per_bag': product.get('price_per_bag', 0),
         'stock_available': stock_available,
-        'available': bool(product.get('available', stock_available > 0)),
+        'available': _resolve_availability(stock_available, manual_unavailable),
+        'manual_unavailable': manual_unavailable,
+        'in_stock': stock_available > 0,
         'location': product.get('location', ''),
         'supplier_name': product.get('supplier_name', ''),
         'supplier_phone': product.get('supplier_phone', ''),
@@ -124,6 +144,7 @@ def list_products():
         ]
     if available_only:
         query['available'] = True
+        query['manual_unavailable'] = {'$ne': True}
     if max_price:
         try:
             query['price_per_bag'] = {'$lte': float(max_price)}
@@ -142,6 +163,9 @@ def list_products():
 @require_roles(['owner', 'supplier'])
 def create_product():
     user = get_current_user()
+    kyc_error, kyc_status_code = _ensure_supplier_kyc_approved()
+    if kyc_error:
+        return kyc_error, kyc_status_code
     data = request.get_json() or {}
     stock_available = int(data.get('stock_available', 0) or 0)
     product = {
@@ -152,6 +176,7 @@ def create_product():
         'price_per_bag': _parse_float(data.get('price_per_bag', 0), 0),
         'stock_available': stock_available,
         'available': stock_available > 0,
+        'manual_unavailable': False,
         'location': _clean(data.get('location')),
         'supplier_name': _clean(data.get('supplier_name')) or user.get('name', ''),
         'supplier_phone': _clean(data.get('supplier_phone')) or user.get('phone', ''),
@@ -213,19 +238,68 @@ def update_product(product_id):
     if 'supplier_name' in data: updates['supplier_name'] = _clean(data.get('supplier_name')) or user.get('name', '')
     if 'supplier_phone' in data: updates['supplier_phone'] = _clean(data.get('supplier_phone')) or user.get('phone', '')
     if 'description' in data: updates['description'] = _clean(data.get('description'))
-    if 'available' in data: updates['available'] = bool(data.get('available'))
+    if 'available' in data: updates['manual_unavailable'] = not bool(data.get('available'))
     if not updates:
         return jsonify({'error': 'No valid fields to update'}), 400
 
     if 'stock_available' in updates:
-        updates['available'] = updates['stock_available'] > 0
-    elif 'available' in updates and not updates['available']:
-        updates['stock_available'] = 0
+        if updates['stock_available'] <= 0:
+            updates['manual_unavailable'] = False
+
+    current_stock = int(updates.get('stock_available', product.get('stock_available', 0)) or 0)
+    manual_unavailable = bool(updates.get('manual_unavailable', product.get('manual_unavailable', False)))
+    updates['available'] = _resolve_availability(current_stock, manual_unavailable)
+    if not updates['available'] and current_stock <= 0 and 'manual_unavailable' not in updates:
+        updates['manual_unavailable'] = False
 
     updates['updated_at'] = datetime.datetime.utcnow()
     mongo.db.fertilizer_products.update_one({'_id': product_obj_id}, {'$set': updates})
     updated = mongo.db.fertilizer_products.find_one({'_id': product_obj_id})
     return jsonify({'message': 'Fertilizer product updated', 'product': _serialize_product(updated)})
+
+
+@fertilizer_bp.route('/products/<product_id>/availability', methods=['PUT'])
+@require_auth
+@require_roles(['owner', 'supplier'])
+def set_product_availability(product_id):
+    user = get_current_user()
+    try:
+        product_obj_id = ObjectId(product_id)
+    except Exception:
+        return jsonify({'error': 'Invalid product id'}), 400
+
+    product = mongo.db.fertilizer_products.find_one({'_id': product_obj_id})
+    if not product:
+        return jsonify({'error': 'Product not found'}), 404
+
+    if str(product.get('supplier_id')) != str(user['_id']) and str(user.get('role', '')).lower() != 'admin':
+        return jsonify({'error': 'You can only update your own fertilizer listings'}), 403
+
+    data = request.get_json() or {}
+    if 'available' not in data:
+        return jsonify({'error': 'available (true/false) is required'}), 400
+
+    should_be_available = bool(data.get('available'))
+    stock_available = int(product.get('stock_available', 0) or 0)
+
+    if should_be_available and stock_available <= 0:
+        return jsonify({'error': 'Cannot mark as available while stock is zero. Update the stock first.'}), 400
+
+    manual_unavailable = not should_be_available
+    mongo.db.fertilizer_products.update_one(
+        {'_id': product_obj_id},
+        {'$set': {
+            'manual_unavailable': manual_unavailable,
+            'available': _resolve_availability(stock_available, manual_unavailable),
+            'updated_at': datetime.datetime.utcnow()
+        }}
+    )
+
+    updated = mongo.db.fertilizer_products.find_one({'_id': product_obj_id})
+    return jsonify({
+        'message': f'Product marked as {"available" if should_be_available else "unavailable"}',
+        'product': _serialize_product(updated)
+    })
 
 
 @fertilizer_bp.route('/products/<product_id>', methods=['DELETE'])
@@ -302,7 +376,7 @@ def create_order():
     new_stock = int(product.get('stock_available', 0) or 0) - quantity
     mongo.db.fertilizer_products.update_one(
         {'_id': product_obj_id},
-        {'$set': {'stock_available': new_stock, 'available': new_stock > 0, 'updated_at': datetime.datetime.utcnow()}}
+        {'$set': {'stock_available': new_stock, 'available': _resolve_availability(new_stock, product.get('manual_unavailable', False)), 'updated_at': datetime.datetime.utcnow()}}
     )
     return jsonify({'message': 'Fertilizer order placed', 'order': _serialize_order(created)}), 201
 
@@ -432,7 +506,7 @@ def verify_payment_and_create_order():
     new_stock = int(product.get('stock_available', 0) or 0) - quantity
     mongo.db.fertilizer_products.update_one(
         {'_id': product_obj_id},
-        {'$set': {'stock_available': new_stock, 'available': new_stock > 0, 'updated_at': datetime.datetime.utcnow()}}
+        {'$set': {'stock_available': new_stock, 'available': _resolve_availability(new_stock, product.get('manual_unavailable', False)), 'updated_at': datetime.datetime.utcnow()}}
     )
 
     # Create notification for supplier
@@ -511,8 +585,9 @@ def update_order_status(order_id):
             quantity = int(order.get('quantity', 0) or 0)
             mongo.db.fertilizer_products.update_one(
                 {'_id': product_id},
-                {'$inc': {'stock_available': quantity}, '$set': {'available': True, 'updated_at': datetime.datetime.utcnow()}}
+                {'$inc': {'stock_available': quantity}, '$set': {'updated_at': datetime.datetime.utcnow()}}
             )
+            _sync_product_availability(product_id)
 
     updated = mongo.db.fertilizer_orders.find_one({'_id': doc_id})
     return jsonify({'order': _serialize_order(updated)})
@@ -738,6 +813,9 @@ def update_supplier_profile():
 @require_roles(['supplier'])
 def bulk_upload_products():
     user = get_current_user()
+    kyc_error, kyc_status_code = _ensure_supplier_kyc_approved()
+    if kyc_error:
+        return kyc_error, kyc_status_code
     data = request.get_json() or {}
     products_data = data.get('products', [])
 
@@ -766,6 +844,7 @@ def bulk_upload_products():
                 'price_per_bag': price_per_bag,
                 'stock_available': stock,
                 'available': stock > 0,
+                'manual_unavailable': False,
                 'location': location,
                 'supplier_name': _clean(prod.get('supplier_name')) or user.get('name', ''),
                 'supplier_phone': _clean(prod.get('supplier_phone')) or user.get('phone', ''),

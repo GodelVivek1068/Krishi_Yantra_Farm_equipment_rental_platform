@@ -48,11 +48,27 @@ def get_default_commission_percent():
     return max(0.0, min(percent, 100.0))
 
 
+def _default_kyc_status(role):
+    """Status assigned to a brand new registration."""
+    role = str(role or 'renter').strip().lower()
+    if role in {'admin', 'transport'}:
+        return 'approved'
+    if role in {'owner', 'supplier', 'kamgar'}:
+        return 'pending'
+    return 'not_required'
+
+
+def _legacy_kyc_status(role):
+    """Fallback for documents stored before kyc_status existed; they stay usable."""
+    role = str(role or 'renter').strip().lower()
+    if role in {'owner', 'supplier', 'admin', 'transport'}:
+        return 'approved'
+    return 'not_required'
+
+
 def _user_to_admin_card(user_doc):
     role = user_doc.get('role', 'renter')
-    kyc_status = user_doc.get('kyc_status')
-    if not kyc_status:
-        kyc_status = 'approved' if role in {'owner', 'admin'} else 'not_required'
+    kyc_status = user_doc.get('kyc_status') or _legacy_kyc_status(role)
 
     return {
         'id': str(user_doc.get('_id', '')),
@@ -133,19 +149,24 @@ def apply_commission_for_rental(rental_doc, actor_id='system'):
     return doc
 
 
-@marketplace_admin_bp.route('/owner-kyc', methods=['POST'])
-@require_auth
-def submit_owner_kyc():
+KYC_ROLE_LABELS = {'owner': 'Owner', 'supplier': 'Supplier'}
+KYC_RESPONSE_KEYS = {'owner': 'owner', 'supplier': 'supplier'}
+
+
+def _submit_kyc_for_role(expected_role):
+    label = KYC_ROLE_LABELS.get(expected_role, expected_role.title())
     user = get_current_user()
-    if str(user.get('role', '')).lower() != 'owner':
-        return jsonify({'error': 'Only owner accounts can submit KYC'}), 403
+    if str(user.get('role', '')).lower() != expected_role:
+        return jsonify({'error': f'Only {label.lower()} accounts can submit KYC'}), 403
 
     data = request.get_json() or {}
     business_name = str(data.get('business_name', '')).strip()
     id_number = str(data.get('id_number', '')).strip()
     pan_number = str(data.get('pan_number', '')).strip()
+    gst_number = str(data.get('gst_number', '')).strip()
     id_proof_url = str(data.get('id_proof_url', '')).strip()
     address_proof_url = str(data.get('address_proof_url', '')).strip()
+    business_proof_url = str(data.get('business_proof_url', '')).strip()
 
     if not business_name or not id_number:
         return jsonify({'error': 'business_name and id_number are required'}), 400
@@ -156,8 +177,10 @@ def submit_owner_kyc():
             'business_name': business_name,
             'id_number': id_number,
             'pan_number': pan_number,
+            'gst_number': gst_number,
             'id_proof_url': id_proof_url,
-            'address_proof_url': address_proof_url
+            'address_proof_url': address_proof_url,
+            'business_proof_url': business_proof_url
         },
         'kyc_review_notes': '',
         'kyc_submitted_at': datetime.datetime.utcnow(),
@@ -166,42 +189,43 @@ def submit_owner_kyc():
 
     mongo.db.users.update_one({'_id': user['_id']}, {'$set': update_doc})
     updated = mongo.db.users.find_one({'_id': user['_id']})
-    return jsonify({'message': 'KYC submitted. Admin approval pending.', 'owner': _user_to_admin_card(updated)})
+    key = KYC_RESPONSE_KEYS.get(expected_role, expected_role)
+    return jsonify({
+        'message': 'KYC submitted. Admin approval pending.',
+        key: _user_to_admin_card(updated)
+    })
 
 
-@marketplace_admin_bp.route('/owner-kyc/status', methods=['GET'])
-@require_auth
-def owner_kyc_status():
+def _kyc_status_for_current_user():
     user = get_current_user()
-    return jsonify({'owner': _user_to_admin_card(user)})
+    key = KYC_RESPONSE_KEYS.get(str(user.get('role', '')).lower(), 'owner')
+    return jsonify({key: _user_to_admin_card(user)})
 
 
-@marketplace_admin_bp.route('/owner-kyc/pending', methods=['GET'])
-@require_roles(['admin'])
-def pending_owner_kyc():
-    users = list(mongo.db.users.find({'role': 'owner', 'kyc_status': 'pending'}).sort('kyc_submitted_at', 1))
-    return jsonify({'owners': [_user_to_admin_card(user) for user in users]})
+def _pending_kyc_for_role(role):
+    users = list(mongo.db.users.find({'role': role, 'kyc_status': 'pending'}).sort('kyc_submitted_at', 1))
+    key = KYC_RESPONSE_KEYS.get(role, role)
+    return jsonify({key: [_user_to_admin_card(user) for user in users]})
 
 
-@marketplace_admin_bp.route('/owner-kyc/<owner_id>/decision', methods=['PUT'])
-@require_roles(['admin'])
-def review_owner_kyc(owner_id):
+def _review_kyc_for_role(role, user_id):
+    label = KYC_ROLE_LABELS.get(role, role.title())
     data = request.get_json() or {}
     decision = _normalize_status(data.get('decision'), {'approved', 'rejected'}, 'rejected')
     notes = str(data.get('notes', '')).strip()
     reviewer = get_current_user()
 
     try:
-        owner_object_id = ObjectId(owner_id)
+        user_object_id = ObjectId(user_id)
     except Exception:
-        return jsonify({'error': 'Invalid owner id'}), 400
+        return jsonify({'error': f'Invalid {label.lower()} id'}), 400
 
-    owner = mongo.db.users.find_one({'_id': owner_object_id, 'role': 'owner'})
-    if not owner:
-        return jsonify({'error': 'Owner not found'}), 404
+    target = mongo.db.users.find_one({'_id': user_object_id, 'role': role})
+    if not target:
+        return jsonify({'error': f'{label} not found'}), 404
 
     mongo.db.users.update_one(
-        {'_id': owner_object_id},
+        {'_id': user_object_id},
         {
             '$set': {
                 'kyc_status': decision,
@@ -212,8 +236,57 @@ def review_owner_kyc(owner_id):
             }
         }
     )
-    updated = mongo.db.users.find_one({'_id': owner_object_id})
-    return jsonify({'owner': _user_to_admin_card(updated)})
+    updated = mongo.db.users.find_one({'_id': user_object_id})
+    key = KYC_RESPONSE_KEYS.get(role, role)
+    return jsonify({key: _user_to_admin_card(updated)})
+
+
+@marketplace_admin_bp.route('/owner-kyc', methods=['POST'])
+@require_auth
+def submit_owner_kyc():
+    return _submit_kyc_for_role('owner')
+
+
+@marketplace_admin_bp.route('/supplier-kyc', methods=['POST'])
+@require_auth
+def submit_supplier_kyc():
+    return _submit_kyc_for_role('supplier')
+
+
+@marketplace_admin_bp.route('/owner-kyc/status', methods=['GET'])
+@require_auth
+def owner_kyc_status():
+    return _kyc_status_for_current_user()
+
+
+@marketplace_admin_bp.route('/supplier-kyc/status', methods=['GET'])
+@require_auth
+def supplier_kyc_status():
+    return _kyc_status_for_current_user()
+
+
+@marketplace_admin_bp.route('/owner-kyc/pending', methods=['GET'])
+@require_roles(['admin'])
+def pending_owner_kyc():
+    return _pending_kyc_for_role('owner')
+
+
+@marketplace_admin_bp.route('/supplier-kyc/pending', methods=['GET'])
+@require_roles(['admin'])
+def pending_supplier_kyc():
+    return _pending_kyc_for_role('supplier')
+
+
+@marketplace_admin_bp.route('/owner-kyc/<owner_id>/decision', methods=['PUT'])
+@require_roles(['admin'])
+def review_owner_kyc(owner_id):
+    return _review_kyc_for_role('owner', owner_id)
+
+
+@marketplace_admin_bp.route('/supplier-kyc/<supplier_id>/decision', methods=['PUT'])
+@require_roles(['admin'])
+def review_supplier_kyc(supplier_id):
+    return _review_kyc_for_role('supplier', supplier_id)
 
 
 @marketplace_admin_bp.route('/commission', methods=['GET'])
@@ -370,6 +443,8 @@ def update_dispute_status(dispute_id):
 def admin_dashboard():
     pending_kyc = mongo.db.users.count_documents({'role': 'owner', 'kyc_status': 'pending'})
     approved_owners = mongo.db.users.count_documents({'role': 'owner', 'kyc_status': 'approved'})
+    pending_supplier_kyc = mongo.db.users.count_documents({'role': 'supplier', 'kyc_status': 'pending'})
+    approved_suppliers = mongo.db.users.count_documents({'role': 'supplier', 'kyc_status': 'approved'})
     open_disputes = mongo.db.disputes.count_documents({'status': {'$in': ['open', 'reviewing']}})
 
     commission_totals = list(mongo.db.commissions.aggregate([
@@ -390,6 +465,8 @@ def admin_dashboard():
     return jsonify({
         'pending_kyc': pending_kyc,
         'approved_owners': approved_owners,
+        'pending_supplier_kyc': pending_supplier_kyc,
+        'approved_suppliers': approved_suppliers,
         'open_disputes': open_disputes,
         'default_commission_percent': get_default_commission_percent(),
         'total_commission': int(totals.get('total_commission', 0) or 0),

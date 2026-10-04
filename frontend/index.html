@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <title>KrishiYantra - Farm Equipment Rental</title>
-  <link rel="stylesheet" href="css/main.css"/>
-  <link rel="stylesheet" href="css/home.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/home.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
+
 <body>
   <!-- NAVBAR -->
   <nav class="navbar">
@@ -28,7 +32,7 @@
     </ul>
     <div class="nav-auth" id="navAuth">
       <a href="pages/login.html" class="btn-outline">Login</a>
-      <a href="pages/register.html" class="btn-primary">Register</a>
+      <a href="pages/farmer-register.html" class="btn-primary">Register</a>
     </div>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
   </nav>
@@ -38,8 +42,9 @@
     <div class="hero-bg"></div>
     <div class="hero-content">
       <span class="hero-tag">🌾 India's Farmer-First Platform</span>
-      <h1>Rent Farm Equipment<br/><span class="highlight">Near You</span></h1>
-      <p>Connect with local equipment owners. Affordable rentals for tractors, harvesters, rotavators & more — delivered to your field.</p>
+      <h1>Rent Farm Equipment<br /><span class="highlight">Near You</span></h1>
+      <p>Connect with local equipment owners. Affordable rentals for tractors, harvesters, rotavators & more — delivered
+        to your field.</p>
       <div class="hero-search">
         <input type="text" id="searchInput" placeholder="Search equipment (e.g. tractor, harvester...)" />
         <input type="text" id="locationInput" placeholder="Your village / city" />
@@ -52,7 +57,7 @@
       </div>
     </div>
     <div class="hero-illustration">
-      <img src="https://cdn-icons-png.flaticon.com/512/2933/2933665.png" alt="tractor" class="float-img"/>
+      <img src="https://cdn-icons-png.flaticon.com/512/2933/2933665.png" alt="tractor" class="float-img" />
     </div>
   </section>
 
@@ -107,7 +112,8 @@
   <!-- OUR SERVICES -->
   <section class="section services-section">
     <h2 class="section-title">Our Services</h2>
-    <p class="section-subtitle">One platform for all your farm needs — equipment, workers, transport &amp; fertilizer</p>
+    <p class="section-subtitle">One platform for all your farm needs — equipment, workers, transport &amp; fertilizer
+    </p>
     <div class="service-tabs">
       <button class="svc-tab active" id="svcTabWorker" onclick="switchServiceTab('worker')">
         <i class="fa-solid fa-person-digging"></i> Workers
@@ -127,7 +133,8 @@
           <h3><i class="fa-solid fa-person-digging"></i> Skilled Farm Workers</h3>
           <p>Hire experienced Kamgar workers for harvesting, transplanting, irrigation, spraying &amp; more.</p>
         </div>
-        <a href="pages/kamgar.html" class="svc-view-all btn-green">View All Workers <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="pages/kamgar.html" class="svc-view-all btn-green">View All Workers <i
+            class="fa-solid fa-arrow-right"></i></a>
       </div>
       <div class="svc-card-grid" id="workerPreviewGrid">
         <div class="svc-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading workers...</div>
@@ -141,7 +148,8 @@
           <h3><i class="fa-solid fa-truck"></i> Transport Vehicles</h3>
           <p>Book trucks, vans, pickers &amp; trailers for farm produce transport and field logistics.</p>
         </div>
-        <a href="pages/transport.html" class="svc-view-all btn-green">View All Vehicles <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="pages/transport.html" class="svc-view-all btn-green">View All Vehicles <i
+            class="fa-solid fa-arrow-right"></i></a>
       </div>
       <div class="svc-card-grid" id="transportPreviewGrid">
         <div class="svc-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading transport...</div>
@@ -155,7 +163,8 @@
           <h3><i class="fa-solid fa-seedling"></i> Fertilizer &amp; Crop Inputs</h3>
           <p>Compare trusted brands and order fertilizer bags delivered directly to your farm.</p>
         </div>
-        <a href="pages/fertilizer.html" class="svc-view-all btn-green">View All Products <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="pages/fertilizer.html" class="svc-view-all btn-green">View All Products <i
+            class="fa-solid fa-arrow-right"></i></a>
       </div>
       <div class="svc-card-grid" id="fertilizerPreviewGrid">
         <div class="svc-loading"><i class="fa-solid fa-spinner fa-spin"></i> Loading products...</div>
@@ -167,11 +176,23 @@
   <section class="section how-it-works">
     <h2 class="section-title">How It Works</h2>
     <div class="steps">
-      <div class="step"><div class="step-num">1</div><h3>Search Equipment</h3><p>Find tractors, harvesters &amp; more near your location.</p></div>
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Search Equipment</h3>
+        <p>Find tractors, harvesters &amp; more near your location.</p>
+      </div>
       <div class="step-arrow"><i class="fa-solid fa-arrow-right"></i></div>
-      <div class="step"><div class="step-num">2</div><h3>Book Online</h3><p>Select dates and confirm your rental instantly.</p></div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Book Online</h3>
+        <p>Select dates and confirm your rental instantly.</p>
+      </div>
       <div class="step-arrow"><i class="fa-solid fa-arrow-right"></i></div>
-      <div class="step"><div class="step-num">3</div><h3>Use &amp; Return</h3><p>Owner delivers to your farm. Use and return on time.</p></div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Use &amp; Return</h3>
+        <p>Owner delivers to your farm. Use and return on time.</p>
+      </div>
     </div>
   </section>
 
@@ -207,4 +228,5 @@
   <script src="js/main.js"></script>
   <script src="js/home.js"></script>
 </body>
+
 </html>

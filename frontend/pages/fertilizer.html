@@ -1,107 +1,612 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
-  <title>Fertilizer Booking - KrishiYantra</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <title>Buy Fertilizer & Seeds - KrishiYantra</title>
   <link rel="stylesheet" href="../css/main.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    body { background: #f8faf7; }
-    .page-hero { background: linear-gradient(135deg, #1c4d38, #2b7a52); color: white; padding: 48px 24px; text-align: center; }
-    .page-hero h1 { font-family: 'Playfair Display', serif; font-size: 2.3rem; margin-bottom: 10px; }
-    .page-hero p { max-width: 700px; margin: 0 auto; color: rgba(255,255,255,0.85); }
-    .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; }
-    .filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; background: white; padding: 18px; border-radius: 16px; box-shadow: var(--shadow-sm); border: 1px solid #e6efe7; margin-bottom: 24px; }
-    .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 18px; }
-    .product-card { background: white; border: 1px solid #e6efe7; border-radius: 18px; padding: 20px; box-shadow: var(--shadow-sm); }
-    .product-card.unavailable { border-color: #f1d0d0; background: #fffafa; }
-    .product-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-    .product-name { font-size: 1.18rem; font-weight: 800; color: var(--green-dark); }
-    .category-tag { background: rgba(45,122,79,0.1); color: var(--green-dark); padding: 6px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
-    .availability-pill {
-      display: inline-block; margin-top: 10px; padding: 6px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700;
+    :root {
+      --primary-green: #1b633e;
+      --primary-light: #2d7a4f;
+      --primary-dark: #0f3d24;
+      --accent-gold: #d97706;
+      --card-bg: #ffffff;
+      --surface-bg: #f4f8f5;
     }
-    .pill-available { background: #dcfce7; color: #166534; }
-    .pill-unavailable { background: #fee2e2; color: #b91c1c; }
-    .meta { margin-top: 10px; color: var(--gray-600); font-size: 0.93rem; }
-    .price { margin-top: 10px; font-size: 1.5rem; font-weight: 800; color: var(--green-dark); }
-    .btn-row { display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
-    .empty-state { text-align: center; color: var(--gray-600); padding: 32px 10px; }
-    .hidden { display: none; }
+
+    body {
+      background-color: var(--surface-bg);
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Hero Header */
+    .page-hero {
+      background: linear-gradient(135deg, #0d3820 0%, #165330 50%, #206d40 100%);
+      color: #ffffff;
+      padding: 56px 24px 72px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .page-hero h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 2.6rem;
+      font-weight: 800;
+      margin: 0 0 12px;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+    }
+
+    .page-hero p {
+      max-width: 680px;
+      margin: 0 auto 24px;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    .page-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.14);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      padding: 8px 18px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* Floating Filter Card */
+    .filter-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 24px;
+      margin-top: -38px;
+      position: relative;
+      z-index: 10;
+      box-shadow: 0 12px 36px rgba(15, 61, 36, 0.08);
+      border: 1px solid #e3ede6;
+      margin-bottom: 32px;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      align-items: flex-end;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #1b633e;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrap i {
+      position: absolute;
+      left: 14px;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      pointer-events: none;
+    }
+
+    .input-wrap input,
+    .input-wrap select {
+      padding-left: 38px !important;
+    }
+
+    .form-group input,
+    .form-group select {
+      height: 44px;
+      padding: 0 14px;
+      border: 1.5px solid #d8e6dc;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      font-family: inherit;
+      color: #1e293b;
+      background: #fbfdfc;
+      transition: all 0.2s ease;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #2d7a4f;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(45, 122, 79, 0.14);
+    }
+
+    .filter-btn-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-search {
+      height: 44px;
+      padding: 0 22px;
+      background: #1b633e;
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(27, 99, 62, 0.2);
+    }
+
+    .btn-search:hover {
+      background: #14532d;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(27, 99, 62, 0.28);
+    }
+
+    .btn-clear {
+      height: 44px;
+      padding: 0 16px;
+      background: #f1f5f3;
+      color: #475569;
+      border: 1px solid #d8e6dc;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .btn-clear:hover {
+      background: #e2ede5;
+      color: #0f172a;
+    }
+
+    /* Results Header */
+    .results-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e9f0ea;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .results-count {
+      font-size: 0.95rem;
+      color: #475569;
+    }
+
+    .results-count strong {
+      color: #0f3d24;
+      font-weight: 700;
+    }
+
+    /* Product Grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .product-card {
+      background: #ffffff;
+      border-radius: 18px;
+      border: 1px solid #e3ede6;
+      box-shadow: 0 4px 16px rgba(15, 61, 36, 0.04);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+      position: relative;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 28px -4px rgba(15, 61, 36, 0.1);
+      border-color: #84cc99;
+    }
+
+    .product-card.unavailable {
+      background: #fffcfc;
+      border-color: #f1d0d0;
+    }
+
+    .product-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+      gap: 12px;
+    }
+
+    .product-badge-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #e8f5ed;
+      color: #1b633e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .category-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: capitalize;
+      background: rgba(45, 122, 79, 0.1);
+      color: #1b633e;
+    }
+
+    .product-name {
+      font-size: 1.22rem;
+      font-weight: 800;
+      color: #0f3d24;
+      margin: 0 0 6px;
+      line-height: 1.3;
+    }
+
+    .product-brand {
+      font-size: 0.88rem;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .availability-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      width: fit-content;
+    }
+
+    .pill-available {
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .pill-unavailable {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .spec-list {
+      background: #f8faf8;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      font-size: 0.86rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .spec-item {
+      display: flex;
+      justify-content: space-between;
+      color: #475569;
+    }
+
+    .spec-item strong {
+      color: #1e293b;
+    }
+
+    .product-desc {
+      font-size: 0.88rem;
+      color: #64748b;
+      line-height: 1.5;
+      margin-bottom: 18px;
+      flex: 1;
+    }
+
+    .product-footer {
+      border-top: 1px solid #edf2ee;
+      padding-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .price-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .price-label {
+      font-size: 0.72rem;
+      color: #64748b;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .price-val {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #1b633e;
+    }
+
+    .btn-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-details {
+      padding: 9px 14px;
+      border-radius: 8px;
+      border: 1.5px solid #d1dfd5;
+      background: transparent;
+      color: #1b633e;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+
+    .btn-details:hover {
+      background: #f1f7f3;
+      border-color: #1b633e;
+    }
+
+    .btn-book {
+      padding: 9px 16px;
+      border-radius: 8px;
+      background: #1b633e;
+      color: #ffffff;
+      border: none;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-book:hover {
+      background: #14532d;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #64748b;
+      padding: 48px 20px;
+      background: white;
+      border-radius: 16px;
+      border: 1px dashed #d8e6dc;
+      grid-column: 1 / -1;
+    }
+
+    .empty-state i {
+      font-size: 2.8rem;
+      color: #94a3b8;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    @media (max-width: 600px) {
+      .page-hero {
+        padding: 40px 20px 56px;
+      }
+      .page-hero h1 {
+        font-size: 2rem;
+      }
+      .filter-card {
+        padding: 16px;
+      }
+      .product-footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .btn-actions {
+        width: 100%;
+      }
+      .btn-actions .btn-details,
+      .btn-actions .btn-book {
+        flex: 1;
+        text-align: center;
+        justify-content: center;
+      }
+    }
   </style>
 </head>
+
 <body>
+  <!-- NAVBAR -->
   <nav class="navbar">
-    <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
+    <div class="nav-brand"><i class="fa-solid fa-seedling"></i><span>KrishiYantra</span></div>
     <ul class="nav-links" id="navLinks">
       <li><a href="../index.html">Home</a></li>
+      <li id="farmerDashboardNav" hidden><a href="farmer-dashboard.html">Farmer Dashboard</a></li>
       <li id="farmerMyRentalsNav" hidden><a href="my-rentals.html">My Rentals</a></li>
       <li id="farmerListEquipmentNav" hidden><a href="list-equipment.html">List Equipment</a></li>
-      <li id="farmerServicesNav" class="service-menu">
-        <button type="button" class="service-menu-toggle" aria-expanded="false">
-          Services <i class="fa-solid fa-chevron-down"></i>
-        </button>
-        <div class="service-menu-dropdown">
-          <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
-          <a href="kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a>
-          <a href="fertilizer.html" class="active"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
-          <a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a>
-        </div>
-      </li>
+      <li><a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a></li>
+      <li><a href="kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a></li>
+      <li><a href="fertilizer.html" class="active"><i class="fa-solid fa-seedling"></i> Fertilizer</a></li>
+      <li><a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a></li>
       <li id="farmerOrdersNav" hidden><a href="my-orders.html">My Orders</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
-    <div class="nav-auth" id="navAuth"><a href="fertilizer-login.html" class="btn-outline">Login</a><a href="register.html" class="btn-primary">Register</a></div>
+    <div class="nav-auth" id="navAuth">
+      <a href="fertilizer-login.html" class="btn-outline">Login</a>
+      <a href="supplier-register.html" class="btn-primary">Register</a>
+    </div>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
   </nav>
 
-  <div class="page-hero">
+  <!-- HERO HEADER -->
+  <header class="page-hero">
     <h1>Buy Fertilizer & Crop Inputs</h1>
-    <p>Compare trusted product brands and place a booking request for fertilizer bags delivered to your farm.</p>
-    <a class="btn-outline service-back-link" href="../index.html"><i class="fa-solid fa-arrow-left"></i> Back</a>
-  </div>
+    <p>Compare trusted agricultural brands, check real-time store availability, and book certified fertilizer bags delivered right to your farm.</p>
+    <div class="page-actions">
+      <button type="button" class="back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    </div>
+  </header>
 
-  <div class="container">
-    <div class="filters">
-      <div class="form-group">
-        <label>Category</label>
-        <select id="fertCategory">
-          <option value="">All</option>
-          <option value="nitrogen">Nitrogen</option>
-          <option value="phosphorus">Phosphorus</option>
-          <option value="potash">Potash</option>
-          <option value="balanced">Balanced</option>
-          <option value="organic">Organic</option>
-        </select>
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="container">
+    <!-- FLOATING FILTER CARD -->
+    <div class="filter-card">
+      <div class="filter-grid">
+        <div class="form-group">
+          <label for="fertCategory"><i class="fa-solid fa-layer-group"></i> Category</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-filter"></i>
+            <select id="fertCategory" onchange="loadProducts()">
+              <option value="">All Categories</option>
+              <option value="nitrogen">Nitrogen (Urea / CAN)</option>
+              <option value="phosphorus">Phosphorus (DAP / SSP)</option>
+              <option value="potash">Potash (MOP)</option>
+              <option value="balanced">Balanced (NPK Mixtures)</option>
+              <option value="organic">Organic / Bio-Fertilizer</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="fertLocation"><i class="fa-solid fa-location-dot"></i> Location</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input id="fertLocation" type="text" placeholder="Pune / Nashik / Kolhapur..." />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="fertBrand"><i class="fa-solid fa-tag"></i> Brand</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-industry"></i>
+            <input id="fertBrand" type="text" placeholder="IFFCO / Coromandel / Mahadhan" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="availabilityFilter"><i class="fa-regular fa-calendar-check"></i> Stock Status</label>
+          <select id="availabilityFilter" onchange="loadProducts()">
+            <option value="">All Products</option>
+            <option value="true">In Stock & Available Only</option>
+          </select>
+        </div>
+
+        <div class="filter-btn-group">
+          <button class="btn-search" onclick="loadProducts()"><i class="fa-solid fa-search"></i> Search</button>
+          <button class="btn-clear" onclick="clearFilters()"><i class="fa-solid fa-rotate-left"></i> Clear</button>
+        </div>
       </div>
-      <div class="form-group">
-        <label>Location</label>
-        <input id="fertLocation" type="text" placeholder="Pune / Nashik" />
-      </div>
-      <div class="form-group">
-        <label>Brand</label>
-        <input id="fertBrand" type="text" placeholder="IFFCO / Coromandel" />
-      </div>
-      <div class="form-group">
-        <label>Availability</label>
-        <select id="availabilityFilter">
-          <option value="">All products</option>
-          <option value="true">Available only</option>
-        </select>
-      </div>
-      <button class="btn-green" onclick="loadProducts()">Search Products</button>
     </div>
 
+    <!-- RESULTS BAR -->
+    <div class="results-bar">
+      <div class="results-count" id="resultsCount">
+        Showing all certified fertilizer products
+      </div>
+    </div>
+
+    <!-- PRODUCT RESULTS GRID -->
     <div id="fertResults" class="product-grid"></div>
-  </div>
+  </main>
 
   <script src="../js/main.js"></script>
   <script>
+    function goBack() {
+      if (document.referrer && window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = '../index.html';
+      }
+    }
+
+    function clearFilters() {
+      document.getElementById('fertCategory').value = '';
+      document.getElementById('fertLocation').value = '';
+      document.getElementById('fertBrand').value = '';
+      document.getElementById('availabilityFilter').value = '';
+      loadProducts();
+    }
+
     async function loadProducts() {
       const results = document.getElementById('fertResults');
+      const countEl = document.getElementById('resultsCount');
       const params = new URLSearchParams();
       const category = document.getElementById('fertCategory').value.trim();
       const location = document.getElementById('fertLocation').value.trim();
@@ -113,44 +618,113 @@
       if (brand) params.append('brand', brand);
       if (availableOnly) params.append('available_only', 'true');
 
-      results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading products...</div>';
+      results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading verified products...</div>';
 
       try {
         const res = await apiCall('GET', `/fertilizer/products?${params.toString()}`);
         const products = res.products || [];
+        
+        if (countEl) {
+          countEl.innerHTML = `Showing <strong>${products.length}</strong> certified fertilizer items`;
+        }
+
         if (!products.length) {
-          results.innerHTML = '<div class="empty-state"><i class="fa-solid fa-box-open"></i>No fertilizer products found.</div>';
+          results.innerHTML = `
+            <div class="empty-state">
+              <i class="fa-solid fa-box-open"></i>
+              <h3>No Fertilizer Products Found</h3>
+              <p>Try searching for a different brand, category, or clear filters.</p>
+            </div>
+          `;
           return;
         }
 
-        results.innerHTML = products.map(product => `
-          <div class="product-card ${product.available ? '' : 'unavailable'}">
-            <div class="product-header">
-              <div class="product-name">${product.name}</div>
-              <span class="category-tag">${product.category || 'fertilizer'}</span>
+        results.innerHTML = products.map(product => {
+          const isAvail = !!product.available;
+          return `
+            <div class="product-card ${isAvail ? '' : 'unavailable'}">
+              <div>
+                <div class="product-card-top">
+                  <div class="product-badge-icon">
+                    <i class="fa-solid fa-seedling"></i>
+                  </div>
+                  <span class="category-badge">${product.category || 'Fertilizer'}</span>
+                </div>
+
+                <h3 class="product-name">${escapeHtml(product.name || 'Fertilizer Bag')}</h3>
+                <div class="product-brand">
+                  <i class="fa-solid fa-building"></i> ${escapeHtml(product.brand || 'Verified Producer')} &bull; ${escapeHtml(product.variant || 'Standard 50kg')}
+                </div>
+
+                <div class="availability-pill ${isAvail ? 'pill-available' : 'pill-unavailable'}">
+                  <i class="fa-solid ${isAvail ? 'fa-circle-check' : 'fa-circle-xmark'}"></i>
+                  ${isAvail ? 'In Stock & Ready' : 'Currently Out of Stock'}
+                </div>
+
+                <div class="spec-list">
+                  <div class="spec-item">
+                    <span><i class="fa-solid fa-store"></i> Supplier</span>
+                    <strong>${escapeHtml(product.supplier_name || 'KrishiYantra Vendor')}</strong>
+                  </div>
+                  <div class="spec-item">
+                    <span><i class="fa-solid fa-location-dot"></i> Hub</span>
+                    <strong>${escapeHtml(product.location || 'Maharashtra')}</strong>
+                  </div>
+                  <div class="spec-item">
+                    <span><i class="fa-solid fa-boxes-stacked"></i> Stock</span>
+                    <strong>${product.stock_available || 0} bags</strong>
+                  </div>
+                </div>
+
+                <div class="product-desc">
+                  ${escapeHtml(product.description || 'Nutrient-rich crop nutrition formula tested for maximum yield.')}
+                </div>
+              </div>
+
+              <div class="product-footer">
+                <div class="price-box">
+                  <span class="price-label">Price / Bag</span>
+                  <span class="price-val">₹${Number(product.price_per_bag || 0).toLocaleString()}</span>
+                </div>
+                <div class="btn-actions">
+                  <a href="fertilizer-detail.html?id=${product.id}" class="btn-details">Details</a>
+                  ${isAvail ? `<button class="btn-book" onclick="window.location.href='fertilizer-detail.html?id=${product.id}'"><i class="fa-solid fa-cart-plus"></i> Order</button>` : ''}
+                </div>
+              </div>
             </div>
-            <div class="availability-pill ${product.available ? 'pill-available' : 'pill-unavailable'}">
-              ${product.available ? 'Available' : 'Unavailable'}
-            </div>
-            <div class="meta"><strong>Brand:</strong> ${product.brand || 'Local supplier'}</div>
-            <div class="meta"><strong>Variant:</strong> ${product.variant || 'Standard'}</div>
-            <div class="meta"><strong>Supplier:</strong> ${product.supplier_name || 'KrishiYantra Vendor'}</div>
-            <div class="meta"><strong>Location:</strong> ${product.location || 'Not specified'}</div>
-            <div class="meta"><strong>Stock:</strong> ${product.stock_available || 0} bags</div>
-            <div class="price">₹${Number(product.price_per_bag || 0)} / bag</div>
-            <div class="meta">${product.description || 'Crop nutrition product for improved yield.'}</div>
-            <div class="btn-row">
-              <a href="fertilizer-detail.html?id=${product.id}" class="btn-outline">View Details</a>
-              <button class="btn-green ${product.available ? '' : 'hidden'}" onclick="window.location.href='fertilizer-detail.html?id=${product.id}'">Book Now</button>
-            </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       } catch (error) {
-        results.innerHTML = `<div class="empty-state"><i class="fa-solid fa-plug-circle-xmark"></i>${error.message || 'Unable to fetch products.'}</div>`;
+        results.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-triangle-exclamation" style="color: #e11d48;"></i>
+            <h3>Unable to Load Products</h3>
+            <p>${error.message || 'Please check your connection and try again.'}</p>
+          </div>
+        `;
       }
     }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Attach enter key to inputs
+    document.getElementById('fertLocation').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') loadProducts();
+    });
+    document.getElementById('fertBrand').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') loadProducts();
+    });
 
     loadProducts();
   </script>
 </body>
+
 </html>

@@ -11,12 +11,12 @@ const API_BASE = (() => {
 
   // If running from file:// or localhost / LAN IP
   const isLocal = !hostname ||
-                  hostname === 'localhost' ||
-                  hostname === '127.0.0.1' ||
-                  hostname.startsWith('192.168.') ||
-                  hostname.startsWith('10.') ||
-                  hostname.startsWith('172.') ||
-                  protocol === 'file:';
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    hostname.startsWith('192.168.') ||
+    hostname.startsWith('10.') ||
+    hostname.startsWith('172.') ||
+    protocol === 'file:';
 
   return isLocal ? 'http://localhost:5000/api' : '/api';
 })();
@@ -93,6 +93,7 @@ function roleToLabel(roleValue) {
   if (role === 'owner') return 'Owner';
   if (role === 'supplier') return 'Supplier';
   if (role === 'kamgar') return 'Worker';
+  if (role === 'transport') return 'Transport Provider';
   return 'Farmer';
 }
 
@@ -139,7 +140,7 @@ if (hamburger && navLinks) {
   });
 }
 
-// ===== SERVICE MENU DROPDOWN (Accessible to all visitors & farmers) =====
+// ===== SERVICE MENU DROPDOWN (Farmer login and dashboard only) =====
 function bindFarmerServicesMenu() {
   bindServicesDropdown();
 }
@@ -188,7 +189,14 @@ function updateNavAuth() {
   if (!navAuth) return;
   const user = getUser();
 
-  // Hide farmer-specific personal tabs from non-farmers, but Services menu stays VISIBLE to everyone
+  // Show Services only on the farmer login and farmer dashboard.
+  const currentPage = window.location.pathname.split('/').pop().toLowerCase().replace(/\.html$/, '');
+  const farmerServicesNav = document.getElementById('farmerServicesNav');
+  if (farmerServicesNav) {
+    farmerServicesNav.hidden = !['login', 'farmer-dashboard'].includes(currentPage);
+  }
+
+  // Hide farmer-specific personal tabs from non-farmers.
   const farmerRestrictedItems = [
     document.getElementById('farmerMyRentalsNav'),
     document.getElementById('farmerListEquipmentNav'),
@@ -226,17 +234,23 @@ function updateNavAuth() {
     const ownerEquipmentLink = (isOwner && kycStatus === 'approved')
       ? `<a href="${resolvePageHref('owner-dashboard.html')}#equipmentList" class="btn-outline" style="margin-left:8px">Equipment</a>`
       : '';
+    const isTransport = role === 'transport';
+    const supplierPortalHref = (kycStatus === 'approved') ? resolvePageHref('supplier-dashboard.html') : resolvePageHref('supplier-kyc.html');
+    const supplierPortalLabel = (kycStatus === 'approved') ? 'Supplier Dashboard' : 'Complete KYC';
     const supplierLink = isSupplier
-      ? `<a href="${resolvePageHref('supplier-dashboard.html')}" class="btn-outline" style="margin-left:8px">Supplier Dashboard</a>`
+      ? `<a href="${supplierPortalHref}" class="btn-outline" style="margin-left:8px">${supplierPortalLabel}</a>`
       : '';
     const kamgarLink = role === 'kamgar'
       ? `<a href="${resolvePageHref('kamgar-dashboard.html')}" class="btn-outline" style="margin-left:8px">Worker Dashboard</a>`
+      : '';
+    const transportLink = (isTransport || isOwner)
+      ? `<a href="${resolvePageHref('transport-dashboard.html')}" class="btn-outline" style="margin-left:8px">Transport Dashboard</a>`
       : '';
     const ownerLink = isOwner
       ? `<a href="${ownerPortalHref}" class="btn-outline" style="margin-left:8px">${ownerPortalLabel}</a>`
       : '';
     let statusTag = '';
-    if (isOwner) {
+    if (isOwner || isSupplier) {
       if (kycStatus === 'pending') statusTag = ' | KYC: Pending';
       else if (kycStatus === 'approved') statusTag = ' | KYC: Approved';
       else if (kycStatus === 'rejected') statusTag = ' | KYC: Rejected';
@@ -285,17 +299,17 @@ function updateNavAuth() {
               </div>
               <div class="form-group">
                 <label for="profilePhoneInput">Phone</label>
-                <input id="profilePhoneInput" name="phone" type="text" maxlength="20" value="${escapeHtml(user.phone || '')}" required>
+                <input id="profilePhoneInput" name="phone" type="tel" maxlength="20" value="${escapeHtml(user.phone || '')}">
               </div>
               <div class="form-group">
                 <label for="profileLocationInput">Location</label>
                 <input id="profileLocationInput" name="location" type="text" maxlength="120" value="${escapeHtml(user.location || '')}">
               </div>
-              <div class="account-actions">
-                <button type="submit" class="account-save-btn" id="profileSaveBtn">Save</button>
+              <div class="account-form-actions">
                 <button type="button" class="account-inline-btn" id="profileCancelBtn">Cancel</button>
+                <button type="submit" class="btn-green" id="profileSaveBtn">Save</button>
               </div>
-              <div class="account-feedback" id="profileFeedback"></div>
+              <div class="account-feedback" id="profileFeedback" role="status" aria-live="polite"></div>
             </form>
           </div>
         </div>
@@ -311,6 +325,7 @@ function updateNavAuth() {
       ${ownerLink}
       ${supplierLink}
       ${kamgarLink}
+      ${transportLink}
       ${ownerEquipmentLink}
       <button class="btn-outline" onclick="logout()">Logout</button>
     `;
@@ -437,15 +452,16 @@ function injectLanguageSwitcher() {
   if (!nav || !navAuth || document.getElementById('languageSwitcher')) return;
 
   const wrapper = document.createElement('div');
-  wrapper.className = 'language-switcher';
+  wrapper.className = 'language-switcher notranslate';
   wrapper.id = 'languageSwitcher';
+  wrapper.setAttribute('translate', 'no');
 
   const options = TRANSLATION_LANGUAGES.map(language => {
     return `<option value="${language.value}">${language.label}</option>`;
   }).join('');
 
   wrapper.innerHTML = `
-    <select id="languageSelect" class="language-select" aria-label="Translate site">
+    <select id="languageSelect" class="language-select notranslate" translate="no" aria-label="Translate site">
       ${options}
     </select>
   `;
@@ -470,11 +486,28 @@ function applyTranslation(language) {
     translateApplyTimer = null;
   }
 
+  const restoreLanguageLabels = () => {
+    const select = document.getElementById('languageSelect');
+    if (!select) return;
+    TRANSLATION_LANGUAGES.forEach(language => {
+      const option = select.querySelector(`option[value="${language.value}"]`);
+      if (option && option.textContent !== language.label) {
+        option.textContent = language.label;
+      }
+    });
+    if (select.value !== targetLanguage) {
+      select.value = targetLanguage;
+    }
+  };
+
   const tryApply = () => {
+    restoreLanguageLabels();
     const combo = document.querySelector('.goog-te-combo');
     if (!combo) return false;
     combo.value = targetLanguage;
     combo.dispatchEvent(new Event('change'));
+    setTimeout(restoreLanguageLabels, 100);
+    setTimeout(restoreLanguageLabels, 700);
     return true;
   };
 
@@ -507,7 +540,8 @@ function loadTranslateWidget() {
 
   const widgetContainer = document.createElement('div');
   widgetContainer.id = 'google_translate_element';
-  widgetContainer.className = 'translate-widget';
+  widgetContainer.className = 'translate-widget notranslate';
+  widgetContainer.setAttribute('translate', 'no');
   document.body.appendChild(widgetContainer);
 
   const script = document.createElement('script');

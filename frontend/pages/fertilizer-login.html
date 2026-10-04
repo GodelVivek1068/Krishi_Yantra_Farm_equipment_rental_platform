@@ -1,28 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
   <title>Supplier Login - KrishiYantra</title>
-  <link rel="stylesheet" href="../css/main.css"/>
-  <link rel="stylesheet" href="../css/auth.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/auth.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    body { background: linear-gradient(135deg, #3a2a0d 0%, #7a5a1e 50%, #a87c2a 100%); }
-    .auth-icon { background: linear-gradient(135deg, #7a5a1e, #a87c2a); box-shadow: 0 8px 24px rgba(122,90,30,0.4); }
-    .auth-header h1 { color: #3a2a0d; }
-    .btn-auth-submit { background: linear-gradient(135deg, #7a5a1e, #a87c2a); box-shadow: 0 4px 16px rgba(122,90,30,0.4); }
-    .btn-auth-submit:hover:not(:disabled) { background: linear-gradient(135deg, #6a4c18, #956d22); }
-    .lockout-fill { background: linear-gradient(90deg, #a87c2a, #2d7a4f); }
-    .security-badge i { color: #a87c2a; }
-    .auth-links a { color: #7a5a1e; }
-    .role-tab.active { border-color: #a87c2a; color: #3a2a0d; background: linear-gradient(135deg, #fef9ec, #fef0c7); box-shadow: 0 4px 12px rgba(168,124,42,0.2); }
-    .role-tab:hover { border-color: #a87c2a; color: #7a5a1e; background: #fffbf0; }
-    .input-wrap input:focus { border-color: #a87c2a; box-shadow: 0 0 0 4px rgba(168,124,42,0.1); }
+    body {
+      background: linear-gradient(135deg, #3a2a0d 0%, #7a5a1e 50%, #a87c2a 100%);
+    }
+
+    .auth-icon {
+      background: linear-gradient(135deg, #7a5a1e, #a87c2a);
+      box-shadow: 0 8px 24px rgba(122, 90, 30, 0.4);
+    }
+
+    .auth-header h1 {
+      color: #3a2a0d;
+    }
+
+    .btn-auth-submit {
+      background: linear-gradient(135deg, #7a5a1e, #a87c2a);
+      box-shadow: 0 4px 16px rgba(122, 90, 30, 0.4);
+    }
+
+    .btn-auth-submit:hover:not(:disabled) {
+      background: linear-gradient(135deg, #6a4c18, #956d22);
+    }
+
+    .lockout-fill {
+      background: linear-gradient(90deg, #a87c2a, #2d7a4f);
+    }
+
+    .security-badge i {
+      color: #a87c2a;
+    }
+
+    .auth-links a {
+      color: #7a5a1e;
+    }
+
+    .role-tab.active {
+      border-color: #a87c2a;
+      color: #3a2a0d;
+      background: linear-gradient(135deg, #fef9ec, #fef0c7);
+      box-shadow: 0 4px 12px rgba(168, 124, 42, 0.2);
+    }
+
+    .role-tab:hover {
+      border-color: #a87c2a;
+      color: #7a5a1e;
+      background: #fffbf0;
+    }
+
+    .input-wrap input:focus {
+      border-color: #a87c2a;
+      box-shadow: 0 0 0 4px rgba(168, 124, 42, 0.1);
+    }
   </style>
 </head>
+
 <body class="auth-body">
   <nav class="navbar">
     <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
@@ -41,7 +85,7 @@
       </li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
-    <div class="nav-auth" id="navAuth"><a href="register.html" class="btn-primary">Register</a></div>
+    <div class="nav-auth" id="navAuth"><a href="supplier-register.html" class="btn-primary">Register</a></div>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
   </nav>
 
@@ -72,7 +116,7 @@
           <label class="form-label" for="email">Email Address</label>
           <div class="input-wrap">
             <i class="fa-solid fa-envelope inp-icon"></i>
-            <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required/>
+            <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required />
           </div>
           <div class="field-err" id="emailErr">Please enter a valid email address.</div>
         </div>
@@ -81,7 +125,8 @@
           <label class="form-label" for="password">Password</label>
           <div class="input-wrap">
             <i class="fa-solid fa-lock inp-icon"></i>
-            <input type="password" id="password" name="password" placeholder="Your password" autocomplete="current-password" required/>
+            <input type="password" id="password" name="password" placeholder="Your password"
+              autocomplete="current-password" required />
             <button type="button" class="toggle-pw" id="togglePw" aria-label="Toggle password visibility">
               <i class="fa-regular fa-eye" id="eyeIcon"></i>
             </button>
@@ -106,7 +151,7 @@
       </div>
 
       <div class="auth-links">
-        Don't have an account? <a href="register.html">Register here</a><br/>
+        Don't have an account? <a href="supplier-register.html">Register here</a><br />
         Farmer or owner? <a href="login.html">Main login →</a>
       </div>
     </div>
@@ -116,8 +161,14 @@
   <script src="../js/auth-utils.js"></script>
   <script>
     if (isLoggedIn()) {
-      const u = getUser();
-      window.location.href = (u && u.role === 'supplier') ? 'supplier-dashboard.html' : 'fertilizer.html';
+      const u = getUser() || {};
+      const role = String(u.role || '').toLowerCase();
+      const kycStatus = String(u.kyc_status || '').toLowerCase();
+      if (role === 'supplier') {
+        window.location.href = kycStatus === 'approved' ? 'supplier-dashboard.html' : 'supplier-kyc.html';
+      } else {
+        window.location.href = 'fertilizer.html';
+      }
     }
 
     let loginRole = 'farmer';
@@ -137,11 +188,11 @@
     function validate() {
       let ok = true;
       const emailVal = document.getElementById('email').value.trim();
-      const passVal  = document.getElementById('password').value;
+      const passVal = document.getElementById('password').value;
       document.getElementById('email').classList.remove('inp-error');
       document.getElementById('password').classList.remove('inp-error');
       document.getElementById('emailErr').style.display = 'none';
-      document.getElementById('passErr').style.display  = 'none';
+      document.getElementById('passErr').style.display = 'none';
       if (!emailVal || !AuthUtils.isValidEmail(emailVal)) {
         document.getElementById('email').classList.add('inp-error');
         document.getElementById('emailErr').style.display = 'block'; ok = false;
@@ -158,14 +209,14 @@
       const locked = AuthUtils.getLockoutMs();
       if (locked > 0) {
         AuthUtils.showAlert('alertBox', 'Too many failed attempts. Please wait before trying again.', 'warning');
-        AuthUtils.startLockout('loginBtn','lockoutBar','lockoutFill','loginBtnText','loginIcon','Sign In','fa-solid fa-right-to-bracket');
+        AuthUtils.startLockout('loginBtn', 'lockoutBar', 'lockoutFill', 'loginBtnText', 'loginIcon', 'Sign In', 'fa-solid fa-right-to-bracket');
         return;
       }
       if (!validate()) return;
 
-      const email    = document.getElementById('email').value.trim().toLowerCase();
+      const email = document.getElementById('email').value.trim().toLowerCase();
       const password = document.getElementById('password').value;
-      AuthUtils.setLoading('loginBtn','loginBtnText','loginIcon', true);
+      AuthUtils.setLoading('loginBtn', 'loginBtnText', 'loginIcon', true);
 
       try {
         const endpoint = loginRole === 'supplier' ? '/auth/login-supplier' : '/auth/login';
@@ -180,6 +231,8 @@
             const redirect = new URLSearchParams(window.location.search).get('redirect');
             if (redirect) { window.location.href = redirect; return; }
             const role = String((res.user && res.user.role) || '').toLowerCase();
+            const kycStatus = String((res.user && res.user.kyc_status) || '').toLowerCase();
+            if (role === 'supplier' && kycStatus !== 'approved') { window.location.href = 'supplier-kyc.html'; return; }
             window.location.href = role === 'supplier' ? 'supplier-dashboard.html' : 'fertilizer.html';
           }, 600);
         } else {
@@ -189,20 +242,21 @@
         const data = AuthUtils.recordFailed();
         AuthUtils.updateAttemptInfo('attemptInfo');
         AuthUtils.showAlert('alertBox', e && e.message ? e.message : 'Cannot connect to server.', 'error');
-        AuthUtils.setLoading('loginBtn','loginBtnText','loginIcon', false);
+        AuthUtils.setLoading('loginBtn', 'loginBtnText', 'loginIcon', false);
         document.getElementById('loginBtnText').textContent = 'Sign In';
         document.getElementById('loginIcon').className = 'fa-solid fa-right-to-bracket';
         if (data.lockedUntil && Date.now() < data.lockedUntil) {
-          AuthUtils.startLockout('loginBtn','lockoutBar','lockoutFill','loginBtnText','loginIcon','Sign In','fa-solid fa-right-to-bracket');
+          AuthUtils.startLockout('loginBtn', 'lockoutBar', 'lockoutFill', 'loginBtnText', 'loginIcon', 'Sign In', 'fa-solid fa-right-to-bracket');
           AuthUtils.showAlert('alertBox', 'Account temporarily locked after ' + AuthUtils.MAX_ATTEMPTS + ' failed attempts. Wait 2 minutes.', 'warning');
         }
       }
     }
 
-    document.getElementById('email').addEventListener('keydown',    e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
+    document.getElementById('email').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
     document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-    document.getElementById('email').addEventListener('input',    () => { document.getElementById('email').classList.remove('inp-error'); document.getElementById('emailErr').style.display = 'none'; });
+    document.getElementById('email').addEventListener('input', () => { document.getElementById('email').classList.remove('inp-error'); document.getElementById('emailErr').style.display = 'none'; });
     document.getElementById('password').addEventListener('input', () => { document.getElementById('password').classList.remove('inp-error'); document.getElementById('passErr').style.display = 'none'; });
   </script>
 </body>
+
 </html>

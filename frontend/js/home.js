@@ -144,7 +144,7 @@ async function loadTransportPreview() {
         + '</div>'
         + '<div class="svc-pills"><span class="svc-pill">' + (v.vehicle_type || 'Transport') + '</span></div>'
         + '<div class="svc-meta"><i class="fa-solid fa-weight-hanging"></i> ' + (v.capacity || 'Capacity N/A') + '</div>'
-        + '<div class="svc-price">&#8377;' + Number(v.price_per_day || 0) + ' <span>/ day</span></div>'
+        + '<div class="svc-price">&#8377;' + Number(v.rate_per_km || 0) + ' <span>/ km</span></div>'
         + '<button class="btn-green svc-cta" onclick="event.stopPropagation();window.location.href=\'pages/transport-detail.html?id=' + v._id + '\'">'
         +   (v.available ? 'Book Now' : 'View Details') + ' <i class="fa-solid fa-arrow-right"></i>'
         + '</button>'

@@ -1,39 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
   <title>Admin Login - KrishiYantra</title>
-  <link rel="stylesheet" href="../css/main.css"/>
-  <link rel="stylesheet" href="../css/auth.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/auth.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    body { background: linear-gradient(135deg, #0a1628 0%, #0f2545 50%, #1a3a6e 100%); }
-    .auth-icon { background: linear-gradient(135deg, #0f2545, #1a3a6e); box-shadow: 0 8px 24px rgba(15,37,69,0.5); }
-    .auth-header h1 { color: #0a1628; }
-    .auth-header p { color: #64748b; }
-    .btn-auth-submit { background: linear-gradient(135deg, #0f2545, #1a3a6e); box-shadow: 0 4px 16px rgba(15,37,69,0.5); }
-    .btn-auth-submit:hover:not(:disabled) { background: linear-gradient(135deg, #0a1e3a, #142e5a); }
-    .lockout-fill { background: linear-gradient(90deg, #1a3a6e, #dc2626); }
-    .security-badge { background: #eff6ff; border-color: #bfdbfe; }
-    .security-badge i { color: #1a3a6e; }
-    .security-badge span { color: #1e40af; }
-    .auth-links a { color: #1a3a6e; }
-    .input-wrap input:focus { border-color: #1a3a6e; box-shadow: 0 0 0 4px rgba(26,58,110,0.1); }
-    .admin-warning {
-      background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px;
-      padding: 14px 16px; margin-bottom: 20px; display: flex;
-      align-items: flex-start; gap: 10px; font-size: 0.85rem; color: #7f1d1d;
+    body {
+      background: linear-gradient(135deg, #0a1628 0%, #0f2545 50%, #1a3a6e 100%);
     }
-    .admin-warning i { color: #dc2626; flex-shrink: 0; margin-top: 2px; font-size: 1rem; }
+
+    .auth-icon {
+      background: linear-gradient(135deg, #0f2545, #1a3a6e);
+      box-shadow: 0 8px 24px rgba(15, 37, 69, 0.5);
+    }
+
+    .auth-header h1 {
+      color: #0a1628;
+    }
+
+    .auth-header p {
+      color: #64748b;
+    }
+
+    .btn-auth-submit {
+      background: linear-gradient(135deg, #0f2545, #1a3a6e);
+      box-shadow: 0 4px 16px rgba(15, 37, 69, 0.5);
+    }
+
+    .btn-auth-submit:hover:not(:disabled) {
+      background: linear-gradient(135deg, #0a1e3a, #142e5a);
+    }
+
+    .lockout-fill {
+      background: linear-gradient(90deg, #1a3a6e, #dc2626);
+    }
+
+    .security-badge {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+    }
+
+    .security-badge i {
+      color: #1a3a6e;
+    }
+
+    .security-badge span {
+      color: #1e40af;
+    }
+
+    .auth-links a {
+      color: #1a3a6e;
+    }
+
+    .input-wrap input:focus {
+      border-color: #1a3a6e;
+      box-shadow: 0 0 0 4px rgba(26, 58, 110, 0.1);
+    }
+
+    .admin-warning {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: #7f1d1d;
+    }
+
+    .admin-warning i {
+      color: #dc2626;
+      flex-shrink: 0;
+      margin-top: 2px;
+      font-size: 1rem;
+    }
+
     .admin-shield {
-      text-align: center; margin: 16px 0 4px;
-      font-size: 2.5rem; opacity: 0.12; user-select: none;
+      text-align: center;
+      margin: 16px 0 4px;
+      font-size: 2.5rem;
+      opacity: 0.12;
+      user-select: none;
     }
   </style>
 </head>
+
 <body class="auth-body">
   <nav class="navbar">
     <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
@@ -84,7 +145,8 @@
           <label class="form-label" for="email">Admin Email</label>
           <div class="input-wrap">
             <i class="fa-solid fa-envelope inp-icon"></i>
-            <input type="email" id="email" name="email" placeholder="admin@krishiplatform.com" autocomplete="off" required/>
+            <input type="email" id="email" name="email" placeholder="admin@krishiplatform.com" autocomplete="off"
+              required />
           </div>
           <div class="field-err" id="emailErr">Please enter a valid email address.</div>
         </div>
@@ -93,7 +155,8 @@
           <label class="form-label" for="password">Admin Password</label>
           <div class="input-wrap">
             <i class="fa-solid fa-lock inp-icon"></i>
-            <input type="password" id="password" name="password" placeholder="Admin password" autocomplete="new-password" required/>
+            <input type="password" id="password" name="password" placeholder="Admin password"
+              autocomplete="new-password" required />
             <button type="button" class="toggle-pw" id="togglePw" aria-label="Toggle password visibility">
               <i class="fa-regular fa-eye" id="eyeIcon"></i>
             </button>
@@ -130,8 +193,8 @@
   <script>
     // Admin uses separate lockout key for stricter security
     const ADMIN_LOCKOUT_KEY = 'ky_admin_attempts';
-    const ADMIN_MAX         = 3;  // only 3 attempts for admin!
-    const ADMIN_LOCKOUT_MS  = 5 * 60 * 1000; // 5 min lockout
+    const ADMIN_MAX = 3;  // only 3 attempts for admin!
+    const ADMIN_LOCKOUT_MS = 5 * 60 * 1000; // 5 min lockout
 
     if (isLoggedIn()) {
       const u = getUser() || {};
@@ -142,7 +205,7 @@
 
     // Override attempt tracking with stricter admin config
     function getAdminAttempts() {
-      try { return JSON.parse(localStorage.getItem(ADMIN_LOCKOUT_KEY)) || {}; } catch(e) { return {}; }
+      try { return JSON.parse(localStorage.getItem(ADMIN_LOCKOUT_KEY)) || {}; } catch (e) { return {}; }
     }
     function recordAdminFail() {
       const d = getAdminAttempts();
@@ -174,11 +237,11 @@
     function validate() {
       let ok = true;
       const emailVal = document.getElementById('email').value.trim();
-      const passVal  = document.getElementById('password').value;
+      const passVal = document.getElementById('password').value;
       document.getElementById('email').classList.remove('inp-error');
       document.getElementById('password').classList.remove('inp-error');
       document.getElementById('emailErr').style.display = 'none';
-      document.getElementById('passErr').style.display  = 'none';
+      document.getElementById('passErr').style.display = 'none';
       if (!emailVal || !AuthUtils.isValidEmail(emailVal)) {
         document.getElementById('email').classList.add('inp-error');
         document.getElementById('emailErr').style.display = 'block'; ok = false;
@@ -194,15 +257,15 @@
       AuthUtils.clearAlert('alertBox');
       const locked = getAdminLockoutMs();
       if (locked > 0) {
-        AuthUtils.showAlert('alertBox', 'Admin portal locked due to failed attempts. Please wait ' + Math.ceil(locked/60000) + ' minute(s).', 'warning');
-        AuthUtils.startLockout('loginBtn','lockoutBar','lockoutFill','loginBtnText','loginIcon','Login as Admin','fa-solid fa-shield-halved');
+        AuthUtils.showAlert('alertBox', 'Admin portal locked due to failed attempts. Please wait ' + Math.ceil(locked / 60000) + ' minute(s).', 'warning');
+        AuthUtils.startLockout('loginBtn', 'lockoutBar', 'lockoutFill', 'loginBtnText', 'loginIcon', 'Login as Admin', 'fa-solid fa-shield-halved');
         return;
       }
       if (!validate()) return;
 
-      const email    = document.getElementById('email').value.trim().toLowerCase();
+      const email = document.getElementById('email').value.trim().toLowerCase();
       const password = document.getElementById('password').value;
-      AuthUtils.setLoading('loginBtn','loginBtnText','loginIcon', true);
+      AuthUtils.setLoading('loginBtn', 'loginBtnText', 'loginIcon', true);
 
       try {
         const res = await apiCall('POST', '/auth/login-admin', { email, password });
@@ -224,20 +287,21 @@
         updateAdminAttemptInfo();
         const msg = e && e.message ? e.message : 'Cannot connect to server.';
         AuthUtils.showAlert('alertBox', msg, 'error');
-        AuthUtils.setLoading('loginBtn','loginBtnText','loginIcon', false);
+        AuthUtils.setLoading('loginBtn', 'loginBtnText', 'loginIcon', false);
         document.getElementById('loginBtnText').textContent = 'Login as Admin';
         document.getElementById('loginIcon').className = 'fa-solid fa-shield-halved';
         if (data.lockedUntil && Date.now() < data.lockedUntil) {
-          AuthUtils.startLockout('loginBtn','lockoutBar','lockoutFill','loginBtnText','loginIcon','Login as Admin','fa-solid fa-shield-halved');
+          AuthUtils.startLockout('loginBtn', 'lockoutBar', 'lockoutFill', 'loginBtnText', 'loginIcon', 'Login as Admin', 'fa-solid fa-shield-halved');
           AuthUtils.showAlert('alertBox', 'Admin portal locked after ' + ADMIN_MAX + ' failed attempts. 5-minute lockout in effect.', 'warning');
         }
       }
     }
 
-    document.getElementById('email').addEventListener('keydown',    e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
+    document.getElementById('email').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('password').focus(); });
     document.getElementById('password').addEventListener('keydown', e => { if (e.key === 'Enter') doAdminLogin(); });
-    document.getElementById('email').addEventListener('input',    () => { document.getElementById('email').classList.remove('inp-error'); document.getElementById('emailErr').style.display = 'none'; });
+    document.getElementById('email').addEventListener('input', () => { document.getElementById('email').classList.remove('inp-error'); document.getElementById('emailErr').style.display = 'none'; });
     document.getElementById('password').addEventListener('input', () => { document.getElementById('password').classList.remove('inp-error'); document.getElementById('passErr').style.display = 'none'; });
   </script>
 </body>
+
 </html>

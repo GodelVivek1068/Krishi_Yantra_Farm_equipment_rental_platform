@@ -1,59 +1,287 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
   <title>Fertilizer Detail - KrishiYantra</title>
   <link rel="stylesheet" href="../css/main.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    .detail-page { max-width: 980px; margin: 40px auto; padding: 0 24px; }
-    .back-link { color: var(--green-mid); font-size: 0.9rem; font-weight: 600; margin-bottom: 24px; display: inline-flex; align-items: center; gap: 6px; }
-    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    .detail-page {
+      max-width: 980px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+
+    .back-link {
+      color: var(--green-mid);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
     .detail-image {
-      width: 100%; height: 320px; background: linear-gradient(135deg, #edf8ef, #dff3db); border-radius: var(--radius); display: flex; align-items: center; justify-content: center;
-      font-size: 7rem; border: 1px solid var(--gray-200);
+      width: 100%;
+      height: 320px;
+      background: linear-gradient(135deg, #edf8ef, #dff3db);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 7rem;
+      border: 1px solid var(--gray-200);
     }
-    .detail-name { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; color: var(--green-dark); margin-bottom: 10px; }
-    .detail-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; font-size: 0.88rem; color: var(--gray-600); }
-    .detail-meta span { display: flex; align-items: center; gap: 5px; }
-    .detail-price { font-size: 2rem; font-weight: 900; color: var(--green-mid); margin-bottom: 20px; }
-    .detail-price small { font-size: 0.9rem; color: var(--gray-400); font-weight: 400; }
-    .detail-desc { color: var(--gray-600); line-height: 1.7; margin-bottom: 24px; font-size: 0.93rem; }
+
+    .detail-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--green-dark);
+      margin-bottom: 10px;
+    }
+
+    .detail-meta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      font-size: 0.88rem;
+      color: var(--gray-600);
+    }
+
+    .detail-meta span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .detail-price {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--green-mid);
+      margin-bottom: 20px;
+    }
+
+    .detail-price small {
+      font-size: 0.9rem;
+      color: var(--gray-400);
+      font-weight: 400;
+    }
+
+    .detail-desc {
+      color: var(--gray-600);
+      line-height: 1.7;
+      margin-bottom: 24px;
+      font-size: 0.93rem;
+    }
+
     .owner-card {
-      background: var(--green-pale); border-radius: var(--radius); padding: 16px; display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
+      background: var(--green-pale);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
     }
-    .owner-avatar { width: 50px; height: 50px; background: var(--green-mid); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; font-weight: 700; }
-    .owner-info h4 { font-weight: 700; color: var(--green-dark); margin-bottom: 2px; }
-    .owner-info span { font-size: 0.82rem; color: var(--gray-600); }
-    .booking-form { background: var(--white); border: 1.5px solid var(--gray-200); border-radius: var(--radius); padding: 24px; margin-top: 32px; }
-    .booking-form h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--green-dark); margin-bottom: 20px; }
-    .booking-summary { background: var(--green-pale); border-radius: var(--radius-sm); padding: 14px; margin: 16px 0; font-size: 0.9rem; }
-    .booking-summary .summary-row { display: flex; justify-content: space-between; padding: 4px 0; }
-    .booking-summary .summary-total { font-weight: 700; border-top: 1px solid var(--gray-200); padding-top: 8px; margin-top: 4px; color: var(--green-dark); font-size: 1rem; }
-    .ratings-section { background: var(--white); border: 1.5px solid var(--gray-200); border-radius: var(--radius); padding: 24px; margin-top: 32px; }
-    .ratings-section h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--green-dark); margin-bottom: 20px; }
-    .rating-summary { display: flex; align-items: center; gap: 24px; margin-bottom: 24px; }
-    .rating-stars { font-size: 2rem; }
-    .rating-avg { font-size: 1.8rem; font-weight: 900; color: var(--green-dark); }
-    .rating-count { font-size: 0.9rem; color: var(--gray-600); }
-    .rating-submit { background: var(--green-pale); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 20px; }
-    .rating-form { display: flex; flex-direction: column; gap: 12px; }
-    .star-input { display: flex; gap: 8px; }
-    .star-input span { font-size: 1.8rem; cursor: pointer; color: var(--gray-300); transition: color 0.2s; }
-    .star-input span:hover, .star-input span.active { color: #fbbf24; }
-    .rating-reviews { border-top: 1px solid var(--gray-200); padding-top: 20px; }
-    .review-item { border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 12px; }
-    .review-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px; }
-    .review-author { font-weight: 600; color: var(--green-dark); }
-    .review-date { font-size: 0.82rem; color: var(--gray-600); }
-    .review-stars { font-size: 0.9rem; color: #fbbf24; }
-    .review-comment { color: var(--gray-600); font-size: 0.9rem; line-height: 1.5; }
-    @media(max-width:700px) { .detail-grid { grid-template-columns: 1fr; } .rating-summary { flex-direction: column; align-items: start; gap: 12px; } }
+
+    .owner-avatar {
+      width: 50px;
+      height: 50px;
+      background: var(--green-mid);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .owner-info h4 {
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 2px;
+    }
+
+    .owner-info span {
+      font-size: 0.82rem;
+      color: var(--gray-600);
+    }
+
+    .booking-form {
+      background: var(--white);
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-top: 32px;
+    }
+
+    .booking-form h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--green-dark);
+      margin-bottom: 20px;
+    }
+
+    .booking-summary {
+      background: var(--green-pale);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin: 16px 0;
+      font-size: 0.9rem;
+    }
+
+    .booking-summary .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+    }
+
+    .booking-summary .summary-total {
+      font-weight: 700;
+      border-top: 1px solid var(--gray-200);
+      padding-top: 8px;
+      margin-top: 4px;
+      color: var(--green-dark);
+      font-size: 1rem;
+    }
+
+    .ratings-section {
+      background: var(--white);
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-top: 32px;
+    }
+
+    .ratings-section h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--green-dark);
+      margin-bottom: 20px;
+    }
+
+    .rating-summary {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .rating-stars {
+      font-size: 2rem;
+    }
+
+    .rating-avg {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--green-dark);
+    }
+
+    .rating-count {
+      font-size: 0.9rem;
+      color: var(--gray-600);
+    }
+
+    .rating-submit {
+      background: var(--green-pale);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .rating-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .star-input {
+      display: flex;
+      gap: 8px;
+    }
+
+    .star-input span {
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: var(--gray-300);
+      transition: color 0.2s;
+    }
+
+    .star-input span:hover,
+    .star-input span.active {
+      color: #fbbf24;
+    }
+
+    .rating-reviews {
+      border-top: 1px solid var(--gray-200);
+      padding-top: 20px;
+    }
+
+    .review-item {
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 8px;
+    }
+
+    .review-author {
+      font-weight: 600;
+      color: var(--green-dark);
+    }
+
+    .review-date {
+      font-size: 0.82rem;
+      color: var(--gray-600);
+    }
+
+    .review-stars {
+      font-size: 0.9rem;
+      color: #fbbf24;
+    }
+
+    .review-comment {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    @media(max-width:700px) {
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .rating-summary {
+        flex-direction: column;
+        align-items: start;
+        gap: 12px;
+      }
+    }
   </style>
 </head>
+
 <body>
   <nav class="navbar">
     <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
@@ -75,14 +303,17 @@
       <li><a href="my-orders.html">My Orders</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
-    <div class="nav-auth" id="navAuth"><a href="login.html" class="btn-outline">Login</a><a href="register.html" class="btn-primary">Register</a></div>
+    <div class="nav-auth" id="navAuth"><a href="fertilizer-login.html" class="btn-outline">Login</a><a href="supplier-register.html"
+        class="btn-primary">Register</a></div>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
   </nav>
 
   <div class="detail-page">
     <a href="fertilizer.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Fertilizer</a>
     <div id="alertBox"></div>
-    <div id="detailContent"><div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div></div>
+    <div id="detailContent">
+      <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>
+    </div>
   </div>
 
   <footer class="footer">
@@ -142,7 +373,7 @@
     function renderRatings(ratings) {
       const detailContent = document.getElementById('detailContent');
       if (!detailContent) return;
-      
+
       let avgRating = 0;
       if (ratings.length > 0) {
         avgRating = (ratings.reduce((sum, r) => sum + (r.rating || 0), 0) / ratings.length).toFixed(1);
@@ -173,7 +404,7 @@
         </div>
       `;
 
-      const reviewsHtml = ratings.length === 0 
+      const reviewsHtml = ratings.length === 0
         ? '<div style="text-align:center;color:var(--gray-400);padding:20px;">No reviews yet. Be the first to rate!</div>'
         : ratings.map(r => `
           <div class="review-item">
@@ -210,7 +441,7 @@
       // Bind star input
       const starBtns = document.querySelectorAll('.star-btn');
       starBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
           const rating = this.dataset.rating;
           starBtns.forEach((b, i) => {
             b.classList.toggle('active', (i + 1) <= rating);
@@ -423,4 +654,5 @@
     loadProduct();
   </script>
 </body>
+
 </html>

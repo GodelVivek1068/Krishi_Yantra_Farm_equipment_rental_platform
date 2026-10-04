@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <title>Farmer Dashboard - KrishiYantra</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary-green: #1b633e;
+      --primary-light: #2d7a4f;
+      --primary-dark: #0f3d24;
+      --surface-bg: #f4f8f5;
+    }
+
+    body {
+      background-color: var(--surface-bg);
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Dashboard Header */
+    .dashboard-hero {
+      background: linear-gradient(135deg, #0d3820 0%, #165330 50%, #206d40 100%);
+      color: #ffffff;
+      padding: 48px 24px 64px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .hero-container {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .hero-text h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 2.4rem;
+      font-weight: 800;
+      margin: 0 0 8px;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-text p {
+      margin: 0;
+      font-size: 1.05rem;
+      color: rgba(255, 255, 255, 0.88);
+      max-width: 600px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-hero {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-hero-primary {
+      background: #ffffff;
+      color: #0f3d24;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-hero-primary:hover {
+      background: #f0fdf4;
+      transform: translateY(-2px);
+    }
+
+    .btn-hero-outline {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(8px);
+    }
+
+    .btn-hero-outline:hover {
+      background: rgba(255, 255, 255, 0.22);
+      border-color: #ffffff;
+    }
+
+    /* Main Container */
+    .dashboard-container {
+      max-width: 1240px;
+      margin: -32px auto 60px;
+      padding: 0 24px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Stats Overview */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      margin-bottom: 36px;
+    }
+
+    .stat-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 22px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      box-shadow: 0 4px 18px rgba(15, 61, 36, 0.05);
+      border: 1px solid #e3ede6;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(15, 61, 36, 0.09);
+    }
+
+    .stat-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .icon-green { background: #e8f5ed; color: #1b633e; }
+    .icon-blue { background: #e0f2fe; color: #0284c7; }
+    .icon-amber { background: #fef3c7; color: #d97706; }
+    .icon-purple { background: #ede9fe; color: #7c3aed; }
+
+    .stat-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-val {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: #0f3d24;
+      line-height: 1.1;
+    }
+
+    .stat-label {
+      font-size: 0.86rem;
+      color: #64748b;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* Section Header */
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: #0f3d24;
+      margin: 0 0 8px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-subtitle {
+      color: #64748b;
+      font-size: 0.95rem;
+      margin: 0 0 24px;
+    }
+
+    /* Services Hub Cards */
+    .services-hub {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    .service-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 26px;
+      border: 1px solid #e3ede6;
+      box-shadow: 0 4px 18px rgba(15, 61, 36, 0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.22s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .service-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 32px rgba(15, 61, 36, 0.1);
+      border-color: #84cc99;
+    }
+
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #1b633e, #2d7a4f);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .service-card:hover::before {
+      opacity: 1;
+    }
+
+    .service-icon-box {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .service-card h3 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #0f3d24;
+      margin: 0 0 10px;
+    }
+
+    .service-card p {
+      font-size: 0.92rem;
+      color: #64748b;
+      line-height: 1.55;
+      margin: 0 0 20px;
+      flex: 1;
+    }
+
+    .service-features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .service-features li {
+      font-size: 0.86rem;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .service-features li i {
+      color: #1b633e;
+      font-size: 0.8rem;
+    }
+
+    .btn-service {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #1b633e;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(27, 99, 62, 0.2);
+    }
+
+    .btn-service:hover {
+      background: #14532d;
+      box-shadow: 0 6px 16px rgba(27, 99, 62, 0.28);
+    }
+
+    /* Management Sections Grid */
+    .management-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .manage-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 26px;
+      border: 1px solid #e3ede6;
+      box-shadow: 0 4px 18px rgba(15, 61, 36, 0.05);
+    }
+
+    .manage-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #eef3ef;
+    }
+
+    .manage-card-header h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f3d24;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .manage-link {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #1b633e;
+      text-decoration: none;
+    }
+
+    .manage-link:hover {
+      text-decoration: underline;
+    }
+
+    .recent-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .recent-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      background: #f8faf8;
+      border-radius: 10px;
+      border: 1px solid #eef4f0;
+      font-size: 0.9rem;
+    }
+
+    .recent-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .recent-title {
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .recent-date {
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .status-active { background: #dcfce7; color: #166534; }
+    .status-pending { background: #fef3c7; color: #b45309; }
+
+    .empty-card-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: #94a3b8;
+    }
+
+    .empty-card-state i {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    @media (max-width: 860px) {
+      .management-grid {
+        grid-template-columns: 1fr;
+      }
+      .dashboard-hero {
+        padding: 40px 20px 56px;
+      }
+      .hero-text h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="../index.html">Home</a></li>
+      <li id="farmerServicesNav" class="service-menu">
+        <button type="button" class="service-menu-toggle" aria-expanded="false">
+          Services <i class="fa-solid fa-chevron-down"></i>
+        </button>
+        <div class="service-menu-dropdown">
+          <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
+          <a href="kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a>
+          <a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
+          <a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a>
+        </div>
+      </li>
+      <li id="farmerDashboardNav"><a href="farmer-dashboard.html" class="active">Farmer Dashboard</a></li>
+      <li id="farmerMyRentalsNav"><a href="my-rentals.html">My Rentals</a></li>
+      <li id="farmerOrdersNav"><a href="my-orders.html">My Orders</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-auth" id="navAuth">
+      <a href="login.html" class="btn-outline">Login</a>
+      <a href="farmer-register.html" class="btn-primary">Register</a>
+    </div>
+    <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
+  </nav>
+
+  <!-- DASHBOARD HERO -->
+  <header class="dashboard-hero">
+    <div class="hero-container">
+      <div class="hero-text">
+        <h1 id="welcomeUser">Welcome, Farmer</h1>
+        <p>Your centralized agricultural hub to hire machinery, find skilled farm workers, purchase verified fertilizer, and book transport logistics.</p>
+      </div>
+      <div class="hero-actions">
+        <a href="my-rentals.html" class="btn-hero btn-hero-primary"><i class="fa-solid fa-clock-rotate-left"></i> My Rentals</a>
+        <a href="my-orders.html" class="btn-hero btn-hero-outline"><i class="fa-solid fa-receipt"></i> Orders</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN DASHBOARD CONTENT -->
+  <main class="dashboard-container">
+    <!-- STATS OVERVIEW -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon-wrap icon-green">
+          <i class="fa-solid fa-tractor"></i>
+        </div>
+        <div class="stat-meta">
+          <span class="stat-val" id="statRentals">0</span>
+          <span class="stat-label">Active Equipment Rentals</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrap icon-blue">
+          <i class="fa-solid fa-person-digging"></i>
+        </div>
+        <div class="stat-meta">
+          <span class="stat-val" id="statWorkers">0</span>
+          <span class="stat-label">Kamgar Workers Hired</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrap icon-amber">
+          <i class="fa-solid fa-seedling"></i>
+        </div>
+        <div class="stat-meta">
+          <span class="stat-val" id="statFertilizer">0</span>
+          <span class="stat-label">Fertilizer Bag Orders</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrap icon-purple">
+          <i class="fa-solid fa-truck"></i>
+        </div>
+        <div class="stat-meta">
+          <span class="stat-val" id="statTransport">0</span>
+          <span class="stat-label">Farm Transport Trips</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SERVICES HUB (EXCLUSIVE TO FARMERS) -->
+    <div>
+      <h2 class="section-title"><i class="fa-solid fa-wheat-awn"></i> Farmer Agricultural Services</h2>
+      <p class="section-subtitle">Select a service below to book equipment, personnel, or logistics for your farm operations.</p>
+      
+      <div class="services-hub">
+        <!-- 1. Equipment Rental -->
+        <div class="service-card">
+          <div>
+            <div class="service-icon-box icon-green">
+              <i class="fa-solid fa-tractor"></i>
+            </div>
+            <h3>Farm Equipment Rental</h3>
+            <p>Rent high-performance tractors, harvesters, rotavators, sprayers, and water pumps from verified local equipment owners.</p>
+            <ul class="service-features">
+              <li><i class="fa-solid fa-check"></i> Daily & hourly flexible rentals</li>
+              <li><i class="fa-solid fa-check"></i> Verified condition & owners</li>
+              <li><i class="fa-solid fa-check"></i> Direct contact with owners</li>
+            </ul>
+          </div>
+          <a href="equipment.html" class="btn-service"><i class="fa-solid fa-magnifying-glass"></i> Browse Equipment</a>
+        </div>
+
+        <!-- 2. Kamgar / Workers -->
+        <div class="service-card">
+          <div>
+            <div class="service-icon-box icon-blue">
+              <i class="fa-solid fa-person-digging"></i>
+            </div>
+            <h3>Kamgar / Farm Workers</h3>
+            <p>Hire skilled farm labourers for harvesting, transplanting, weeding, irrigation, field spraying, and daily farming needs.</p>
+            <ul class="service-features">
+              <li><i class="fa-solid fa-check"></i> Experienced local farm workers</li>
+              <li><i class="fa-solid fa-check"></i> Transparent daily wage rates</li>
+              <li><i class="fa-solid fa-check"></i> Instant booking & direct call</li>
+            </ul>
+          </div>
+          <a href="kamgar.html" class="btn-service"><i class="fa-solid fa-user-plus"></i> Hire Farm Workers</a>
+        </div>
+
+        <!-- 3. Fertilizer & Agri-Inputs -->
+        <div class="service-card">
+          <div>
+            <div class="service-icon-box icon-amber">
+              <i class="fa-solid fa-seedling"></i>
+            </div>
+            <h3>Fertilizer & Agri-Inputs</h3>
+            <p>Purchase certified fertilizers, NPK mixtures, Urea, DAP, micronutrients, and organic soil inputs directly from approved vendors.</p>
+            <ul class="service-features">
+              <li><i class="fa-solid fa-check"></i> Certified brands (IFFCO, Mahadhan)</li>
+              <li><i class="fa-solid fa-check"></i> Live stock & bulk bag pricing</li>
+              <li><i class="fa-solid fa-check"></i> Farm delivery assistance</li>
+            </ul>
+          </div>
+          <a href="fertilizer.html" class="btn-service"><i class="fa-solid fa-cart-shopping"></i> Order Fertilizer</a>
+        </div>
+
+        <!-- 4. Farm Transport -->
+        <div class="service-card">
+          <div>
+            <div class="service-icon-box icon-purple">
+              <i class="fa-solid fa-truck"></i>
+            </div>
+            <h3>Farm Transport</h3>
+            <p>Book tractor trolleys, pickup mini-trucks, and tempo vans to transport grains, vegetables, fertilizers, or farm machinery.</p>
+            <ul class="service-features">
+              <li><i class="fa-solid fa-check"></i> On-demand rural & mandi transport</li>
+              <li><i class="fa-solid fa-check"></i> Verified drivers & vehicles</li>
+              <li><i class="fa-solid fa-check"></i> Transparent payload rates</li>
+            </ul>
+          </div>
+          <a href="transport.html" class="btn-service"><i class="fa-solid fa-truck-fast"></i> Book Transport</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECENT ACTIVITY OVERVIEW -->
+    <div class="management-grid">
+      <!-- Active Rentals -->
+      <div class="manage-card">
+        <div class="manage-card-header">
+          <h3><i class="fa-solid fa-tractor"></i> Recent Equipment Rentals</h3>
+          <a href="my-rentals.html" class="manage-link">View All &rarr;</a>
+        </div>
+        <div id="recentRentalsContainer">
+          <div class="empty-card-state">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <p>Loading your recent rentals...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders & Bookings -->
+      <div class="manage-card">
+        <div class="manage-card-header">
+          <h3><i class="fa-solid fa-boxes-packing"></i> Input & Transport Bookings</h3>
+          <a href="my-orders.html" class="manage-link">View All &rarr;</a>
+        </div>
+        <div id="recentOrdersContainer">
+          <div class="empty-card-state">
+            <i class="fa-solid fa-receipt"></i>
+            <p>Loading your orders & bookings...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = getUser();
+      
+      // Personalize greeting
+      if (user && user.name) {
+        document.getElementById('welcomeUser').textContent = `Welcome back, ${user.name} 🌾`;
+      }
+
+      // Fetch active stats and recent activity
+      loadDashboardData();
+    });
+
+    async function loadDashboardData() {
+      const user = getUser();
+      if (!user) return;
+
+      try {
+        // 1. Fetch Rentals
+        const rentalsRes = await apiCall('GET', '/rentals/my');
+        const rentals = rentalsRes.rentals || [];
+        document.getElementById('statRentals').textContent = rentals.length;
+
+        const rentalsContainer = document.getElementById('recentRentalsContainer');
+        if (rentals.length === 0) {
+          rentalsContainer.innerHTML = `
+            <div class="empty-card-state">
+              <i class="fa-solid fa-tractor"></i>
+              <p>No equipment rentals yet. <a href="equipment.html" style="color:#1b633e;font-weight:700;">Browse equipment</a></p>
+            </div>
+          `;
+        } else {
+          rentalsContainer.innerHTML = `
+            <ul class="recent-list">
+              ${rentals.slice(0, 4).map(r => `
+                <li class="recent-item">
+                  <div class="recent-info">
+                    <span class="recent-title">${escapeHtml(r.equipment_name || 'Farm Machinery')}</span>
+                    <span class="recent-date"><i class="fa-regular fa-calendar"></i> ${r.start_date || 'N/A'} to ${r.end_date || 'N/A'}</span>
+                  </div>
+                  <span class="status-badge ${r.status === 'approved' ? 'status-active' : 'status-pending'}">${r.status || 'Active'}</span>
+                </li>
+              `).join('')}
+            </ul>
+          `;
+        }
+
+        // 2. Fetch Worker Bookings
+        try {
+          const workersRes = await apiCall('GET', '/kamgar/bookings/my');
+          const workers = workersRes.bookings || [];
+          document.getElementById('statWorkers').textContent = workers.length;
+        } catch (e) {
+          // fallback if guest/mock
+        }
+
+        // 3. Fetch Orders (Fertilizer & Transports)
+        try {
+          const ordersRes = await apiCall('GET', '/fertilizer/orders/my');
+          const orders = ordersRes.orders || [];
+          document.getElementById('statFertilizer').textContent = orders.length;
+
+          const ordersContainer = document.getElementById('recentOrdersContainer');
+          if (orders.length === 0) {
+            ordersContainer.innerHTML = `
+              <div class="empty-card-state">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                <p>No recent orders. <a href="fertilizer.html" style="color:#1b633e;font-weight:700;">Order fertilizer</a></p>
+              </div>
+            `;
+          } else {
+            ordersContainer.innerHTML = `
+              <ul class="recent-list">
+                ${orders.slice(0, 4).map(o => `
+                  <li class="recent-item">
+                    <div class="recent-info">
+                      <span class="recent-title">${escapeHtml(o.product_name || 'Agri Inputs')} (${o.quantity || 1} bags)</span>
+                      <span class="recent-date"><i class="fa-regular fa-clock"></i> ₹${Number(o.total_price || 0).toLocaleString()}</span>
+                    </div>
+                    <span class="status-badge ${o.status === 'confirmed' ? 'status-active' : 'status-pending'}">${o.status || 'Processing'}</span>
+                  </li>
+                `).join('')}
+              </ul>
+            `;
+          }
+        } catch (e) {
+          // fallback if endpoint returns error
+        }
+
+        // 4. Fetch Transport Bookings
+        try {
+          const transportRes = await apiCall('GET', '/transport/bookings/my');
+          const transports = transportRes.bookings || [];
+          document.getElementById('statTransport').textContent = transports.length;
+        } catch (e) {
+          // fallback
+        }
+
+      } catch (err) {
+        console.error('Error loading farmer dashboard data:', err);
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+
+</html>

@@ -1,47 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
   <title>Kamgar Dashboard - KrishiYantra</title>
   <link rel="stylesheet" href="../css/main.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    body { background: #f6faf7; }
-    .page-header { background: linear-gradient(135deg, #204d36, #2d7a4f); color: white; padding: 48px 24px 36px; }
-    .page-header h1 { font-family: 'Playfair Display', serif; font-size: 2.2rem; }
-    .page-header p { color: rgba(255,255,255,0.75); }
-    .container { max-width: 1180px; margin: 0 auto; padding: 28px 24px 80px; }
-    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; margin-bottom: 24px; }
-    .stat-card { background: white; border: 1px solid #e5efe7; border-radius: 16px; padding: 18px; box-shadow: var(--shadow-sm); }
-    .stat-label { color: var(--gray-600); font-size: 0.8rem; }
-    .stat-value { font-size: 1.6rem; font-weight: 800; color: var(--green-dark); margin-top: 8px; }
-    .panel { background: white; border: 1px solid #e5efe7; border-radius: 18px; padding: 20px; box-shadow: var(--shadow-sm); }
-    .grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 22px; }
-    .section-title { color: var(--green-dark); font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 14px; }
-    .profile-card { background: linear-gradient(180deg, #f8fdf9, #f0faf3); border: 1px dashed #bddcbe; border-radius: 16px; padding: 18px; margin-bottom: 18px; }
-    .profile-form { border-top: 1px solid #dcecdf; margin-top: 18px; padding-top: 18px; }
-    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
-    .form-grid .full { grid-column: 1 / -1; }
-    .job-list { display: grid; gap: 12px; }
-    .job-card { border: 1px solid #e7efe8; border-radius: 14px; padding: 14px; }
-    .job-card h4 { margin: 0 0 8px; color: var(--green-dark); }
-    .job-meta { color: var(--gray-600); font-size: 0.86rem; display: flex; flex-wrap: wrap; gap: 10px; }
-    .status-badge { display: inline-block; padding: 6px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; margin-top: 10px; }
-    .status-requested { background: #fff7d6; color: #9a6700; }
-    .status-accepted { background: #dff8e9; color: #0f7a39; }
-    .status-in_progress { background: #dbeafe; color: #1d4ed8; }
-    .status-completed { background: #e2e8f0; color: #334155; }
-    .status-cancelled { background: #fee2e2; color: #b91c1c; }
-    .pill { display: inline-block; background: #edf9f1; color: var(--green-dark); border: 1px solid #d4ebd9; border-radius: 999px; padding: 6px 9px; font-size: 0.72rem; margin: 6px 6px 0 0; }
-    .small-btn { border: none; border-radius: 999px; padding: 7px 12px; font-weight: 700; cursor: pointer; margin-top: 10px; }
-    .green { background: #dcfce7; color: #166534; }
-    .amber { background: #fef3c7; color: #92400e; }
-    .empty { padding: 20px; text-align: center; color: var(--gray-500); }
+    body {
+      background: #f6faf7;
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, #204d36, #2d7a4f);
+      color: white;
+      padding: 48px 24px 36px;
+    }
+
+    .page-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+    }
+
+    .page-header p {
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 24px 80px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid #e5efe7;
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-label {
+      color: var(--gray-600);
+      font-size: 0.8rem;
+    }
+
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--green-dark);
+      margin-top: 8px;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid #e5efe7;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 22px;
+    }
+
+    .section-title {
+      color: var(--green-dark);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      margin-bottom: 14px;
+    }
+
+    .profile-card {
+      background: linear-gradient(180deg, #f8fdf9, #f0faf3);
+      border: 1px dashed #bddcbe;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .profile-form {
+      border-top: 1px solid #dcecdf;
+      margin-top: 18px;
+      padding-top: 18px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .job-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .job-card {
+      border: 1px solid #e7efe8;
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .job-card h4 {
+      margin: 0 0 8px;
+      color: var(--green-dark);
+    }
+
+    .job-meta {
+      color: var(--gray-600);
+      font-size: 0.86rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    .status-requested {
+      background: #fff7d6;
+      color: #9a6700;
+    }
+
+    .status-accepted {
+      background: #dff8e9;
+      color: #0f7a39;
+    }
+
+    .status-in_progress {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .status-completed {
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    .status-cancelled {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .pill {
+      display: inline-block;
+      background: #edf9f1;
+      color: var(--green-dark);
+      border: 1px solid #d4ebd9;
+      border-radius: 999px;
+      padding: 6px 9px;
+      font-size: 0.72rem;
+      margin: 6px 6px 0 0;
+    }
+
+    .small-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .green {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .amber {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .empty {
+      padding: 20px;
+      text-align: center;
+      color: var(--gray-500);
+    }
   </style>
 </head>
+
 <body>
   <nav class="navbar">
     <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
@@ -63,7 +226,7 @@
     </ul>
     <div class="nav-auth" id="navAuth">
       <a href="worker-login.html" class="btn-outline">Login</a>
-      <a href="register.html" class="btn-primary">Register</a>
+      <a href="worker-register.html" class="btn-primary">Register</a>
     </div>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
   </nav>
@@ -75,10 +238,22 @@
 
   <div class="container">
     <div class="stats">
-      <div class="stat-card"><div class="stat-label">Jobs Requested</div><div class="stat-value" id="jobsRequested">0</div></div>
-      <div class="stat-card"><div class="stat-label">Accepted</div><div class="stat-value" id="jobsAccepted">0</div></div>
-      <div class="stat-card"><div class="stat-label">In Progress</div><div class="stat-value" id="jobsProgress">0</div></div>
-      <div class="stat-card"><div class="stat-label">Completed</div><div class="stat-value" id="jobsCompleted">0</div></div>
+      <div class="stat-card">
+        <div class="stat-label">Jobs Requested</div>
+        <div class="stat-value" id="jobsRequested">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Accepted</div>
+        <div class="stat-value" id="jobsAccepted">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">In Progress</div>
+        <div class="stat-value" id="jobsProgress">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Completed</div>
+        <div class="stat-value" id="jobsCompleted">0</div>
+      </div>
     </div>
 
     <div class="grid">
@@ -93,9 +268,14 @@
             <div><label for="profileName">Name</label><input id="profileName" type="text" required></div>
             <div><label for="profilePhone">Phone</label><input id="profilePhone" type="text" required></div>
             <div><label for="profileLocation">Location</label><input id="profileLocation" type="text" required></div>
-            <div><label for="profileExperience">Experience (years)</label><input id="profileExperience" type="number" min="0"></div>
-            <div class="full"><label for="profileSkills">Skills (comma separated)</label><input id="profileSkills" type="text" placeholder="Harvesting, Weeding, Spraying" required></div>
-            <div class="full"><label for="profileDescription">About your work</label><textarea id="profileDescription" rows="3" style="width:100%;padding:10px;border:1px solid var(--gray-200);border-radius:8px;font:inherit;resize:vertical;"></textarea></div>
+            <div><label for="profileExperience">Experience (years)</label><input id="profileExperience" type="number"
+                min="0"></div>
+            <div class="full"><label for="profileSkills">Skills (comma separated)</label><input id="profileSkills"
+                type="text" placeholder="Harvesting, Weeding, Spraying" required></div>
+            <div class="full"><label for="profileDescription">About your work</label><textarea id="profileDescription"
+                rows="3"
+                style="width:100%;padding:10px;border:1px solid var(--gray-200);border-radius:8px;font:inherit;resize:vertical;"></textarea>
+            </div>
             <div class="full"><button class="btn-green" type="submit">Save worker profile</button></div>
           </div>
         </form>
@@ -128,7 +308,9 @@
 
     <div class="panel" style="margin-top:22px;">
       <h2 class="section-title">Assigned Job Requests</h2>
-      <div id="jobList" class="job-list"><div class="empty">Loading jobs...</div></div>
+      <div id="jobList" class="job-list">
+        <div class="empty">Loading jobs...</div>
+      </div>
     </div>
   </div>
 
@@ -302,4 +484,5 @@
     }, 15000);
   </script>
 </body>
+
 </html>

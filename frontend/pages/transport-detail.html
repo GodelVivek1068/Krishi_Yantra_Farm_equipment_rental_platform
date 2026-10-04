@@ -1,50 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
-  <title>Transport Detail - KrishiYantra</title>
-  <link rel="stylesheet" href="../css/main.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <style>
-    .detail-page { max-width: 960px; margin: 40px auto; padding: 0 24px; }
-    .back-link { color: var(--green-mid); font-size: 0.9rem; font-weight: 600; margin-bottom: 24px; display: inline-flex; align-items: center; gap: 6px; }
-    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
-    .detail-image {
-      width: 100%; height: 320px; background: var(--green-pale);
-      border-radius: var(--radius); display: flex; align-items: center;
-      justify-content: center; font-size: 7rem; border: 1px solid var(--gray-200);
-    }
-    .detail-name { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; color: var(--green-dark); margin-bottom: 10px; }
-    .detail-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; font-size: 0.88rem; color: var(--gray-600); }
-    .detail-meta span { display: flex; align-items: center; gap: 5px; }
-    .detail-rating { margin-bottom: 14px; font-size: 0.9rem; color: var(--gray-600); display: flex; align-items: center; gap: 8px; }
-    .detail-rating .star { color: #f59e0b; }
-    .detail-price { font-size: 2rem; font-weight: 900; color: var(--green-mid); margin-bottom: 20px; }
-    .detail-price small { font-size: 0.9rem; color: var(--gray-400); font-weight: 400; }
-    .detail-desc { color: var(--gray-600); line-height: 1.7; margin-bottom: 24px; font-size: 0.93rem; }
-    .owner-card {
-      background: var(--green-pale); border-radius: var(--radius); padding: 16px;
-      display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
-    }
-    .owner-avatar {
-      width: 50px; height: 50px; background: var(--green-mid); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 1.2rem; font-weight: 700; flex-shrink: 0;
-    }
-    .owner-info h4 { font-weight: 700; color: var(--green-dark); margin-bottom: 2px; }
-    .owner-info span { font-size: 0.82rem; color: var(--gray-600); }
 
-    .booking-form { background: var(--white); border: 1.5px solid var(--gray-200); border-radius: var(--radius); padding: 24px; margin-top: 32px; }
-    .booking-form h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--green-dark); margin-bottom: 20px; }
-    .booking-summary {
-      background: var(--green-pale); border-radius: var(--radius-sm); padding: 14px;
-      margin: 16px 0; font-size: 0.9rem;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+  <title>Transport Detail - KrishiYantra</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    .detail-page {
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 24px;
     }
-    .booking-summary .summary-row { display: flex; justify-content: space-between; padding: 4px 0; }
-    .booking-summary .summary-total { font-weight: 700; border-top: 1px solid var(--gray-200); padding-top: 8px; margin-top: 4px; color: var(--green-dark); font-size: 1rem; }
+
+    .back-link {
+      color: var(--green-mid);
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    .detail-image {
+      width: 100%;
+      height: 320px;
+      background: var(--green-pale);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 7rem;
+      border: 1px solid var(--gray-200);
+    }
+
+    .detail-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--green-dark);
+      margin-bottom: 10px;
+    }
+
+    .detail-meta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+      font-size: 0.88rem;
+      color: var(--gray-600);
+    }
+
+    .detail-meta span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .detail-rating {
+      margin-bottom: 14px;
+      font-size: 0.9rem;
+      color: var(--gray-600);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .detail-rating .star {
+      color: #f59e0b;
+    }
+
+    .detail-price {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--green-mid);
+      margin-bottom: 20px;
+    }
+
+    .detail-price small {
+      font-size: 0.9rem;
+      color: var(--gray-400);
+      font-weight: 400;
+    }
+
+    .detail-desc {
+      color: var(--gray-600);
+      line-height: 1.7;
+      margin-bottom: 24px;
+      font-size: 0.93rem;
+    }
+
+    .owner-card {
+      background: var(--green-pale);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .owner-avatar {
+      width: 50px;
+      height: 50px;
+      background: var(--green-mid);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .owner-info h4 {
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 2px;
+    }
+
+    .owner-info span {
+      font-size: 0.82rem;
+      color: var(--gray-600);
+    }
+
+    .booking-form {
+      background: var(--white);
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-top: 32px;
+    }
+
+    .booking-form h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--green-dark);
+      margin-bottom: 20px;
+    }
+
+    .booking-summary {
+      background: var(--green-pale);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin: 16px 0;
+      font-size: 0.9rem;
+    }
+
+    .booking-summary .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+    }
+
+    .booking-summary .summary-total {
+      font-weight: 700;
+      border-top: 1px solid var(--gray-200);
+      padding-top: 8px;
+      margin-top: 4px;
+      color: var(--green-dark);
+      font-size: 1rem;
+    }
 
     .alt-wrap {
       margin-top: 24px;
@@ -53,6 +182,7 @@
       border-radius: var(--radius);
       padding: 18px;
     }
+
     .alt-title {
       color: #7c4a03;
       font-weight: 800;
@@ -61,27 +191,50 @@
       align-items: center;
       gap: 8px;
     }
+
     .alt-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
     }
+
     .alt-card {
       background: var(--white);
       border: 1px solid #f2d27a;
       border-radius: var(--radius-sm);
       padding: 12px;
     }
-    .alt-name { font-weight: 700; color: var(--green-dark); margin-bottom: 6px; }
-    .alt-meta { color: var(--gray-600); font-size: 0.84rem; margin-bottom: 8px; }
-    .alt-price { color: var(--green-mid); font-weight: 800; margin-bottom: 8px; }
+
+    .alt-name {
+      font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 6px;
+    }
+
+    .alt-meta {
+      color: var(--gray-600);
+      font-size: 0.84rem;
+      margin-bottom: 8px;
+    }
+
+    .alt-price {
+      color: var(--green-mid);
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
 
     @media(max-width:700px) {
-      .detail-grid { grid-template-columns: 1fr; }
-      .alt-grid { grid-template-columns: 1fr; }
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .alt-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
+
 <body>
   <nav class="navbar">
     <div class="nav-brand"><i class="fa-solid fa-truck"></i><span>KrishiYantra</span></div>
@@ -114,7 +267,9 @@
   <div class="detail-page">
     <a href="transport.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Transport</a>
     <div id="alertBox"></div>
-    <div id="detailContent"><div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div></div>
+    <div id="detailContent">
+      <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>
+    </div>
   </div>
 
   <footer class="footer">
@@ -132,10 +287,11 @@
     let bookingDraft = {
       startDate: '',
       endDate: '',
+      distanceKm: '',
       deliveryAddress: '',
       goodsDescription: ''
     };
-    const ICONS = { tractor:'🚜', harvester:'🌾', rotavator:'⚙️', sprayer:'💧', thresher:'🌿', plough:'🔧', seeder:'🌱', pump:'🪣', truck:'🚛', van:'🚐', picker:'🚚', trailer:'🚛', container:'🚢', tanker:'🚛' };
+    const ICONS = { tractor: '🚜', harvester: '🌾', rotavator: '⚙️', sprayer: '💧', thresher: '🌿', plough: '🔧', seeder: '🌱', pump: '🪣', truck: '🚛', van: '🚐', picker: '🚚', trailer: '🚛', container: '🚢', tanker: '🚛' };
     const safeText = (value) => String(value || '').replace(/[&<>"']/g, (m) => {
       if (m === '&') return '&amp;';
       if (m === '<') return '&lt;';
@@ -169,7 +325,7 @@
           throw new Error(res.error || 'Transport vehicle not found');
         }
         renderDetail(res.transport);
-      } catch(e) {
+      } catch (e) {
         showAlert('alertBox', e.message || 'Unable to load transport from backend.', 'error');
         document.getElementById('detailContent').innerHTML = '<div class="no-results">Could not load transport details.</div>';
       }
@@ -178,35 +334,39 @@
     function captureBookingDraft() {
       const startDate = document.getElementById('startDate');
       const endDate = document.getElementById('endDate');
+      const distanceKm = document.getElementById('distanceKm');
       const deliveryAddress = document.getElementById('deliveryAddress');
       const goodsDescription = document.getElementById('goodsDescription');
-      if (!startDate || !endDate || !deliveryAddress || !goodsDescription) return;
+      if (!startDate || !endDate || !distanceKm || !deliveryAddress || !goodsDescription) return;
       bookingDraft = {
         startDate: startDate.value || '',
         endDate: endDate.value || '',
+        distanceKm: distanceKm.value || '',
         deliveryAddress: deliveryAddress.value || '',
         goodsDescription: goodsDescription.value || ''
       };
     }
 
-    function restoreBookingDraft(pricePerDay, isAvailable) {
+    function restoreBookingDraft(ratePerKm, isAvailable) {
       if (!isAvailable) return;
       const startDate = document.getElementById('startDate');
       const endDate = document.getElementById('endDate');
+      const distanceKm = document.getElementById('distanceKm');
       const deliveryAddress = document.getElementById('deliveryAddress');
       const goodsDescription = document.getElementById('goodsDescription');
-      if (!startDate || !endDate || !deliveryAddress || !goodsDescription) return;
+      if (!startDate || !endDate || !distanceKm || !deliveryAddress || !goodsDescription) return;
       if (bookingDraft.startDate) startDate.value = bookingDraft.startDate;
       if (bookingDraft.endDate) endDate.value = bookingDraft.endDate;
+      if (bookingDraft.distanceKm) distanceKm.value = bookingDraft.distanceKm;
       if (bookingDraft.deliveryAddress) deliveryAddress.value = bookingDraft.deliveryAddress;
       if (bookingDraft.goodsDescription) goodsDescription.value = bookingDraft.goodsDescription;
-      if (startDate.value && endDate.value) {
-        calcTotal(pricePerDay);
+      if (distanceKm.value) {
+        calcTotal(ratePerKm);
       }
     }
 
     function wireBookingDraftListeners() {
-      const ids = ['startDate', 'endDate', 'deliveryAddress', 'goodsDescription'];
+      const ids = ['startDate', 'endDate', 'distanceKm', 'deliveryAddress', 'goodsDescription'];
       ids.forEach((id) => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -219,7 +379,7 @@
       captureBookingDraft();
       currentTransport = vehicle;
       const isAvailable = vehicle.available !== false;
-      const pricePerDay = Number(vehicle.price_per_day || 0);
+      const ratePerKm = Number(vehicle.rate_per_km || 0);
       const ratingAvg = Number(vehicle.rating_avg || 0);
       const ratingCount = Number(vehicle.rating_count || 0);
       const ratingLine = ratingCount > 0
@@ -250,10 +410,10 @@
               ${isAvailable ? `<span><i class="fa-solid fa-circle" style="color:#22c55e;font-size:0.6rem"></i> Available</span>` : `<span><i class="fa-solid fa-circle" style="color:#ef4444;font-size:0.6rem"></i> Unavailable</span>`}
             </div>
             ${ratingLine}
-            <div class="detail-price">₹${pricePerDay}<small>/day</small></div>
+            <div class="detail-price">₹${ratePerKm}<small>/km</small></div>
             <p class="detail-desc">${vehicle.description || 'Transport vehicle available for hire.'}</p>
             <div class="owner-card">
-              <div class="owner-avatar">${(vehicle.owner_name || 'O').split(' ').map(p => p[0]).slice(0,2).join('').toUpperCase()}</div>
+              <div class="owner-avatar">${(vehicle.owner_name || 'O').split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase()}</div>
               <div class="owner-info">
                 <h4>${vehicle.owner_name || 'Owner'}</h4>
                 <span><i class="fa-solid fa-phone"></i> ${vehicle.owner_phone || 'Contact via platform'}</span>
@@ -267,12 +427,16 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
             <div class="form-group">
               <label>Start Date</label>
-              <input type="date" id="startDate" min="${new Date().toISOString().split('T')[0]}" onchange="calcTotal(${pricePerDay})" ${isAvailable ? '' : 'disabled'}/>
+              <input type="date" id="startDate" min="${new Date().toISOString().split('T')[0]}" onchange="calcTotal(${ratePerKm})" ${isAvailable ? '' : 'disabled'}/>
             </div>
             <div class="form-group">
               <label>End Date</label>
-              <input type="date" id="endDate" min="${new Date().toISOString().split('T')[0]}" onchange="calcTotal(${pricePerDay})" ${isAvailable ? '' : 'disabled'}/>
+              <input type="date" id="endDate" min="${new Date().toISOString().split('T')[0]}" onchange="calcTotal(${ratePerKm})" ${isAvailable ? '' : 'disabled'}/>
             </div>
+          </div>
+          <div class="form-group">
+            <label>Distance (km)</label>
+            <input type="number" id="distanceKm" min="1" step="0.5" placeholder="e.g. 25" oninput="calcTotal(${ratePerKm})" ${isAvailable ? '' : 'disabled'}/>
           </div>
           <div class="form-group">
             <label>Delivery Address</label>
@@ -283,31 +447,29 @@
             <textarea id="goodsDescription" placeholder="Type of goods, weight estimate..." ${isAvailable ? '' : 'disabled'}></textarea>
           </div>
           <div class="booking-summary" id="bookingSummary" style="display:none">
-            <div class="summary-row"><span>Price per day</span><span>₹${pricePerDay}</span></div>
-            <div class="summary-row"><span>Number of days</span><span id="numDays">-</span></div>
+            <div class="summary-row"><span>Rate per km</span><span>₹${ratePerKm}</span></div>
+            <div class="summary-row"><span>Distance</span><span id="numKm">-</span></div>
             <div class="summary-row summary-total"><span>Total Amount</span><span id="totalAmt">-</span></div>
           </div>
-          <button id="bookBtn" class="btn-green" style="width:100%;justify-content:center;padding:13px;" onclick="bookTransport('${vehicle._id}', ${pricePerDay})" ${isAvailable ? '' : 'disabled'}>
+          <button id="bookBtn" class="btn-green" style="width:100%;justify-content:center;padding:13px;" onclick="bookTransport('${vehicle._id}', ${ratePerKm})" ${isAvailable ? '' : 'disabled'}>
             <i class="fa-solid fa-check-circle"></i> ${isAvailable ? 'Confirm & Pay' : 'Currently Booked'}
           </button>
         </div>
       `;
-      restoreBookingDraft(pricePerDay, isAvailable);
+      restoreBookingDraft(ratePerKm, isAvailable);
       wireBookingDraftListeners();
     }
 
-    function calcTotal(pricePerDay) {
-      const s = document.getElementById('startDate').value;
-      const e = document.getElementById('endDate').value;
-      if (!s || !e) return;
-      const days = Math.ceil((new Date(e) - new Date(s)) / 86400000);
-      if (days <= 0) { document.getElementById('bookingSummary').style.display='none'; return; }
-      document.getElementById('numDays').textContent = days;
-      document.getElementById('totalAmt').textContent = `₹${days * pricePerDay}`;
+    function calcTotal(ratePerKm) {
+      const distanceInput = document.getElementById('distanceKm');
+      const distanceKm = Number(distanceInput.value || 0);
+      if (distanceKm <= 0) { document.getElementById('bookingSummary').style.display = 'none'; return; }
+      document.getElementById('numKm').textContent = `${distanceKm} km`;
+      document.getElementById('totalAmt').textContent = `₹${Math.round(distanceKm * ratePerKm)}`;
       document.getElementById('bookingSummary').style.display = 'block';
     }
 
-    async function bookTransport(transportIdParam, pricePerDay) {
+    async function bookTransport(transportIdParam, ratePerKm) {
       if (!isLoggedIn()) {
         window.location.href = `transport-login.html?redirect=${encodeURIComponent(`transport-detail.html?id=${transportIdParam}`)}`;
         return;
@@ -318,14 +480,16 @@
       }
       const startDate = document.getElementById('startDate').value;
       const endDate = document.getElementById('endDate').value;
+      const distanceKm = Number(document.getElementById('distanceKm').value || 0);
       const deliveryAddress = document.getElementById('deliveryAddress').value;
       const goodsDescription = document.getElementById('goodsDescription').value;
       if (!startDate || !endDate || !deliveryAddress) {
         showAlert('alertBox', 'Please fill all required fields', 'error'); return;
       }
-      const days = Math.ceil((new Date(endDate) - new Date(startDate)) / 86400000);
-      if (days <= 0) { showAlert('alertBox', 'End date must be after start date', 'error'); return; }
-      const totalAmount = days * pricePerDay;
+      if (distanceKm <= 0) {
+        showAlert('alertBox', 'Please enter the trip distance in km', 'error'); return;
+      }
+      const totalAmount = Math.round(distanceKm * ratePerKm);
       const bookBtn = document.getElementById('bookBtn');
       if (bookBtn) {
         bookBtn.disabled = true;
@@ -335,9 +499,9 @@
         transport_id: transportIdParam,
         start_date: startDate,
         end_date: endDate,
+        distance_km: distanceKm,
         delivery_address: deliveryAddress,
-        goods_description: goodsDescription,
-        total_amount: totalAmount
+        goods_description: goodsDescription
       };
       try {
         const order = await apiCall('POST', '/transport/payment/order', bookingPayload, true);
@@ -365,7 +529,7 @@
               };
               const verifyRes = await apiCall('POST', '/transport/payment/verify', verifyPayload, true);
               if (verifyRes.rental) {
-                bookingDraft = { startDate: '', endDate: '', deliveryAddress: '', goodsDescription: '' };
+                bookingDraft = { startDate: '', endDate: '', distanceKm: '', deliveryAddress: '', goodsDescription: '' };
                 showAlert('alertBox', 'Payment successful. Transport booking request sent to owner for confirmation.', 'success');
                 setTimeout(() => window.location.href = 'my-transports.html', 1800);
               } else {
@@ -392,7 +556,7 @@
         };
         const rzp = new Razorpay(options);
         rzp.open();
-      } catch(e) {
+      } catch (e) {
         if (bookBtn) {
           bookBtn.disabled = false;
           bookBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Confirm & Pay';
@@ -412,4 +576,5 @@
     loadDetail();
   </script>
 </body>
+
 </html>

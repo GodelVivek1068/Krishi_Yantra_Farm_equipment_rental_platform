@@ -36,6 +36,7 @@ test_paths = [
     ("/pages/supplier-dashboard.html", 200),
     ("/pages/kamgar-dashboard.html", 200),
     ("/pages/transport-dashboard.html", 200),
+    ("/pages/farmer-dashboard.html", 200),
     ("/pages/admin-panel.html", 200),
     ("/pages/admin-login.html", 200),
     ("/pages/worker-login.html", 200),
@@ -68,6 +69,7 @@ test_paths = [
     ("/supplier-dashboard", 200),
     ("/kamgar-dashboard", 200),
     ("/transport-dashboard", 200),
+    ("/farmer-dashboard", 200),
 ]
 
 passed = 0

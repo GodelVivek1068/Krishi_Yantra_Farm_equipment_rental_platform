@@ -1,57 +1,291 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
   <title>Transport Dashboard - KrishiYantra</title>
   <link rel="stylesheet" href="../css/main.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    body { background: #f5f9f6; }
-    .dashboard-hero { background: linear-gradient(135deg, #173f2a, #2d7a4f); color: white; padding: 42px 24px 34px; }
-    .dashboard-hero-inner, .dashboard-wrap { max-width: 1180px; margin: 0 auto; }
-    .dashboard-hero h1 { font-family: 'Playfair Display', serif; font-size: 2.2rem; }
-    .dashboard-hero p { color: rgba(255,255,255,0.78); margin-top: 5px; }
-    .dashboard-wrap { padding: 28px 24px 70px; }
-    .quick-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
-    .quick-actions a { display: inline-flex; align-items: center; gap: 8px; }
-    .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 24px; }
-    .stat { background: white; border: 1px solid #e2eee5; border-radius: 14px; padding: 18px; box-shadow: var(--shadow-sm); }
-    .stat i { color: var(--green-mid); font-size: 1.15rem; }
-    .stat-label { color: var(--gray-600); font-size: 0.8rem; margin-top: 8px; }
-    .stat-value { color: var(--green-dark); font-size: 1.65rem; font-weight: 900; margin-top: 3px; }
-    .dashboard-grid { display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 20px; }
-    .panel { background: white; border: 1px solid #e2eee5; border-radius: 16px; padding: 20px; box-shadow: var(--shadow-sm); }
-    .panel h2 { color: var(--green-dark); font-family: 'Playfair Display', serif; font-size: 1.25rem; margin-bottom: 14px; }
-    .panel h2 i { font-family: inherit; font-size: 0.95rem; margin-right: 6px; }
-    .item { border: 1px solid #e6efe8; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
-    .item:last-child { margin-bottom: 0; }
-    .item-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
-    .item h3 { color: var(--green-dark); font-size: 1rem; margin: 0; }
-    .meta { color: var(--gray-600); display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.82rem; margin-top: 7px; }
-    .badge { display: inline-flex; border-radius: 999px; padding: 5px 9px; font-size: 0.7rem; font-weight: 800; text-transform: capitalize; }
-    .badge-green { background: #dcfce7; color: #166534; }
-    .badge-amber { background: #fef3c7; color: #92400e; }
-    .badge-red { background: #fee2e2; color: #b91c1c; }
-    .item-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 11px; }
-    .mini-btn { border: 0; border-radius: 999px; padding: 7px 11px; cursor: pointer; font-size: 0.75rem; font-weight: 800; }
-    .mini-btn.confirm { background: #dcfce7; color: #166534; }
-    .mini-btn.cancel { background: #fee2e2; color: #b91c1c; }
-    .empty { color: var(--gray-500); text-align: center; padding: 30px 12px; }
-    .loading { color: var(--gray-600); padding: 20px; text-align: center; }
-    .vehicle-form { background: #f7fcf8; border: 1px solid #dcecdf; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
-    .vehicle-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-    .vehicle-form-grid .full { grid-column: 1 / -1; }
-    .vehicle-form label { display: block; color: var(--gray-600); font-size: 0.78rem; font-weight: 700; margin-bottom: 5px; }
-    .vehicle-form input, .vehicle-form select, .vehicle-form textarea { width: 100%; border: 1px solid var(--gray-200); border-radius: 8px; padding: 9px 10px; font: inherit; }
-    .vehicle-form textarea { min-height: 78px; resize: vertical; }
-    .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
-    @media (max-width: 900px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dashboard-grid { grid-template-columns: 1fr; } }
-    @media (max-width: 560px) { .stats { grid-template-columns: 1fr; } .dashboard-wrap { padding-left: 16px; padding-right: 16px; } .dashboard-hero { padding-left: 16px; padding-right: 16px; } }
+    body {
+      background: #f5f9f6;
+    }
+
+    .dashboard-hero {
+      background: linear-gradient(135deg, #173f2a, #2d7a4f);
+      color: white;
+      padding: 42px 24px 34px;
+    }
+
+    .dashboard-hero-inner,
+    .dashboard-wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .dashboard-hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+    }
+
+    .dashboard-hero p {
+      color: rgba(255, 255, 255, 0.78);
+      margin-top: 5px;
+    }
+
+    .dashboard-wrap {
+      padding: 28px 24px 70px;
+    }
+
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .quick-actions a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .stat {
+      background: white;
+      border: 1px solid #e2eee5;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat i {
+      color: var(--green-mid);
+      font-size: 1.15rem;
+    }
+
+    .stat-label {
+      color: var(--gray-600);
+      font-size: 0.8rem;
+      margin-top: 8px;
+    }
+
+    .stat-value {
+      color: var(--green-dark);
+      font-size: 1.65rem;
+      font-weight: 900;
+      margin-top: 3px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 20px;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid #e2eee5;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel h2 {
+      color: var(--green-dark);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      margin-bottom: 14px;
+    }
+
+    .panel h2 i {
+      font-family: inherit;
+      font-size: 0.95rem;
+      margin-right: 6px;
+    }
+
+    .item {
+      border: 1px solid #e6efe8;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+
+    .item:last-child {
+      margin-bottom: 0;
+    }
+
+    .item-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .item h3 {
+      color: var(--green-dark);
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    .meta {
+      color: var(--gray-600);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.82rem;
+      margin-top: 7px;
+    }
+
+    .badge {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: capitalize;
+    }
+
+    .badge-green {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-amber {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-red {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .item-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 11px;
+    }
+
+    .mini-btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 7px 11px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+
+    .mini-btn.confirm {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .mini-btn.cancel {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .empty {
+      color: var(--gray-500);
+      text-align: center;
+      padding: 30px 12px;
+    }
+
+    .loading {
+      color: var(--gray-600);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .vehicle-form {
+      background: #f7fcf8;
+      border: 1px solid #dcecdf;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .vehicle-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .vehicle-form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .vehicle-form label {
+      display: block;
+      color: var(--gray-600);
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .vehicle-form input,
+    .vehicle-form select,
+    .vehicle-form textarea {
+      width: 100%;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 9px 10px;
+      font: inherit;
+    }
+
+    .vehicle-form textarea {
+      min-height: 78px;
+      resize: vertical;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard-wrap {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .dashboard-hero {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+    }
   </style>
 </head>
+
 <body>
   <nav class="navbar">
     <div class="nav-brand"><i class="fa-solid fa-truck"></i><span>KrishiYantra</span></div>
@@ -86,41 +320,80 @@
     <div class="quick-actions">
       <a class="btn-green" href="transport.html"><i class="fa-solid fa-magnifying-glass"></i> Browse Transport</a>
       <a class="btn-outline" href="my-transports.html"><i class="fa-solid fa-list"></i> Full Booking History</a>
-      <a class="btn-outline" id="listVehicleLink" href="my-transports.html"><i class="fa-solid fa-truck"></i> Manage Vehicles</a>
-      <button class="btn-outline" id="addVehicleButton" type="button" onclick="toggleVehicleForm()"><i class="fa-solid fa-plus"></i> Add Vehicle</button>
+      <a class="btn-outline" id="listVehicleLink" href="my-transports.html"><i class="fa-solid fa-truck"></i> Manage
+        Vehicles</a>
+      <button class="btn-outline" id="addVehicleButton" type="button" onclick="toggleVehicleForm()"
+        aria-controls="vehicleFormPanel" aria-expanded="false"><i class="fa-solid fa-plus"></i> <span
+          id="addVehicleButtonLabel">Add Vehicle</span></button>
     </div>
     <div id="alertBox"></div>
     <section class="vehicle-form" id="vehicleFormPanel" hidden>
-      <h2 style="color:var(--green-dark);font-family:'Playfair Display',serif;font-size:1.25rem;margin-bottom:14px;"><i class="fa-solid fa-truck"></i> Add transport vehicle</h2>
+      <h2 style="color:var(--green-dark);font-family:'Playfair Display',serif;font-size:1.25rem;margin-bottom:14px;"><i
+          class="fa-solid fa-truck"></i> Add transport vehicle</h2>
+      <p style="color:var(--gray-600);font-size:0.88rem;margin:-7px 0 16px;">List each vehicle separately. You can
+        add another vehicle whenever you need to.</p>
       <form id="vehicleForm">
         <div class="vehicle-form-grid">
-          <div><label for="vehicleName">Vehicle name</label><input id="vehicleName" type="text" placeholder="Mahindra Bolero Pickup" required></div>
-          <div><label for="vehicleType">Vehicle type</label><select id="vehicleType" required><option value="truck">Truck</option><option value="van">Van</option><option value="picker">Pickup</option><option value="trailer">Trailer</option><option value="container">Container</option><option value="tanker">Tanker</option><option value="other">Other</option></select></div>
-          <div><label for="vehicleCapacity">Capacity</label><input id="vehicleCapacity" type="text" placeholder="5 tons"></div>
-          <div><label for="vehiclePrice">Price per day (INR)</label><input id="vehiclePrice" type="number" min="1" placeholder="2500" required></div>
-          <div class="full"><label for="vehicleLocation">Location</label><input id="vehicleLocation" type="text" placeholder="Pune, Maharashtra" required></div>
+          <div><label for="vehicleName">Vehicle name</label><input id="vehicleName" type="text"
+              placeholder="Mahindra Bolero Pickup" required></div>
+          <div><label for="vehicleType">Vehicle type</label><select id="vehicleType" required>
+              <option value="truck">Truck</option>
+              <option value="van">Van</option>
+              <option value="picker">Pickup</option>
+              <option value="trailer">Trailer</option>
+              <option value="container">Container</option>
+              <option value="tanker">Tanker</option>
+              <option value="other">Other</option>
+            </select></div>
+          <div><label for="vehicleCapacity">Capacity</label><input id="vehicleCapacity" type="text"
+              placeholder="5 tons"></div>
+          <div><label for="vehiclePrice">Rate per km (INR, 100-300)</label><input id="vehiclePrice" type="number"
+              min="100" max="300" step="1" placeholder="150" required></div>
+          <div class="full"><label for="vehicleLocation">Location</label><input id="vehicleLocation" type="text"
+              placeholder="Pune, Maharashtra" required></div>
           <div><label for="vehicleCity">City</label><input id="vehicleCity" type="text" placeholder="Pune"></div>
-          <div><label for="vehicleDistrict">District</label><input id="vehicleDistrict" type="text" placeholder="Pune"></div>
-          <div class="full"><label for="vehicleImage">Image URL</label><input id="vehicleImage" type="url" placeholder="https://example.com/vehicle.jpg"></div>
-          <div class="full"><label for="vehicleDescription">Description</label><textarea id="vehicleDescription" placeholder="Describe the vehicle, driver service, and delivery coverage"></textarea></div>
+          <div><label for="vehicleDistrict">District</label><input id="vehicleDistrict" type="text" placeholder="Pune">
+          </div>
+          <div class="full"><label for="vehicleImage">Image URL</label><input id="vehicleImage" type="url"
+              placeholder="https://example.com/vehicle.jpg"></div>
+          <div class="full"><label for="vehicleDescription">Description</label><textarea id="vehicleDescription"
+              placeholder="Describe the vehicle, driver service, and delivery coverage"></textarea></div>
         </div>
-        <div class="form-actions"><button class="mini-btn cancel" type="button" onclick="toggleVehicleForm(false)">Cancel</button><button class="mini-btn confirm" type="submit">Save Vehicle</button></div>
+        <div class="form-actions"><button class="mini-btn cancel" type="button"
+            onclick="toggleVehicleForm(false)">Cancel</button><button class="mini-btn confirm" id="saveVehicleButton"
+            type="submit">Save Vehicle</button></div>
       </form>
     </section>
     <section class="stats" id="stats">
-      <div class="stat"><i class="fa-solid fa-calendar-check"></i><div class="stat-label">Total Bookings</div><div class="stat-value" id="totalBookings">-</div></div>
-      <div class="stat"><i class="fa-solid fa-hourglass-half"></i><div class="stat-label">Pending Requests</div><div class="stat-value" id="pendingBookings">-</div></div>
-      <div class="stat"><i class="fa-solid fa-truck"></i><div class="stat-label" id="vehicleStatLabel">My Vehicles</div><div class="stat-value" id="myVehicles">-</div></div>
-      <div class="stat"><i class="fa-solid fa-indian-rupee-sign"></i><div class="stat-label" id="amountStatLabel">Total Booking Value</div><div class="stat-value" id="totalAmount">-</div></div>
+      <div class="stat"><i class="fa-solid fa-calendar-check"></i>
+        <div class="stat-label">Total Bookings</div>
+        <div class="stat-value" id="totalBookings">-</div>
+      </div>
+      <div class="stat"><i class="fa-solid fa-hourglass-half"></i>
+        <div class="stat-label">Pending Requests</div>
+        <div class="stat-value" id="pendingBookings">-</div>
+      </div>
+      <div class="stat"><i class="fa-solid fa-truck"></i>
+        <div class="stat-label" id="vehicleStatLabel">My Vehicles</div>
+        <div class="stat-value" id="myVehicles">-</div>
+      </div>
+      <div class="stat"><i class="fa-solid fa-indian-rupee-sign"></i>
+        <div class="stat-label" id="amountStatLabel">Total Booking Value</div>
+        <div class="stat-value" id="totalAmount">-</div>
+      </div>
     </section>
     <div class="dashboard-grid">
       <section class="panel">
         <h2><i class="fa-solid fa-calendar-days"></i> Recent Bookings</h2>
-        <div id="bookingList"><div class="loading">Loading bookings...</div></div>
+        <div id="bookingList">
+          <div class="loading">Loading bookings...</div>
+        </div>
       </section>
       <section class="panel" id="ownerPanel">
         <h2><i class="fa-solid fa-truck"></i> My Vehicles</h2>
-        <div id="vehicleList"><div class="loading">Loading vehicles...</div></div>
+        <div id="vehicleList">
+          <div class="loading">Loading vehicles...</div>
+        </div>
       </section>
     </div>
   </main>
@@ -128,27 +401,31 @@
   <script src="../js/main.js"></script>
   <script>
     const currentUser = getUser() || {};
-    const isOwner = String(currentUser.role || '').toLowerCase() === 'owner';
+    const role = String(currentUser.role || '').toLowerCase();
+    const isOwner = role === 'owner' || role === 'transport';
 
     function toggleVehicleForm(show = null) {
       const panel = document.getElementById('vehicleFormPanel');
+      const button = document.getElementById('addVehicleButton');
       if (!panel) return;
       if (!isOwner) {
-        showAlert('alertBox', 'Only approved transport owners can add vehicles. Please register or log in as an owner.', 'error');
+        showAlert('alertBox', 'Only transport providers or vehicle owners can add vehicles. Please register or log in as a transport provider.', 'error');
         return;
       }
       const shouldShow = show === null ? panel.hidden : show;
       panel.hidden = !shouldShow;
+      if (button) button.setAttribute('aria-expanded', String(shouldShow));
       if (shouldShow) document.getElementById('vehicleName').focus();
     }
 
     async function addVehicle(event) {
       event.preventDefault();
+      const saveButton = document.getElementById('saveVehicleButton');
       const payload = {
         name: document.getElementById('vehicleName').value.trim(),
         vehicle_type: document.getElementById('vehicleType').value,
         capacity: document.getElementById('vehicleCapacity').value.trim(),
-        price_per_day: Number(document.getElementById('vehiclePrice').value || 0),
+        rate_per_km: Number(document.getElementById('vehiclePrice').value || 0),
         location: document.getElementById('vehicleLocation').value.trim(),
         city: document.getElementById('vehicleCity').value.trim(),
         district: document.getElementById('vehicleDistrict').value.trim(),
@@ -156,19 +433,32 @@
         description: document.getElementById('vehicleDescription').value.trim(),
         owner_phone: currentUser.phone || ''
       };
-      if (!payload.name || !payload.location || payload.price_per_day <= 0) {
-        showAlert('alertBox', 'Vehicle name, location, and a valid daily price are required.', 'error');
+      if (!payload.name || !payload.location || payload.rate_per_km < 100 || payload.rate_per_km > 300) {
+        showAlert('alertBox', 'Vehicle name, location, and a rate per km between Rs. 100 and Rs. 300 are required.', 'error');
         return;
       }
       try {
+        saveButton.disabled = true;
+        saveButton.textContent = 'Saving...';
         await apiCall('POST', '/transport/', payload, true);
         document.getElementById('vehicleForm').reset();
         toggleVehicleForm(false);
-        showAlert('alertBox', 'Transport vehicle added successfully.', 'success');
+        showAlert('alertBox', 'Vehicle added successfully. You can add another vehicle at any time.', 'success');
         await loadVehicles();
       } catch (error) {
         showAlert('alertBox', error.message || 'Unable to add vehicle.', 'error');
+      } finally {
+        saveButton.disabled = false;
+        saveButton.textContent = 'Save Vehicle';
       }
+    }
+
+    function updateAddVehicleButton(vehicleCount) {
+      const label = document.getElementById('addVehicleButtonLabel');
+      const button = document.getElementById('addVehicleButton');
+      const hasVehicles = vehicleCount > 0;
+      if (label) label.textContent = hasVehicles ? 'Add Another Vehicle' : 'Add Vehicle';
+      if (button) button.setAttribute('aria-label', hasVehicles ? 'Add another vehicle' : 'Add vehicle');
     }
 
     function statusClass(status) {
@@ -221,13 +511,15 @@
         const res = await apiCall('GET', '/transport/my', null, true);
         const vehicles = res.transport || [];
         setText('myVehicles', vehicles.length);
+        updateAddVehicleButton(vehicles.length);
         const list = document.getElementById('vehicleList');
         list.innerHTML = vehicles.length ? vehicles.map(vehicle => `
           <div class="item">
             <div class="item-top"><h3>${vehicle.name || 'Transport vehicle'}</h3><span class="badge ${vehicle.available ? 'badge-green' : 'badge-red'}">${vehicle.available ? 'Available' : 'Unavailable'}</span></div>
-            <div class="meta"><span>${vehicle.vehicle_type || 'Vehicle'}</span><span>${vehicle.location || 'Location not set'}</span><span>Rs. ${Number(vehicle.price_per_day || 0).toLocaleString('en-IN')}/day</span></div>
-          </div>`).join('') : '<div class="empty">No vehicles listed yet.</div>';
+            <div class="meta"><span>${vehicle.vehicle_type || 'Vehicle'}</span><span>${vehicle.location || 'Location not set'}</span><span>Rs. ${Number(vehicle.rate_per_km || 0).toLocaleString('en-IN')}/km</span></div>
+          </div>`).join('') : `<div class="empty">No vehicles listed yet.<br><button class="mini-btn confirm" type="button" style="margin-top:12px" onclick="toggleVehicleForm(true)"><i class="fa-solid fa-plus"></i> Add your first vehicle</button></div>`;
       } catch (error) {
+        updateAddVehicleButton(0);
         document.getElementById('vehicleList').innerHTML = `<div class="empty">${error.message || 'Unable to load vehicles.'}</div>`;
       }
     }
@@ -266,4 +558,5 @@
     setInterval(() => { if (!document.hidden) loadDashboard(); }, 15000);
   </script>
 </body>
+
 </html>

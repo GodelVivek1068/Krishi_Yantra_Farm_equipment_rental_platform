@@ -1,42 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
   <title>Notifications - KrishiYantra</title>
   <link rel="stylesheet" href="../css/main.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    .notifications-header { background: linear-gradient(135deg, #1f6f45, #153a2a); color: white; padding: 40px 24px; text-align: center; }
-    .notifications-header h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 4px; }
-    .notifications-wrap { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
-    .notification-card { background: white; border-left: 4px solid var(--gray-300); border-radius: 8px; padding: 18px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; }
-    .notification-card:hover { box-shadow: var(--shadow-md); border-left-color: var(--green-mid); }
-    .notification-card.unread { background: #f7fffb; border-left-color: var(--green-mid); }
-    .notification-card.new-order { border-left-color: #10b981; }
-    .notification-card.status-update { border-left-color: #3b82f6; }
-    .notification-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px; }
-    .notification-title { font-weight: 700; color: var(--green-dark); font-size: 0.95rem; }
-    .notification-time { font-size: 0.75rem; color: var(--gray-500); }
-    .notification-message { font-size: 0.9rem; color: var(--gray-700); line-height: 1.5; }
-    .notification-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 0.82rem; }
-    .notification-type { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; background: var(--green-pale); color: var(--green-dark); font-weight: 600; }
-    .notification-type.status-update { background: #dbeafe; color: #1e40af; }
-    .unread-badge { width: 10px; height: 10px; background: var(--green-mid); border-radius: 50%; }
-    .mark-read-btn { background: none; border: none; color: var(--gray-400); cursor: pointer; font-size: 0.9rem; }
-    .mark-read-btn:hover { color: var(--green-mid); }
-    .empty-state { text-align: center; padding: 60px 20px; }
-    .empty-state i { font-size: 3rem; color: var(--gray-300); margin-bottom: 16px; }
-    .empty-state p { color: var(--gray-500); font-size: 1.1rem; }
-    .filters { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-    .filter-btn { border: 1px solid var(--gray-300); padding: 8px 16px; border-radius: 999px; background: white; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
-    .filter-btn.active { background: var(--green-mid); color: white; border-color: var(--green-mid); }
-    .filter-btn:hover { border-color: var(--green-mid); }
-    @media(max-width:640px) { .notifications-header h1 { font-size: 1.4rem; } .notification-card { padding: 14px; } .filters { gap: 6px; } }
+    .notifications-header {
+      background: linear-gradient(135deg, #1f6f45, #153a2a);
+      color: white;
+      padding: 40px 24px;
+      text-align: center;
+    }
+
+    .notifications-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      margin-bottom: 4px;
+    }
+
+    .notifications-wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    .notification-card {
+      background: white;
+      border-left: 4px solid var(--gray-300);
+      border-radius: 8px;
+      padding: 18px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .notification-card:hover {
+      box-shadow: var(--shadow-md);
+      border-left-color: var(--green-mid);
+    }
+
+    .notification-card.unread {
+      background: #f7fffb;
+      border-left-color: var(--green-mid);
+    }
+
+    .notification-card.new-order {
+      border-left-color: #10b981;
+    }
+
+    .notification-card.status-update {
+      border-left-color: #3b82f6;
+    }
+
+    .notification-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 8px;
+    }
+
+    .notification-title {
+      font-weight: 700;
+      color: var(--green-dark);
+      font-size: 0.95rem;
+    }
+
+    .notification-time {
+      font-size: 0.75rem;
+      color: var(--gray-500);
+    }
+
+    .notification-message {
+      font-size: 0.9rem;
+      color: var(--gray-700);
+      line-height: 1.5;
+    }
+
+    .notification-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      font-size: 0.82rem;
+    }
+
+    .notification-type {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--green-pale);
+      color: var(--green-dark);
+      font-weight: 600;
+    }
+
+    .notification-type.status-update {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .unread-badge {
+      width: 10px;
+      height: 10px;
+      background: var(--green-mid);
+      border-radius: 50%;
+    }
+
+    .mark-read-btn {
+      background: none;
+      border: none;
+      color: var(--gray-400);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .mark-read-btn:hover {
+      color: var(--green-mid);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      color: var(--gray-300);
+      margin-bottom: 16px;
+    }
+
+    .empty-state p {
+      color: var(--gray-500);
+      font-size: 1.1rem;
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      border: 1px solid var(--gray-300);
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: white;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .filter-btn.active {
+      background: var(--green-mid);
+      color: white;
+      border-color: var(--green-mid);
+    }
+
+    .filter-btn:hover {
+      border-color: var(--green-mid);
+    }
+
+    @media(max-width:640px) {
+      .notifications-header h1 {
+        font-size: 1.4rem;
+      }
+
+      .notification-card {
+        padding: 14px;
+      }
+
+      .filters {
+        gap: 6px;
+      }
+    }
   </style>
 </head>
+
 <body>
   <nav class="navbar">
     <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
@@ -55,7 +203,8 @@
       </li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
-    <div class="nav-auth" id="navAuth"><a href="login.html" class="btn-outline">Login</a><a href="register.html" class="btn-primary">Register</a></div>
+    <div class="nav-auth" id="navAuth"><a href="login.html" class="btn-outline">Login</a><a href="farmer-register.html"
+        class="btn-primary">Register</a></div>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
   </nav>
 
@@ -68,10 +217,14 @@
     <div id="alertBox"></div>
 
     <div class="filters">
-      <button class="filter-btn active" onclick="filterNotifications('all')"><i class="fa-solid fa-inbox"></i> All</button>
-      <button class="filter-btn" onclick="filterNotifications('new_order')"><i class="fa-solid fa-box"></i> New Orders</button>
-      <button class="filter-btn" onclick="filterNotifications('status_update')"><i class="fa-solid fa-sync"></i> Status Updates</button>
-      <button class="filter-btn" onclick="filterNotifications('unread')"><i class="fa-solid fa-circle"></i> Unread</button>
+      <button class="filter-btn active" onclick="filterNotifications('all')"><i class="fa-solid fa-inbox"></i>
+        All</button>
+      <button class="filter-btn" onclick="filterNotifications('new_order')"><i class="fa-solid fa-box"></i> New
+        Orders</button>
+      <button class="filter-btn" onclick="filterNotifications('status_update')"><i class="fa-solid fa-sync"></i> Status
+        Updates</button>
+      <button class="filter-btn" onclick="filterNotifications('unread')"><i class="fa-solid fa-circle"></i>
+        Unread</button>
     </div>
 
     <div id="notificationsList">
@@ -125,7 +278,7 @@
 
     async function loadNotifications() {
       if (!requireFarmerLoggedIn()) return;
-      
+
       try {
         const res = await apiCall('GET', '/fertilizer/notifications?limit=50');
         allNotifications = res.notifications || [];
@@ -214,4 +367,5 @@
     loadNotifications();
   </script>
 </body>
+
 </html>

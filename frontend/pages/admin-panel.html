@@ -1,23 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="icon" type="image/svg+xml" href="../favicon.svg"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
   <title>Admin Panel - KrishiYantra</title>
-  <link rel="stylesheet" href="../css/main.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
     .hero {
       background: linear-gradient(130deg, #102a43 0%, #1f5f8b 50%, #2c7da0 100%);
       color: #fff;
       padding: 38px 24px 30px;
     }
-    .hero h1 { font-family: 'Playfair Display', serif; font-size: 2rem; }
-    .hero p { color: rgba(255,255,255,0.82); }
 
-    .admin-wrap { max-width: 1200px; margin: 26px auto; padding: 0 24px; }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+    }
+
+    .hero p {
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .admin-wrap {
+      max-width: 1200px;
+      margin: 26px auto;
+      padding: 0 24px;
+    }
 
     .stats-grid {
       display: grid;
@@ -25,6 +39,7 @@
       gap: 12px;
       margin-bottom: 16px;
     }
+
     .stat-card {
       border: 1px solid var(--gray-200);
       border-radius: var(--radius-sm);
@@ -32,14 +47,25 @@
       padding: 14px;
       box-shadow: var(--shadow-sm);
     }
-    .stat-label { color: var(--gray-600); font-size: 0.8rem; }
-    .stat-value { font-size: 1.35rem; color: #0f3a56; font-weight: 800; margin-top: 4px; }
+
+    .stat-label {
+      color: var(--gray-600);
+      font-size: 0.8rem;
+    }
+
+    .stat-value {
+      font-size: 1.35rem;
+      color: #0f3a56;
+      font-weight: 800;
+      margin-top: 4px;
+    }
 
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
     }
+
     .panel {
       border: 1px solid var(--gray-200);
       border-radius: var(--radius);
@@ -47,6 +73,7 @@
       box-shadow: var(--shadow-sm);
       padding: 16px;
     }
+
     .panel h3 {
       margin-bottom: 12px;
       font-family: 'Playfair Display', serif;
@@ -60,9 +87,24 @@
       padding: 10px;
       margin-bottom: 8px;
     }
-    .row-title { font-weight: 700; color: #0f3a56; }
-    .row-meta { font-size: 0.82rem; color: var(--gray-600); margin-top: 4px; }
-    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+
+    .row-title {
+      font-weight: 700;
+      color: #0f3a56;
+    }
+
+    .row-meta {
+      font-size: 0.82rem;
+      color: var(--gray-600);
+      margin-top: 4px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
 
     .commission-box {
       border: 1px dashed #93c5fd;
@@ -72,7 +114,11 @@
       margin-bottom: 10px;
     }
 
-    .empty { color: var(--gray-400); text-align: center; padding: 16px; }
+    .empty {
+      color: var(--gray-400);
+      text-align: center;
+      padding: 16px;
+    }
 
     .live-badge {
       display: inline-flex;
@@ -92,9 +138,17 @@
     }
 
     @keyframes pulseBadge {
-      0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.45); }
-      70% { box-shadow: 0 0 0 8px rgba(220, 38, 38, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+      0% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.45);
+      }
+
+      70% {
+        box-shadow: 0 0 0 8px rgba(220, 38, 38, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+      }
     }
 
     .live-badge.hidden {
@@ -102,11 +156,17 @@
     }
 
     @media(max-width:980px) {
-      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .grid { grid-template-columns: 1fr; }
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
+
 <body>
   <nav class="navbar">
     <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
@@ -129,31 +189,57 @@
     </ul>
     <div class="nav-auth" id="navAuth">
       <a href="login.html" class="btn-outline">Login</a>
-      <a href="register.html" class="btn-primary">Register</a>
+      <a href="farmer-register.html" class="btn-primary">Register</a>
     </div>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
   </nav>
 
   <div class="hero">
     <h1>Marketplace Admin Panel</h1>
-    <p>Approve owner KYC, configure platform commission, and resolve disputes.</p>
+    <p>Approve owner and supplier KYC, configure platform commission, and resolve disputes.</p>
   </div>
 
   <div class="admin-wrap">
     <div id="alertBox"></div>
 
     <div class="stats-grid" id="statsGrid">
-      <div class="stat-card"><div class="stat-label">Pending KYC</div><div class="stat-value">-</div></div>
-      <div class="stat-card"><div class="stat-label">Approved Owners</div><div class="stat-value">-</div></div>
-      <div class="stat-card"><div class="stat-label">Open Disputes</div><div class="stat-value">-</div></div>
-      <div class="stat-card"><div class="stat-label">Total Commission</div><div class="stat-value">-</div></div>
-      <div class="stat-card"><div class="stat-label">Owner Payout</div><div class="stat-value">-</div></div>
+      <div class="stat-card">
+        <div class="stat-label">Pending KYC</div>
+        <div class="stat-value">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Approved Owners</div>
+        <div class="stat-value">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Open Disputes</div>
+        <div class="stat-value">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Commission</div>
+        <div class="stat-value">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Owner Payout</div>
+        <div class="stat-value">-</div>
+      </div>
     </div>
 
     <div class="grid">
       <section class="panel">
-        <h3><i class="fa-solid fa-user-check"></i> Owner KYC Approvals <span id="pendingKycBadge" class="live-badge hidden">0</span></h3>
-        <div id="kycList"><div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div></div>
+        <h3><i class="fa-solid fa-user-check"></i> Owner KYC Approvals <span id="pendingKycBadge"
+            class="live-badge hidden">0</span></h3>
+        <div id="kycList">
+          <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h3><i class="fa-solid fa-seedling"></i> Supplier KYC Approvals <span id="pendingSupplierKycBadge"
+            class="live-badge hidden">0</span></h3>
+        <div id="supplierKycList">
+          <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>
+        </div>
       </section>
 
       <section class="panel">
@@ -161,12 +247,15 @@
         <div class="commission-box" id="commissionInfo"></div>
         <div class="form-group">
           <label>Default Commission Percent</label>
-          <input type="number" id="commissionInput" min="0" max="100" step="0.1"/>
+          <input type="number" id="commissionInput" min="0" max="100" step="0.1" />
         </div>
-        <button class="btn-green" onclick="saveCommission()"><i class="fa-solid fa-floppy-disk"></i> Save Commission</button>
+        <button class="btn-green" onclick="saveCommission()"><i class="fa-solid fa-floppy-disk"></i> Save
+          Commission</button>
 
         <h3 style="margin-top:18px;"><i class="fa-solid fa-scale-balanced"></i> Disputes</h3>
-        <div id="disputeList"><div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div></div>
+        <div id="disputeList">
+          <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>
+        </div>
       </section>
     </div>
   </div>
@@ -174,8 +263,17 @@
   <script src="../js/main.js"></script>
   <script>
     let lastPendingKycCount = null;
+    let lastPendingSupplierKycCount = null;
     let kycPollTimer = null;
     let kycAudioContext = null;
+
+    const KYC_LIST_TARGETS = {
+      owner: { listId: 'kycList', badgeId: 'pendingKycBadge' },
+      supplier: { listId: 'supplierKycList', badgeId: 'pendingSupplierKycBadge' }
+    };
+
+    const esc = (value) => String(value === undefined || value === null ? '' : value)
+      .replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 
     function requireAdmin() {
       const user = getUser();
@@ -232,7 +330,7 @@
       };
 
       if (kycAudioContext.state === 'suspended') {
-        kycAudioContext.resume().then(play).catch(() => {});
+        kycAudioContext.resume().then(play).catch(() => { });
       } else {
         play();
       }
@@ -240,25 +338,33 @@
 
     async function initAdmin() {
       if (!requireAdmin()) return;
-      await Promise.all([loadDashboard(), loadKyc(), loadCommission(), loadDisputes()]);
+      await Promise.all([loadDashboard(), loadKyc(), loadSupplierKyc(), loadCommission(), loadDisputes()]);
       startKycRealtimePolling();
     }
 
-    function updatePendingKycBadge(count) {
-      const badge = document.getElementById('pendingKycBadge');
+    function refreshAdminTitle() {
+      const total = (lastPendingKycCount || 0) + (lastPendingSupplierKycCount || 0);
+      if (total <= 0) {
+        document.title = 'Admin Panel - KrishiYantra';
+        return;
+      }
+      document.title = `(${total > 99 ? '99+' : total}) Admin Panel - KrishiYantra`;
+    }
+
+    function updatePendingKycBadge(role, count) {
+      const target = KYC_LIST_TARGETS[role] || {};
+      const badge = document.getElementById(target.badgeId);
       if (!badge) return;
 
       const normalized = Number(count || 0);
       if (normalized <= 0) {
         badge.classList.add('hidden');
         badge.textContent = '0';
-        document.title = 'Admin Panel - KrishiYantra';
-        return;
+      } else {
+        badge.classList.remove('hidden');
+        badge.textContent = normalized > 99 ? '99+' : String(normalized);
       }
-
-      badge.classList.remove('hidden');
-      badge.textContent = normalized > 99 ? '99+' : String(normalized);
-      document.title = `(${badge.textContent}) Admin Panel - KrishiYantra`;
+      refreshAdminTitle();
     }
 
     function startKycRealtimePolling() {
@@ -266,6 +372,7 @@
       kycPollTimer = setInterval(() => {
         if (document.hidden) return;
         loadKyc(true);
+        loadSupplierKyc(true);
       }, 5000);
     }
 
@@ -273,8 +380,10 @@
       try {
         const res = await apiCall('GET', '/admin/dashboard', null, true);
         document.getElementById('statsGrid').innerHTML = `
-          <div class="stat-card"><div class="stat-label">Pending KYC</div><div class="stat-value">${res.pending_kyc || 0}</div></div>
+          <div class="stat-card"><div class="stat-label">Pending Owner KYC</div><div class="stat-value">${res.pending_kyc || 0}</div></div>
           <div class="stat-card"><div class="stat-label">Approved Owners</div><div class="stat-value">${res.approved_owners || 0}</div></div>
+          <div class="stat-card"><div class="stat-label">Pending Supplier KYC</div><div class="stat-value">${res.pending_supplier_kyc || 0}</div></div>
+          <div class="stat-card"><div class="stat-label">Approved Suppliers</div><div class="stat-value">${res.approved_suppliers || 0}</div></div>
           <div class="stat-card"><div class="stat-label">Open Disputes</div><div class="stat-value">${res.open_disputes || 0}</div></div>
           <div class="stat-card"><div class="stat-label">Total Commission</div><div class="stat-value">Rs. ${(res.total_commission || 0).toLocaleString('en-IN')}</div></div>
           <div class="stat-card"><div class="stat-label">Owner Payout</div><div class="stat-value">Rs. ${(res.total_owner_payout || 0).toLocaleString('en-IN')}</div></div>
@@ -284,53 +393,78 @@
       }
     }
 
-    async function loadKyc(fromPoll = false) {
-      const wrap = document.getElementById('kycList');
-      try {
-        const res = await apiCall('GET', '/admin/owner-kyc/pending', null, true);
-        const owners = res.owners || [];
-        const pendingCount = owners.length;
-
-        if (fromPoll && lastPendingKycCount !== null && pendingCount > lastPendingKycCount) {
-          const delta = pendingCount - lastPendingKycCount;
-          showAlert('alertBox', `${delta} new pending KYC request${delta > 1 ? 's' : ''} received.`, 'info');
-          playKycSoundNotification();
-        }
-
-        lastPendingKycCount = pendingCount;
-        updatePendingKycBadge(pendingCount);
-
-        if (!owners.length) {
-          wrap.innerHTML = '<div class="empty">No pending KYC submissions.</div>';
-          return;
-        }
-
-        wrap.innerHTML = owners.map((owner) => {
-          const details = owner.kyc_details || {};
-          return `
+    function renderKycRows(role, entries) {
+      return entries.map((entry) => {
+        const details = entry.kyc_details || {};
+        const gstLine = details.gst_number
+          ? ` | GST: ${esc(details.gst_number)}`
+          : '';
+        return `
             <div class="row-card">
-              <div class="row-title">${owner.name} (${owner.email})</div>
-              <div class="row-meta">Phone: ${owner.phone || '-'} | Location: ${owner.location || '-'}</div>
-              <div class="row-meta">Business: ${details.business_name || '-'} | ID: ${details.id_number || '-'} | PAN: ${details.pan_number || '-'}</div>
+              <div class="row-title">${esc(entry.name)} (${esc(entry.email)})</div>
+              <div class="row-meta">Phone: ${esc(entry.phone) || '-'} | Location: ${esc(entry.location) || '-'}</div>
+              <div class="row-meta">Business: ${esc(details.business_name) || '-'} | ID: ${esc(details.id_number) || '-'} | PAN: ${esc(details.pan_number) || '-'}${gstLine}</div>
+              <div class="row-meta">ID Proof: ${esc(details.id_proof_url) || '-'} | Address Proof: ${esc(details.address_proof_url) || '-'}${details.business_proof_url ? ` | Business Proof: ${esc(details.business_proof_url)}` : ''}</div>
               <div class="actions">
-                <button class="btn-green" onclick="reviewKyc('${owner.id}', 'approved')"><i class="fa-solid fa-check"></i> Approve</button>
-                <button class="btn-outline" style="border-color:#fca5a5;color:#b91c1c;" onclick="reviewKyc('${owner.id}', 'rejected')"><i class="fa-solid fa-xmark"></i> Reject</button>
+                <button class="btn-green" onclick="reviewKyc('${role}', '${entry.id}', 'approved')"><i class="fa-solid fa-check"></i> Approve</button>
+                <button class="btn-outline" style="border-color:#fca5a5;color:#b91c1c;" onclick="reviewKyc('${role}', '${entry.id}', 'rejected')"><i class="fa-solid fa-xmark"></i> Reject</button>
               </div>
             </div>
           `;
-        }).join('');
+      }).join('');
+    }
+
+    async function loadKycForRole(role, fromPoll = false) {
+      const target = KYC_LIST_TARGETS[role] || {};
+      const wrap = document.getElementById(target.listId);
+      if (!wrap) return;
+      const roleLabel = role === 'supplier' ? 'Supplier' : 'Owner';
+      try {
+        const res = await apiCall('GET', `/admin/${role}-kyc/pending`, null, true);
+        const entries = res[role] || [];
+        const pendingCount = entries.length;
+        const previous = role === 'supplier' ? lastPendingSupplierKycCount : lastPendingKycCount;
+
+        if (fromPoll && previous !== null && pendingCount > previous) {
+          const delta = pendingCount - previous;
+          showAlert('alertBox', `${delta} new pending ${roleLabel} KYC request${delta > 1 ? 's' : ''} received.`, 'info');
+          playKycSoundNotification();
+        }
+
+        if (role === 'supplier') {
+          lastPendingSupplierKycCount = pendingCount;
+        } else {
+          lastPendingKycCount = pendingCount;
+        }
+        updatePendingKycBadge(role, pendingCount);
+
+        if (!entries.length) {
+          wrap.innerHTML = `<div class="empty">No pending ${roleLabel.toLowerCase()} KYC submissions.</div>`;
+          return;
+        }
+
+        wrap.innerHTML = renderKycRows(role, entries);
       } catch (e) {
-        updatePendingKycBadge(lastPendingKycCount || 0);
-        wrap.innerHTML = `<div class="empty">${e.message || 'Failed to load KYC list.'}</div>`;
+        updatePendingKycBadge(role, role === 'supplier' ? lastPendingSupplierKycCount : lastPendingKycCount);
+        wrap.innerHTML = `<div class="empty">${esc(e.message) || `Failed to load ${roleLabel.toLowerCase()} KYC list.`}</div>`;
       }
     }
 
-    async function reviewKyc(ownerId, decision) {
+    async function loadKyc(fromPoll = false) {
+      await loadKycForRole('owner', fromPoll);
+    }
+
+    async function loadSupplierKyc(fromPoll = false) {
+      await loadKycForRole('supplier', fromPoll);
+    }
+
+    async function reviewKyc(role, userId, decision) {
+      const roleLabel = role === 'supplier' ? 'Supplier' : 'Owner';
       const notes = window.prompt(`Optional notes for ${decision}:`, '') || '';
       try {
-        await apiCall('PUT', `/admin/owner-kyc/${ownerId}/decision`, { decision, notes }, true);
-        showAlert('alertBox', `Owner KYC ${decision}.`, 'success');
-        await Promise.all([loadDashboard(), loadKyc()]);
+        await apiCall('PUT', `/admin/${role}-kyc/${userId}/decision`, { decision, notes }, true);
+        showAlert('alertBox', `${roleLabel} KYC ${decision}.`, 'success');
+        await Promise.all([loadDashboard(), loadKyc(), loadSupplierKyc()]);
       } catch (e) {
         showAlert('alertBox', e.message || 'Failed to update KYC decision.', 'error');
       }
@@ -406,15 +540,17 @@
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) return;
       loadKyc(true);
+      loadSupplierKyc(true);
     });
 
     // Prime audio context on first user interaction for better browser compatibility.
     document.addEventListener('pointerdown', () => {
       initKycAudio();
       if (kycAudioContext && kycAudioContext.state === 'suspended') {
-        kycAudioContext.resume().catch(() => {});
+        kycAudioContext.resume().catch(() => { });
       }
     }, { once: true });
   </script>
 </body>
+
 </html>

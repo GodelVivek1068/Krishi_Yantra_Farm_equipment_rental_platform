@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
-  <title>Owner KYC - KrishiYantra</title>
+  <title>Supplier KYC - KrishiYantra</title>
   <link rel="stylesheet" href="../css/main.css" />
   <link
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap"
@@ -103,7 +103,7 @@
 
 <body>
   <nav class="navbar">
-    <div class="nav-brand"><i class="fa-solid fa-tractor"></i><span>KrishiYantra</span></div>
+    <div class="nav-brand"><i class="fa-solid fa-seedling"></i><span>KrishiYantra</span></div>
     <ul class="nav-links" id="navLinks">
       <li><a href="../index.html">Home</a></li>
       <li id="farmerServicesNav" class="service-menu">
@@ -113,33 +113,33 @@
         <div class="service-menu-dropdown">
           <a href="equipment.html"><i class="fa-solid fa-tractor"></i> Equipment</a>
           <a href="kamgar.html"><i class="fa-solid fa-person-digging"></i> Worker</a>
-          <a href="fertilizer.html"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
+          <a href="fertilizer.html" class="active"><i class="fa-solid fa-seedling"></i> Fertilizer</a>
           <a href="transport.html"><i class="fa-solid fa-truck"></i> Transport</a>
         </div>
       </li>
-      <li><a href="owner-kyc.html" class="active">Owner KYC</a></li>
+      <li><a href="supplier-kyc.html" class="active">Supplier KYC</a></li>
       <li><a href="contact.html">Contact</a></li>
     </ul>
     <div class="nav-auth" id="navAuth">
-      <a href="login.html" class="btn-outline">Login</a>
-      <a href="owner-register.html" class="btn-primary">Owner Register</a>
+      <a href="fertilizer-login.html" class="btn-outline">Login</a>
+      <a href="supplier-register.html" class="btn-primary">Supplier Register</a>
     </div>
     <button class="hamburger" id="hamburger"><i class="fa-solid fa-bars"></i></button>
   </nav>
 
   <div class="page-header">
-    <h1>Owner KYC Verification</h1>
-    <p>Complete your KYC to activate your personal owner dashboard.</p>
+    <h1>Supplier KYC Verification</h1>
+    <p>Complete your KYC to activate your supplier dashboard and start listing fertilizer products.</p>
   </div>
 
   <div class="wrap">
     <div id="alertBox"></div>
     <div class="card">
       <div class="steps">
-        Step 1 completed: Owner registration<br />
+        Step 1 completed: Supplier registration<br />
         Step 2: Submit KYC details (current page)<br />
         Step 3: Admin reviews and approves<br />
-        Step 4: Automatic redirect to owner dashboard
+        Step 4: Automatic redirect to supplier dashboard
       </div>
 
       <div id="kycStatusBox"></div>
@@ -147,8 +147,8 @@
 
       <div class="form-grid">
         <div class="form-group">
-          <label>Business / Owner Name *</label>
-          <input type="text" id="businessName" placeholder="e.g. Patil Agro Services" />
+          <label>Business / Company Name *</label>
+          <input type="text" id="businessName" placeholder="e.g. Patil Agro Supplies" />
         </div>
         <div class="form-group">
           <label>ID Number *</label>
@@ -159,12 +159,20 @@
           <input type="text" id="panNumber" placeholder="e.g. ABCDE1234F" />
         </div>
         <div class="form-group">
+          <label>GST Number</label>
+          <input type="text" id="gstNumber" placeholder="e.g. 27ABCDE1234F1Z5" />
+        </div>
+        <div class="form-group">
           <label>ID Proof URL</label>
           <input type="url" id="idProofUrl" placeholder="https://..." />
         </div>
-        <div class="form-group full">
+        <div class="form-group">
           <label>Address Proof URL</label>
           <input type="url" id="addressProofUrl" placeholder="https://..." />
+        </div>
+        <div class="form-group full">
+          <label>Business Proof URL (GST Certificate / Shop License)</label>
+          <input type="url" id="businessProofUrl" placeholder="https://..." />
         </div>
       </div>
 
@@ -179,13 +187,13 @@
   <script>
     let kycPollTimer = null;
 
-    function requireOwner() {
+    function requireSupplier() {
       if (!isLoggedIn()) {
-        window.location.href = 'login.html?redirect=owner-kyc.html';
+        window.location.href = 'fertilizer-login.html?redirect=supplier-kyc.html';
         return false;
       }
       const user = getUser() || {};
-      if (String(user.role || '').toLowerCase() !== 'owner') {
+      if (String(user.role || '').toLowerCase() !== 'supplier') {
         window.location.href = '../index.html';
         return false;
       }
@@ -196,11 +204,11 @@
       const box = document.getElementById('kycStatusBox');
       const normalized = String(status || 'pending').toLowerCase();
       if (normalized === 'approved') {
-        box.innerHTML = '<div class="status approved"><i class="fa-solid fa-circle-check"></i> KYC approved. Your owner dashboard is active.</div>';
+        box.innerHTML = '<div class="status approved"><i class="fa-solid fa-circle-check"></i> KYC approved. Your supplier dashboard is active.</div>';
       } else if (normalized === 'rejected') {
         box.innerHTML = '<div class="status rejected"><i class="fa-solid fa-circle-xmark"></i> KYC rejected. Update details and resubmit.</div>';
       } else {
-        box.innerHTML = '<div class="status pending"><i class="fa-solid fa-clock"></i> KYC pending admin review. Dashboard access is blocked until approval.</div>';
+        box.innerHTML = '<div class="status pending"><i class="fa-solid fa-clock"></i> KYC pending admin review. Product listing stays blocked until approval.</div>';
       }
     }
 
@@ -214,19 +222,21 @@
 
     async function loadKycStatus() {
       try {
-        const res = await apiCall('GET', '/admin/owner-kyc/status', null, true);
-        const owner = res.owner || {};
-        const status = String(owner.kyc_status || 'pending').toLowerCase();
+        const res = await apiCall('GET', '/admin/supplier-kyc/status', null, true);
+        const supplier = res.supplier || {};
+        const status = String(supplier.kyc_status || 'pending').toLowerCase();
         renderStatus(status);
 
-        const details = owner.kyc_details || {};
+        const details = supplier.kyc_details || {};
         if (details.business_name) document.getElementById('businessName').value = details.business_name;
         if (details.id_number) document.getElementById('idNumber').value = details.id_number;
         if (details.pan_number) document.getElementById('panNumber').value = details.pan_number;
+        if (details.gst_number) document.getElementById('gstNumber').value = details.gst_number;
         if (details.id_proof_url) document.getElementById('idProofUrl').value = details.id_proof_url;
         if (details.address_proof_url) document.getElementById('addressProofUrl').value = details.address_proof_url;
+        if (details.business_proof_url) document.getElementById('businessProofUrl').value = details.business_proof_url;
 
-        const notes = owner.kyc_review_notes || '';
+        const notes = supplier.kyc_review_notes || '';
         document.getElementById('kycReviewNotes').textContent = notes ? `Admin note: ${notes}` : '';
 
         const user = getUser() || {};
@@ -236,9 +246,9 @@
         updateNavAuth();
 
         if (status === 'approved') {
-          showAlert('alertBox', 'KYC approved. Redirecting to owner dashboard...', 'success');
+          showAlert('alertBox', 'KYC approved. Redirecting to supplier dashboard...', 'success');
           setTimeout(() => {
-            window.location.href = 'owner-dashboard.html';
+            window.location.href = 'supplier-dashboard.html';
           }, 900);
         }
       } catch (e) {
@@ -250,8 +260,10 @@
       const business_name = document.getElementById('businessName').value.trim();
       const id_number = document.getElementById('idNumber').value.trim();
       const pan_number = document.getElementById('panNumber').value.trim();
+      const gst_number = document.getElementById('gstNumber').value.trim();
       const id_proof_url = document.getElementById('idProofUrl').value.trim();
       const address_proof_url = document.getElementById('addressProofUrl').value.trim();
+      const business_proof_url = document.getElementById('businessProofUrl').value.trim();
 
       if (!business_name || !id_number) {
         showAlert('alertBox', 'Business name and ID number are required', 'error');
@@ -259,12 +271,14 @@
       }
 
       try {
-        await apiCall('POST', '/admin/owner-kyc', {
+        await apiCall('POST', '/admin/supplier-kyc', {
           business_name,
           id_number,
           pan_number,
+          gst_number,
           id_proof_url,
-          address_proof_url
+          address_proof_url,
+          business_proof_url
         }, true);
         showAlert('alertBox', 'KYC submitted and sent to admin for approval.', 'success');
         await loadKycStatus();
@@ -273,10 +287,10 @@
       }
     }
 
-    if (requireOwner()) {
+    if (requireSupplier()) {
       const reason = new URLSearchParams(window.location.search).get('reason');
       if (reason === 'approval_required') {
-        showAlert('alertBox', 'Admin approval is required before opening owner dashboard.', 'error');
+        showAlert('alertBox', 'Admin approval is required before opening supplier dashboard.', 'error');
       }
       loadKycStatus();
       startKycPolling();

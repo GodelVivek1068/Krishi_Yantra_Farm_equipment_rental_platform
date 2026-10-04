@@ -46,11 +46,27 @@ def _reset_attempts(ip):
         _login_attempts.pop(ip, None)
 
 
+def _default_kyc_status(role):
+    """Status assigned to a brand new registration."""
+    role = str(role or 'renter').strip().lower()
+    if role in {'admin', 'transport'}:
+        return 'approved'
+    if role in {'owner', 'supplier', 'kamgar'}:
+        return 'pending'
+    return 'not_required'
+
+
+def _legacy_kyc_status(role):
+    """Fallback for documents stored before kyc_status existed; they stay usable."""
+    role = str(role or 'renter').strip().lower()
+    if role in {'owner', 'supplier', 'admin', 'transport'}:
+        return 'approved'
+    return 'not_required'
+
+
 def _serialize_user(user):
     role = user.get('role', 'renter')
-    kyc_status = user.get('kyc_status')
-    if not kyc_status:
-        kyc_status = 'approved' if role in {'owner', 'supplier', 'admin'} else 'not_required'
+    kyc_status = user.get('kyc_status') or _legacy_kyc_status(role)
 
     user_id_str = str(user['_id'])
     return {
@@ -89,7 +105,7 @@ def register():
     location = data.get('location', '').strip()
     password = data.get('password', '')
     role = data.get('role', 'renter')
-    role = role if role in {'renter', 'owner', 'kamgar', 'supplier'} else 'renter'
+    role = role if role in {'renter', 'owner', 'kamgar', 'supplier', 'transport'} else 'renter'
 
     is_admin_email = email in _admin_emails()
     if is_admin_email:
@@ -108,7 +124,7 @@ def register():
 
     hashed_pw = generate_password_hash(password)
 
-    kyc_status = 'pending' if role in {'owner', 'kamgar', 'supplier'} else ('approved' if role == 'admin' else 'not_required')
+    kyc_status = _default_kyc_status(role)
     user_doc = {
         'name': name,
         'email': email,
@@ -283,6 +299,38 @@ def login_admin():
         return jsonify({'error': 'This account does not have admin access'}), 403
 
     _reset_attempts(ip + '_admin')
+    token = generate_token(user['_id'])
+    return jsonify({
+        'token': token,
+        'user': _serialize_user(user)
+    })
+
+
+@auth_bp.route('/login-transport', methods=['POST'])
+def login_transport():
+    ip = _get_client_ip()
+    allowed, wait_sec = _check_rate_limit(ip)
+    if not allowed:
+        return jsonify({'error': f'Too many failed attempts. Please wait {wait_sec} seconds before trying again.'}), 429
+
+    data = request.get_json() or {}
+    email = data.get('email', '').strip().lower()
+    password = data.get('password', '')
+
+    if not email or not password:
+        return jsonify({'error': 'Email and password are required'}), 400
+
+    user = mongo.db.users.find_one({'email': email})
+    if not user or not check_password_hash(user['password'], password):
+        _record_failed_attempt(ip)
+        return jsonify({'error': 'Invalid email or password'}), 401
+
+    role = str(user.get('role', 'renter')).lower()
+    if role not in ('transport', 'owner'):
+        _record_failed_attempt(ip)
+        return jsonify({'error': 'This account is not registered as transport provider or owner'}), 403
+
+    _reset_attempts(ip)
     token = generate_token(user['_id'])
     return jsonify({
         'token': token,

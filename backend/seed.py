@@ -86,8 +86,57 @@ users = [
         "password": generate_password_hash("password123"),
         "role": "kamgar",
         "created_at": datetime.datetime.utcnow()
+    },
+    {
+        "name": "Suresh Kadam",
+        "email": "suresh.supplier@demo.com",
+        "phone": "9765432109",
+        "location": "Nashik, Maharashtra",
+        "password": generate_password_hash("password123"),
+        "role": "supplier",
+        "kyc_status": "pending",
+        "kyc_details": {},
+        "kyc_review_notes": "",
+        "created_at": datetime.datetime.utcnow()
+    },
+    {
+        "name": "Prakash Agro Supplies",
+        "email": "prakash.supplier@demo.com",
+        "phone": "9654321098",
+        "location": "Pune, Maharashtra",
+        "password": generate_password_hash("password123"),
+        "role": "supplier",
+        "kyc_status": "approved",
+        "kyc_details": {
+            "business_name": "Prakash Agro Supplies",
+            "id_number": "MH1234567",
+            "pan_number": "ABCDE1234F",
+            "gst_number": "27ABCDE1234F1Z5",
+            "id_proof_url": "",
+            "address_proof_url": "",
+            "business_proof_url": "",
+        },
+        "kyc_review_notes": "Verified by admin",
+        "created_at": datetime.datetime.utcnow()
+    },
+    {
+        "name": "KrishiYantra Admin",
+        "email": os.getenv("ADMIN_EMAILS", "admin@demo.com").split(",")[0].strip() or "admin@demo.com",
+        "phone": "9000000000",
+        "location": "Pune, Maharashtra",
+        "password": generate_password_hash("password123"),
+        "role": "admin",
+        "kyc_status": "approved",
+        "kyc_details": {},
+        "kyc_review_notes": "",
+        "created_at": datetime.datetime.utcnow()
     }
 ]
+for _user in users:
+    if "kyc_status" not in _user:
+        _user["kyc_status"] = "approved" if _user["role"] in ("owner", "kamgar", "renter", "admin") else "not_required"
+        _user["kyc_details"] = {}
+        _user["kyc_review_notes"] = ""
 user_ids = db.users.insert_many(users).inserted_ids
 print(f"  Inserted {len(user_ids)} users")
 
@@ -97,6 +146,8 @@ renter_id = user_ids[2]
 worker1_id = user_ids[3]
 worker2_id = user_ids[4]
 worker3_id = user_ids[5]
+supplier1_id = user_ids[6]
+supplier2_id = user_ids[7]
 
 # ---- Seed Equipment ----
 print("Seeding equipment...")
@@ -426,9 +477,9 @@ fertilizer_products = [
         "price_per_bag": 840,
         "stock_available": 80,
         "location": "Kolhapur, Maharashtra",
-        "supplier_name": "Vivek Jadhav",
-        "supplier_phone": "9699391891",
-        "supplier_id": owner1_id,
+        "supplier_name": "Prakash Agro Supplies",
+        "supplier_phone": "9654321098",
+        "supplier_id": supplier2_id,
         "description": "Potassium-rich fertilizer to increase crop resilience, fruit quality, and stress tolerance.",
         "rating_avg": 4.5,
         "rating_count": 16,
@@ -443,9 +494,9 @@ fertilizer_products = [
         "price_per_bag": 430,
         "stock_available": 110,
         "location": "Nanded, Maharashtra",
-        "supplier_name": "Vivek Jadhav",
-        "supplier_phone": "9699391891",
-        "supplier_id": owner1_id,
+        "supplier_name": "Prakash Agro Supplies",
+        "supplier_phone": "9654321098",
+        "supplier_id": supplier2_id,
         "description": "Organic nutrient source for soil health improvement and long-term fertility building.",
         "rating_avg": 4.7,
         "rating_count": 18,
@@ -484,7 +535,7 @@ transport_vehicles = [
         "name": "Tata Ace Gold (Chota Hathi)",
         "vehicle_type": "small_truck",
         "capacity": "1 Ton",
-        "price_per_day": 1800,
+        "rate_per_km": 120,
         "location": "Pune, Maharashtra",
         "city": "Pune",
         "district": "Pune",
@@ -505,7 +556,7 @@ transport_vehicles = [
         "name": "Mahindra Bolero Pickup Extra Long",
         "vehicle_type": "pickup",
         "capacity": "1.7 Ton",
-        "price_per_day": 2400,
+        "rate_per_km": 150,
         "location": "Kolhapur, Maharashtra",
         "city": "Kolhapur",
         "district": "Kolhapur",
@@ -526,7 +577,7 @@ transport_vehicles = [
         "name": "Mahindra Tractor with Hydraulic Trolley",
         "vehicle_type": "tractor_trolley",
         "capacity": "8 Ton",
-        "price_per_day": 2200,
+        "rate_per_km": 140,
         "location": "Ahmednagar, Maharashtra",
         "city": "Ahmednagar",
         "district": "Ahmednagar",
@@ -547,7 +598,7 @@ transport_vehicles = [
         "name": "Tata 407 Gold SFC Agricultural Truck",
         "vehicle_type": "big_truck",
         "capacity": "4 Ton",
-        "price_per_day": 3800,
+        "rate_per_km": 260,
         "location": "Nashik, Maharashtra",
         "city": "Nashik",
         "district": "Nashik",
@@ -568,7 +619,7 @@ transport_vehicles = [
         "name": "Ashok Leyland Dost Strong Small Truck",
         "vehicle_type": "small_truck",
         "capacity": "1.5 Ton",
-        "price_per_day": 2100,
+        "rate_per_km": 140,
         "location": "Sangli, Maharashtra",
         "city": "Sangli",
         "district": "Sangli",
@@ -589,7 +640,7 @@ transport_vehicles = [
         "name": "Mahindra 275 DI Tractor with Grain Trolley",
         "vehicle_type": "tractor_trolley",
         "capacity": "5 Ton",
-        "price_per_day": 1700,
+        "rate_per_km": 110,
         "location": "Satara, Maharashtra",
         "city": "Satara",
         "district": "Satara",
@@ -610,7 +661,7 @@ transport_vehicles = [
         "name": "Mahindra Bolero Camper 4x4 Farm Pickup",
         "vehicle_type": "pickup",
         "capacity": "1.2 Ton",
-        "price_per_day": 2500,
+        "rate_per_km": 160,
         "location": "Solapur, Maharashtra",
         "city": "Solapur",
         "district": "Solapur",
@@ -631,7 +682,7 @@ transport_vehicles = [
         "name": "Eicher Pro 2049 Big Cargo Truck",
         "vehicle_type": "big_truck",
         "capacity": "7 Ton",
-        "price_per_day": 5200,
+        "rate_per_km": 300,
         "location": "Aurangabad, Maharashtra",
         "city": "Aurangabad",
         "district": "Aurangabad",
@@ -652,7 +703,7 @@ transport_vehicles = [
         "name": "Tata Yodha 4x4 Farm Pickup",
         "vehicle_type": "pickup",
         "capacity": "1.7 Ton",
-        "price_per_day": 2600,
+        "rate_per_km": 170,
         "location": "Latur, Maharashtra",
         "city": "Latur",
         "district": "Latur",
@@ -673,7 +724,7 @@ transport_vehicles = [
         "name": "Swaraj 744 FE with Heavy Farm Trolley",
         "vehicle_type": "tractor_trolley",
         "capacity": "7 Ton",
-        "price_per_day": 2000,
+        "rate_per_km": 130,
         "location": "Kolhapur, Maharashtra",
         "city": "Kolhapur",
         "district": "Kolhapur",
@@ -694,7 +745,7 @@ transport_vehicles = [
         "name": "Tata Intra V30 Small Farm Truck",
         "vehicle_type": "small_truck",
         "capacity": "1.3 Ton",
-        "price_per_day": 1900,
+        "rate_per_km": 130,
         "location": "Jalgaon, Maharashtra",
         "city": "Jalgaon",
         "district": "Jalgaon",
@@ -715,7 +766,7 @@ transport_vehicles = [
         "name": "BharatBenz 1217C Heavy Farm Goods Truck",
         "vehicle_type": "big_truck",
         "capacity": "10 Ton",
-        "price_per_day": 6200,
+        "rate_per_km": 300,
         "location": "Pune, Maharashtra",
         "city": "Pune",
         "district": "Pune",
@@ -738,8 +789,10 @@ print(f"  Inserted {len(transport_ids)} transport vehicles")
 
 print("\n[OK] Seeding complete!")
 print("\nDemo Login Credentials:")
-print("  Email: rajesh@demo.com  | Password: password123  (Owner)")
+print("  Email: rajesh@demo.com  | Password: password123  (Owner, KYC approved)")
 print("  Email: meena@demo.com   | Password: password123  (Renter)")
 print("  Email: ramesh.kamgar@demo.com | Password: password123  (Kamgar)")
-print("  Email: meena@demo.com   | Password: password123  (Renter)")
+print("  Email: suresh.supplier@demo.com  | Password: password123  (Supplier, KYC pending)")
+print("  Email: prakash.supplier@demo.com | Password: password123  (Supplier, KYC approved)")
+print("  Email: admin@demo.com  | Password: password123  (Admin, see ADMIN_EMAILS in .env)")
 

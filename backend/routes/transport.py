@@ -9,6 +9,7 @@ import hashlib
 import razorpay
 from config.db import mongo
 from utils.auth_middleware import get_current_user, require_auth
+from models.transport import MIN_RATE_PER_KM, MAX_RATE_PER_KM
 
 transport_bp = Blueprint('transport', __name__)
 ACTIVE_BOOKING_STATUSES = {'pending', 'confirmed'}
@@ -181,6 +182,16 @@ def _build_active_booking_window(transport_id):
     }
 
 
+def _get_rate_per_km(doc):
+    rate = _safe_float(doc.get('rate_per_km'))
+    if rate is None:
+        # Legacy listings were priced per day; fall back to a valid per-km rate.
+        rate = _safe_float(doc.get('price_per_day'))
+    if rate is None:
+        return MIN_RATE_PER_KM
+    return int(max(MIN_RATE_PER_KM, min(MAX_RATE_PER_KM, round(rate))))
+
+
 def transport_to_dict(doc):
     expired_count = _expire_overdue_bookings(doc['_id'])
     active_booking_window = _build_active_booking_window(doc['_id'])
@@ -203,7 +214,7 @@ def transport_to_dict(doc):
         'image_url': doc.get('image_url', ''),
         'rating_avg': float(doc.get('rating_avg', 0) or 0),
         'rating_count': int(doc.get('rating_count', 0) or 0),
-        'price_per_day': doc.get('price_per_day'),
+        'rate_per_km': _get_rate_per_km(doc),
         'location': doc.get('location'),
         'description': doc.get('description', ''),
         'city': doc.get('city', ''),
@@ -222,25 +233,40 @@ def transport_to_dict(doc):
     }
 
 
+MAX_BOOKING_DISTANCE_KM = 5000
+
+
 def _validate_booking_payload(data):
     transport_id = data.get('transport_id')
     start_date = data.get('start_date')
     end_date = data.get('end_date')
     delivery_address = data.get('delivery_address', '').strip()
     goods_description = data.get('goods_description', '').strip()
-    total_amount = int(data.get('total_amount', 0) or 0)
+    distance_km = _safe_float(data.get('distance_km'))
     if not all([transport_id, start_date, end_date, delivery_address]):
         return None, 'transport_id, start_date, end_date, and delivery_address are required'
-    if total_amount <= 0:
-        return None, 'total_amount must be greater than 0'
+    if distance_km is None or distance_km <= 0:
+        return None, 'distance_km must be greater than 0'
+    if distance_km > MAX_BOOKING_DISTANCE_KM:
+        return None, f'distance_km must be {MAX_BOOKING_DISTANCE_KM} km or less'
     return {
         'transport_id': transport_id,
         'start_date': start_date,
         'end_date': end_date,
         'delivery_address': delivery_address,
         'goods_description': goods_description,
-        'total_amount': total_amount
+        'distance_km': round(distance_km, 2)
     }, None
+
+
+def _apply_booking_total(booking, transport):
+    rate_per_km = _get_rate_per_km(transport)
+    total_amount = int(round(rate_per_km * booking['distance_km']))
+    if total_amount <= 0:
+        return None, 'Total amount must be greater than 0'
+    booking['rate_per_km'] = rate_per_km
+    booking['total_amount'] = total_amount
+    return booking, None
 
 
 def _get_transport_for_booking(transport_id, user_id):
@@ -277,6 +303,8 @@ def _create_rental_doc(user, transport, booking, payment):
         'end_date': booking['end_date'],
         'delivery_address': booking['delivery_address'],
         'goods_description': booking['goods_description'],
+        'distance_km': booking['distance_km'],
+        'rate_per_km': booking['rate_per_km'],
         'total_amount': booking['total_amount'],
         'payment_status': 'paid',
         'payment_id': payment.get('payment_id', ''),
@@ -354,6 +382,8 @@ def transport_rental_to_dict(r):
         'end_date': r.get('end_date', ''),
         'delivery_address': r.get('delivery_address', ''),
         'goods_description': r.get('goods_description', ''),
+        'distance_km': r.get('distance_km', 0),
+        'rate_per_km': r.get('rate_per_km', 0),
         'total_amount': r.get('total_amount', 0),
         'payment_status': r.get('payment_status', 'pending'),
         'payment_id': r.get('payment_id', ''),
@@ -370,7 +400,7 @@ def get_transport_vehicles():
         search = request.args.get('search')
         vehicle_type = request.args.get('vehicle_type')
         location = request.args.get('location')
-        max_price = request.args.get('max_price')
+        max_rate = request.args.get('max_rate')
         limit = int(request.args.get('limit', 50))
         sort = request.args.get('sort', 'newest')
         origin_lat = _safe_float(request.args.get('lat'))
@@ -395,17 +425,28 @@ def get_transport_vehicles():
                 query['vehicle_type'] = {'$regex': vehicle_type, '$options': 'i'}
         if location:
             query['location'] = {'$regex': location, '$options': 'i'}
-        if max_price:
-            query['price_per_day'] = {'$lte': int(max_price)}
+        if max_rate:
+            conditions = query.setdefault('$and', [])
+            conditions.append({
+                '$or': [
+                    {'rate_per_km': {'$lte': int(max_rate)}},
+                    {'rate_per_km': {'$exists': False}, 'price_per_day': {'$lte': int(max_rate)}}
+                ]
+            })
 
         sort_field = [('created_at', -1)]
-        if sort == 'price_asc':
-            sort_field = [('price_per_day', 1)]
-        elif sort == 'price_desc':
-            sort_field = [('price_per_day', -1)]
+        rate_sort = None
+        if sort == 'rate_asc':
+            rate_sort = 'rate_asc'
+        elif sort == 'rate_desc':
+            rate_sort = 'rate_desc'
 
         docs = list(mongo.db.transport_vehicles.find(query).sort(sort_field).limit(limit))
         transport = [transport_to_dict(d) for d in docs]
+        if rate_sort == 'rate_asc':
+            transport.sort(key=lambda item: item['rate_per_km'])
+        elif rate_sort == 'rate_desc':
+            transport.sort(key=lambda item: item['rate_per_km'], reverse=True)
         return jsonify({'transport': transport, 'total': len(transport)})
     except Exception as e:
         return jsonify({
@@ -430,16 +471,17 @@ def get_transport_detail(transport_id):
 def create_transport():
     user = get_current_user()
     data = request.get_json()
-    if user.get('role', 'renter') != 'owner':
-        return jsonify({'error': 'Only owners can list transport vehicles'}), 403
+    role = str(user.get('role', 'renter')).lower()
+    if role not in ('owner', 'transport'):
+        return jsonify({'error': 'Only transport owners or providers can list transport vehicles'}), 403
     owner_kyc_status = str(user.get('kyc_status', 'approved')).lower()
-    if owner_kyc_status != 'approved':
+    if role == 'owner' and owner_kyc_status != 'approved':
         return jsonify({
             'error': 'Owner KYC is not approved yet. Submit KYC and wait for admin approval before listing transport.'
         }), 403
     name = data.get('name', '').strip()
     vehicle_type = data.get('vehicle_type', '').strip()
-    price_per_day = data.get('price_per_day')
+    rate_per_km = _safe_float(data.get('rate_per_km'))
     location = data.get('location', '').strip()
     city = _normalize_text(data.get('city', ''))
     district = _normalize_text(data.get('district', ''))
@@ -450,14 +492,21 @@ def create_transport():
         city = city or inferred_city
         district = district or inferred_district
     latitude, longitude = _resolve_coordinates(location, city, district, latitude, longitude)
-    if not all([name, vehicle_type, price_per_day, location]):
-        return jsonify({'error': 'Name, vehicle type, price, and location are required'}), 400
+    if not all([name, vehicle_type, location]):
+        return jsonify({'error': 'Name, vehicle type, and location are required'}), 400
+    if rate_per_km is None or rate_per_km <= 0:
+        return jsonify({'error': 'Rate per km is required'}), 400
+    rate_per_km = int(round(rate_per_km))
+    if rate_per_km < MIN_RATE_PER_KM or rate_per_km > MAX_RATE_PER_KM:
+        return jsonify({
+            'error': f'Rate per km must be between Rs. {MIN_RATE_PER_KM} and Rs. {MAX_RATE_PER_KM}'
+        }), 400
     doc = {
         'name': name,
         'vehicle_type': vehicle_type,
         'image_url': data.get('image_url', '').strip(),
         'capacity': _normalize_text(data.get('capacity', '')),
-        'price_per_day': int(price_per_day),
+        'rate_per_km': rate_per_km,
         'location': location,
         'city': city,
         'district': district,
@@ -482,8 +531,9 @@ def create_transport():
 @require_auth
 def my_transport():
     user = get_current_user()
-    if str(user.get('role', 'renter')).lower() != 'owner':
-        return jsonify({'error': 'Only transport owners can manage vehicles'}), 403
+    role = str(user.get('role', 'renter')).lower()
+    if role not in ('owner', 'transport'):
+        return jsonify({'error': 'Only transport owners or providers can manage vehicles'}), 403
     user_id_str = str(user['_id'])
     vehicles = list(mongo.db.transport_vehicles.find({
         '$or': [
@@ -507,6 +557,18 @@ def update_transport(transport_id):
         if str(doc['owner_id']) != str(user['_id']):
             return jsonify({'error': 'Unauthorized'}), 403
         update_fields = {k: v for k, v in data.items() if k not in ['_id', 'owner_id']}
+        if 'price_per_day' in update_fields:
+            update_fields.pop('price_per_day')
+        if 'rate_per_km' in update_fields:
+            new_rate = _safe_float(update_fields.get('rate_per_km'))
+            if new_rate is None or new_rate <= 0:
+                return jsonify({'error': 'Rate per km is required'}), 400
+            new_rate = int(round(new_rate))
+            if new_rate < MIN_RATE_PER_KM or new_rate > MAX_RATE_PER_KM:
+                return jsonify({
+                    'error': f'Rate per km must be between Rs. {MIN_RATE_PER_KM} and Rs. {MAX_RATE_PER_KM}'
+                }), 400
+            update_fields['rate_per_km'] = new_rate
         if any(field in data for field in ['location', 'city', 'district', 'latitude', 'longitude']):
             location = _normalize_text(data.get('location', doc.get('location', '')))
             city = _normalize_text(data.get('city', doc.get('city', '')))
@@ -559,9 +621,12 @@ def create_transport_payment_order():
     if not key_id or not key_secret:
         return jsonify({'error': 'Payment gateway is not configured on server'}), 500
     try:
-        _, eq_error, eq_status = _get_transport_for_booking(booking['transport_id'], user['_id'])
+        transport, eq_error, eq_status = _get_transport_for_booking(booking['transport_id'], user['_id'])
         if eq_error:
             return jsonify({'error': eq_error}), eq_status
+        booking, total_error = _apply_booking_total(booking, transport)
+        if total_error:
+            return jsonify({'error': total_error}), 400
         client = razorpay.Client(auth=(key_id, key_secret))
         receipt = f"transport_{str(user['_id'])[-6:]}_{int(datetime.datetime.utcnow().timestamp())}"
         order = client.order.create({
@@ -616,6 +681,9 @@ def verify_transport_payment_and_create_rental():
         transport, eq_error, eq_status = _get_transport_for_booking(booking['transport_id'], user['_id'])
         if eq_error:
             return jsonify({'error': eq_error}), eq_status
+        booking, total_error = _apply_booking_total(booking, transport)
+        if total_error:
+            return jsonify({'error': total_error}), 400
         doc = _create_rental_doc(user, transport, booking, {
             'payment_id': payment_id,
             'order_id': order_id
@@ -639,8 +707,9 @@ def my_transport_bookings():
 @require_auth
 def owner_transport_bookings():
     user = get_current_user()
-    if str(user.get('role', 'renter')).lower() != 'owner':
-        return jsonify({'error': 'Only transport owners can view owner bookings'}), 403
+    role = str(user.get('role', 'renter')).lower()
+    if role not in ('owner', 'transport'):
+        return jsonify({'error': 'Only transport owners or providers can view owner bookings'}), 403
     owner_transport_id_strs = {str(value) for value in _owner_transport_ids(user['_id'])}
     user_name = str(user.get('name', '')).strip().lower()
     user_phone = str(user.get('phone', '')).strip()
